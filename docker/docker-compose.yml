@@ -1,0 +1,87 @@
+
+version: '3.8'
+
+services:
+
+  # Kafka brokers
+  kafka1:
+    image: bitnami/kafka:4.0-debian-12
+    container_name: kafka1
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_KRAFT_MODE: yes
+      KAFKA_CFG_KAFKA_NODE_ID: 1
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_LISTENERS: PLAINTEXT://kafka1:9092,CONTROLLER://kafka1:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      # 메타데이터 리더의 개수 지정 (scale out 되더라도 메타데이터만을 위한 리더는 이 셋으로 고정, 토픽에 따른 리더는 scale-out된 노드도 될 수 있음)
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka1:9093,2@kafka2:9093,3@kafka3:9093
+      # 컨슈머 offset 정보(어디까지 읽었는지)를 저장하는 내부 토픽의 복제본 개수 (보통 전체 브로커 수와 동일하게 설정)
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      # 트랜잭션 상태 로그(어떤 작업을 실행하라)가 복제되는 node의 숫자 (내결함성 보장을 위해 전체 브로커 수와 동일하게 설정, 복제 대상이 아니더라도 트랜잭션 로그는 저장)
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      # 리더를 포함해서 2개의 노드에 작업이 성공해야함.
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      # 새로운 컨슈머 그룹이 생겼을때, 리밸런싱 지연 시간 지정(현재설정 : 즉시 리밸런싱)
+      KAFKA_CFG_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+  kafka2:
+    image: bitnami/kafka:4.0-debian-12
+    container_name: kafka2
+    ports:
+      - "9094:9092"
+      - "9095:9093"
+    environment:
+      KAFKA_KRAFT_MODE: yes
+      KAFKA_CFG_NODE_ID: 2
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_LISTENERS: PLAINTEXT://kafka2:9092,CONTROLLER://kafka2:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9094
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka1:9093,2@kafka2:9093,3@kafka3:9093
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_CFG_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+  kafka3:
+    image: bitnami/kafka:4.0-debian-12
+    container_name: kafka3
+    ports:
+      - "9096:9092"
+      - "9097:9093"
+    environment:
+      KAFKA_KRAFT_MODE: yes
+      KAFKA_CFG_NODE_ID: 3
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_LISTENERS: PLAINTEXT://kafka3:9092,CONTROLLER://kafka3:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9096
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka1:9093,2@kafka2:9093,3@kafka3:9093
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_CFG_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+  # Redis master
+  user-cache-redis-master:
+    image: redis:7.2-alpine
+    container_name: redis-master
+    ports:
+      - "6379:6379"
+
+  # Redis replica for scale-out testing
+  user-cache-redis-replica:
+    image: redis:7.2-alpine
+    container_name: redis-replica
+    command: ["redis-server", "--replicaof", "redis-master", "6379"]
+    ports:
+      - "6380:6379"
+    depends_on:
+      - redis-master

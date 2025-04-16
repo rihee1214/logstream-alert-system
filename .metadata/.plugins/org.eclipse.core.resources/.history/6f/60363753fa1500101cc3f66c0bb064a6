@@ -1,0 +1,18 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.4'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+description = '''\
+Shared utility and base components for alerting system. Includes DTOs, constants, exceptions, and common interfaces.
+알림 시스템을 위한 공용 유틸리티 및 기반 컴포넌트. DTO, 상수, 예외, 공통 인터페이스를 포함하고 있음.
+'''
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}

@@ -1,0 +1,13 @@
+package com.rihee.alerting;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class LogstreamAlertSystemApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(LogstreamAlertSystemApplication.class, args);
+	}
+
+}

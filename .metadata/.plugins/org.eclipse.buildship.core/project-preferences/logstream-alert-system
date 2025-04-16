@@ -1,0 +1,12 @@
+#
+#Sun Apr 13 23:51:31 KST 2025
+buildDir=build
+buildScriptPath=build.gradle
+classpath=<?xml version\="1.0" encoding\="UTF-8"?>\n<classpath>\n</classpath>\n
+derivedResources=.gradle;build;agent/build;common/build;email-service/build;error-handle-service/build;logging-service/build;mock-service/build;sms-service/build
+gradleVersion=8.13
+hasAutoBuildTasks=false
+linkedResources=
+managedBuilders=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><commands/>
+managedNatures=org.eclipse.jdt.core.javanature
+subprojectPaths=agent;common;email-service;error-handle-service;logging-service;mock-service;sms-service
