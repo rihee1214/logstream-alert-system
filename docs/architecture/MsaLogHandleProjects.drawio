@@ -1,72 +1,74 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Whale/4.31.304.16 Safari/537.36" version="26.2.13">
   <diagram name="페이지-1" id="jw8IQPoCw4GdPcp-_bTI">
-    <mxGraphModel dx="1680" dy="901" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1428" dy="766" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-57" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#FFFFFF,#FFFFFF);" vertex="1" parent="1">
-          <mxGeometry x="24" y="48" width="780" height="780" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-57" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#FFFFFF,#FFFFFF);" parent="1" vertex="1">
+          <mxGeometry x="30" y="50" width="780" height="780" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-4" value="" style="whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=light-dark(#000000,#FF0000);fillColor=light-dark(#FFFFFF,#FFFFFF);" vertex="1" parent="1">
-          <mxGeometry x="94" y="65" width="220" height="220" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-4" value="" style="whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;strokeColor=light-dark(#000000,#FF0000);fillColor=light-dark(#FFFFFF,#FFFFFF);" parent="1" vertex="1">
+          <mxGeometry x="103" y="79" width="200" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-1" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Mock Service&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#333333);strokeWidth=2;fillColor=light-dark(#FFFFFF,#E8F0FE);" vertex="1" parent="1">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-1" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Mock Service&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#333333);strokeWidth=2;fillColor=light-dark(#FFFFFF,#E8F0FE);" parent="1" vertex="1">
           <mxGeometry x="144" y="105" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-2" value="&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 13px; color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0));&quot;&gt;&lt;b style=&quot;&quot;&gt;* Prometheus로 System Log를 수집하도록 처리 *&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 13px; color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0));&quot;&gt;&lt;b&gt;* PostgreSQL을 제외한 모든 요소들은 Filebeat를 가지고 있음(EFK조합) *&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;font style=&quot;font-size: 13px; color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0));&quot;&gt;&lt;b style=&quot;&quot;&gt;&amp;nbsp;* Alertmanager로 System Log 문제를 Slack에 올리도록 처리함 *&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=light-dark(#FFFFFF,#FFFFFF);" vertex="1" parent="1">
-          <mxGeometry x="355" y="65" width="430" height="90" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-2" value="&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 13px; color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0));&quot;&gt;&lt;b style=&quot;&quot;&gt;* Prometheus로 System Log를 수집하고, Filebeat로 전송(EFK조합) *&lt;br&gt;&amp;nbsp; (Alertmanager로는 Prometheus가 직접 전송)&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0)); font-size: 13px;&quot;&gt;&lt;b&gt;* 모든 서비스 컨테이너 내부에&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0));&quot;&gt;&lt;b style=&quot;background-color: transparent; font-size: 13px;&quot;&gt;Prometheus Exporter가 존재&lt;/b&gt;&lt;b style=&quot;font-size: 13px; background-color: transparent;&quot;&gt;&amp;nbsp;*&lt;/b&gt;&lt;/font&gt;&lt;b style=&quot;color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0)); font-size: 13px; background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0));&quot;&gt;&lt;b style=&quot;font-size: 13px; background-color: transparent;&quot;&gt;&amp;nbsp; (단,&amp;nbsp;&lt;/b&gt;&lt;b style=&quot;background-color: transparent; font-size: 13px;&quot;&gt;PostgreSQL 제외)&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;font style=&quot;font-size: 13px; color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0));&quot;&gt;&lt;b style=&quot;&quot;&gt;* Alertmanager는 모든 System Log를 받고 Alert를 처리함 *&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;b style=&quot;font-size: 13px; color: rgb(211, 84, 0);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0));&quot;&gt;&amp;nbsp; (Alert 메시지 전송 정책은 README.md 참조)&lt;/font&gt;&lt;/b&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;font style=&quot;font-size: 13px; color: light-dark(rgb(0, 0, 0), rgb(211, 84, 0));&quot;&gt;&lt;b style=&quot;&quot;&gt;&lt;/b&gt;&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=light-dark(#FFFFFF,#FFFFFF);" parent="1" vertex="1">
+          <mxGeometry x="344" y="80" width="430" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-3" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Agent&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#333333);strokeWidth=2;fillColor=light-dark(#FFFFFF,#E8F0FE);" vertex="1" parent="1">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-3" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Agent&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#333333);strokeWidth=2;fillColor=light-dark(#FFFFFF,#E8F0FE);" parent="1" vertex="1">
           <mxGeometry x="144" y="203" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-5" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-1" target="0wmGPp9-1j7nRuPfBWGD-3">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-5" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-1" target="0wmGPp9-1j7nRuPfBWGD-3" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="399" y="445" as="sourcePoint" />
             <mxPoint x="499" y="445" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-6" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0)); background-color: light-dark(rgb(255, 255, 255), rgb(255, 255, 255));&quot;&gt;REST API 이용한 LOG 전송&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-5">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-6" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;REST API 이용한 LOG 전송&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);" parent="0wmGPp9-1j7nRuPfBWGD-5" connectable="0" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-4" as="offset" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-11" value="동일 컨테이너" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="159" y="65" width="90" height="30" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-11" value="동일 컨테이너" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
+          <mxGeometry x="159" y="76" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-12" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Logging Service&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;- Save Log and Distribute&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-12" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Logging Service&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;- Save Biz Log and Distribute&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="114" y="315" width="180" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-13" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-3" target="0wmGPp9-1j7nRuPfBWGD-12">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-13" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-3" target="0wmGPp9-1j7nRuPfBWGD-12" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="399" y="445" as="sourcePoint" />
             <mxPoint x="499" y="445" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-14" value="&lt;font style=&quot;&quot;&gt;Kafka (all-log-topic)&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-13">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-14" value="&lt;font style=&quot;&quot;&gt;Kafka (all-log-topic)&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-13" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="11" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-15" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-12" target="0wmGPp9-1j7nRuPfBWGD-17">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-15" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-12" target="0wmGPp9-1j7nRuPfBWGD-17" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="399" y="445" as="sourcePoint" />
             <mxPoint x="509" y="330" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="519" y="345" />
-              <mxPoint x="519" y="359" />
+              <mxPoint x="380" y="345" />
+              <mxPoint x="380" y="374" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-16" value="{log-index}" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-15">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-16" value="{log-index}" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-15" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="-16" as="offset" />
+            <mxPoint x="-117" y="-29" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-17" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;ElasticSearch&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(로그 저장용)&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="649" y="329" width="120" height="60" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-17" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;ElasticSearch&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(로그 저장용)&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="650" y="329" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-18" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;SMS Service&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-18" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;SMS Service&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="114" y="485" width="115" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-19" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-12" target="0wmGPp9-1j7nRuPfBWGD-18">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-19" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-12" target="0wmGPp9-1j7nRuPfBWGD-18" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="399" y="445" as="sourcePoint" />
             <mxPoint x="499" y="445" as="targetPoint" />
@@ -76,15 +78,15 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-20" value="&lt;font style=&quot;&quot;&gt;Kafka (sms-topic)&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-19">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-20" value="&lt;font style=&quot;&quot;&gt;Kafka (sms-topic)&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-19" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="46" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-21" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Email Service&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-21" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Email Service&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="482" y="485" width="115" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-22" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-12" target="0wmGPp9-1j7nRuPfBWGD-21">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-22" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-12" target="0wmGPp9-1j7nRuPfBWGD-21" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="214" y="385" as="sourcePoint" />
             <mxPoint x="182" y="455" as="targetPoint" />
@@ -94,18 +96,18 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-23" value="Kafka (email-topic)" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-22">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-23" value="Kafka (email-topic)" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-22" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="135" y="55" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-24" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Redis&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(부서, 직원 정보 캐싱)&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-24" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Redis&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(부서, 직원 정보 캐싱)&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="298" y="581" width="115" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-25" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;PostgreSQL&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(부서, 직원 정보)&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-25" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;PostgreSQL&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(부서, 직원 정보)&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="298" y="450" width="115" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-26" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-18" target="0wmGPp9-1j7nRuPfBWGD-24">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-26" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" parent="1" source="0wmGPp9-1j7nRuPfBWGD-18" target="0wmGPp9-1j7nRuPfBWGD-24" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="429" y="465" as="sourcePoint" />
             <mxPoint x="479" y="415" as="targetPoint" />
@@ -115,7 +117,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-27" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-21" target="0wmGPp9-1j7nRuPfBWGD-24">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-27" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" parent="1" source="0wmGPp9-1j7nRuPfBWGD-21" target="0wmGPp9-1j7nRuPfBWGD-24" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="239" y="525" as="sourcePoint" />
             <mxPoint x="304" y="525" as="targetPoint" />
@@ -125,39 +127,39 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-28" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-24" target="0wmGPp9-1j7nRuPfBWGD-25">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-28" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-24" target="0wmGPp9-1j7nRuPfBWGD-25" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="350" y="590" as="sourcePoint" />
             <mxPoint x="352" y="480" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-29" value="캐시 Miss시 조회" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;fontColor=light-dark(#000000,#000000);labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-28">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-29" value="캐시 Miss시 조회" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;fontColor=light-dark(#000000,#000000);labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);" parent="0wmGPp9-1j7nRuPfBWGD-28" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="-10" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-30" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;ErrorHandler&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-30" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;ErrorHandler&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="288.5" y="705" width="126" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-38" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-30" target="0wmGPp9-1j7nRuPfBWGD-17">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-38" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" parent="1" source="0wmGPp9-1j7nRuPfBWGD-30" target="0wmGPp9-1j7nRuPfBWGD-17" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="189" y="805" as="sourcePoint" />
             <mxPoint x="499" y="485" as="targetPoint" />
             <Array as="points">
               <mxPoint x="352" y="805" />
-              <mxPoint x="709" y="805" />
+              <mxPoint x="710" y="805" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-39" value="5회 재송신 후 실패 시" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-38">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-39" value="5회 재송신 후 실패 시" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-38" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="-230" y="10" as="offset" />
+            <mxPoint x="-230" y="9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-41" value="{fail-log-index}" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="1">
-          <mxGeometry x="639" y="805" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-41" value="{fail-log-index}" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="1" connectable="0" vertex="1">
+          <mxGeometry x="639" y="804" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-42" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-18" target="0wmGPp9-1j7nRuPfBWGD-30">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-42" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" parent="1" source="0wmGPp9-1j7nRuPfBWGD-18" target="0wmGPp9-1j7nRuPfBWGD-30" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="399" y="485" as="sourcePoint" />
             <mxPoint x="199" y="805" as="targetPoint" />
@@ -166,10 +168,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-43" value="실패 시&lt;br&gt;(error-topic)" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-42">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-43" value="실패 시&lt;br&gt;(error-topic)" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-42" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-44" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-21" target="0wmGPp9-1j7nRuPfBWGD-30">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-44" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" parent="1" source="0wmGPp9-1j7nRuPfBWGD-21" target="0wmGPp9-1j7nRuPfBWGD-30" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="210" y="555" as="sourcePoint" />
             <mxPoint x="299" y="730" as="targetPoint" />
@@ -178,10 +180,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-45" value="실패 시&lt;br&gt;(error-topic)" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-44">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-45" value="실패 시&lt;br&gt;(error-topic)" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-44" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-46" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-30">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-46" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" parent="1" source="0wmGPp9-1j7nRuPfBWGD-30" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="399" y="485" as="sourcePoint" />
             <mxPoint x="130" y="460" as="targetPoint" />
@@ -191,12 +193,12 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-47" value="SMS 재전송 요청" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-46">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-47" value="SMS 재전송 요청" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-46" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="20" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-48" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-30">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-48" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" parent="1" source="0wmGPp9-1j7nRuPfBWGD-30" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="299" y="760" as="sourcePoint" />
             <mxPoint x="580" y="460" as="targetPoint" />
@@ -206,49 +208,63 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-49" value="Email 재전송 요청" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-48">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-49" value="Email 재전송 요청" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-48" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="-1" y="18" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-65" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-50" target="0wmGPp9-1j7nRuPfBWGD-51">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-65" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-50" target="0wmGPp9-1j7nRuPfBWGD-51" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-50" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Kibana&lt;/b&gt;&lt;br&gt;(로그 상세 검색)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="439" y="171" width="126" height="42" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-50" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Kibana&lt;/b&gt;&lt;br&gt;(로그 상세 검색)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="578" y="196" width="126" height="42" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-51" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Grafana&lt;br&gt;&lt;/b&gt;(전체 추이 분석)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="439" y="256" width="126" height="42" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-51" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Grafana&lt;br&gt;&lt;/b&gt;(전체 추이 분석)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="578" y="276" width="126" height="42" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-52" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-17" target="0wmGPp9-1j7nRuPfBWGD-51">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-52" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-17" target="0wmGPp9-1j7nRuPfBWGD-51" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="399" y="485" as="sourcePoint" />
             <mxPoint x="499" y="485" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="709" y="277" />
+              <mxPoint x="740" y="297" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-54" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-17" target="0wmGPp9-1j7nRuPfBWGD-50">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-54" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-17" target="0wmGPp9-1j7nRuPfBWGD-50" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="709" y="329" as="sourcePoint" />
-            <mxPoint x="565" y="211" as="targetPoint" />
+            <mxPoint x="740" y="329" as="sourcePoint" />
+            <mxPoint x="630" y="191" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="709" y="192" />
+              <mxPoint x="740" y="217" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-56" value="모든 시스템 로그 데이터&lt;br&gt;비지니스 로그 데이터" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=light-dark(#000000,#000000);" vertex="1" parent="1">
-          <mxGeometry x="568" y="215" width="140" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-63" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-51" target="0wmGPp9-1j7nRuPfBWGD-50">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-63" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" parent="1" source="0wmGPp9-1j7nRuPfBWGD-51" target="0wmGPp9-1j7nRuPfBWGD-50" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="550" y="410" as="sourcePoint" />
-            <mxPoint x="650" y="410" as="targetPoint" />
+            <mxPoint x="686" y="437" as="sourcePoint" />
+            <mxPoint x="786" y="437" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-64" value="&lt;span style=&quot;background-color: light-dark(rgb(255, 255, 255), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;상세 로그 필요시&lt;/font&gt;&lt;/span&gt;" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;" connectable="0" vertex="1" parent="0wmGPp9-1j7nRuPfBWGD-63">
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-64" value="&lt;span style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;상세 로그 필요시&lt;/font&gt;&lt;/span&gt;" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);" parent="0wmGPp9-1j7nRuPfBWGD-63" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="hYfd5T9ThYuKL_FTIHz8-3" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b style=&quot;&quot;&gt;System Logging Service&lt;br&gt;- &lt;/b&gt;Collect System Logs from Filebeat&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="335" y="238" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="hYfd5T9ThYuKL_FTIHz8-4" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;strokeColor=light-dark(#000000,#333333);strokeWidth=2;" edge="1" parent="1" source="hYfd5T9ThYuKL_FTIHz8-3" target="0wmGPp9-1j7nRuPfBWGD-17">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="304" y="355" as="sourcePoint" />
+            <mxPoint x="660" y="384" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="445" y="344" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hYfd5T9ThYuKL_FTIHz8-5" value="{sys-log-index}" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" connectable="0" vertex="1" parent="hYfd5T9ThYuKL_FTIHz8-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-23" as="offset" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>

@@ -69,17 +69,37 @@
 
 ---
 
-## 🔍 로그 수집 및 상태 감시
+## 🧾 로그 처리 및 상태 감시 방식
+### 📄 로그 분류 및 수집
+1. Biz Log – Logging Service
+  - Mock 서비스와 Agent에서 수집된 비즈니스 로그(Biz Log)는 Kafka로 전송되어 Logging Service에서 처리됩니다.
+  - Logging Service는 해당 로그를 Elasticsearch에 저장하며, 알림이 필요한 로그는 별도의 Kafka Topic을 통해 알림 서비스로 전달합니다.
 
-### EFK 구성
-- 각 서비스는 Filebeat를 통해 로그를 전송  
-- Elasticsearch에 저장 후 Kibana로 검색  
-- BizLog / AllSystemLog 등 인덱스 분리
+2. System Log – System Logging Service
+  - 모든 컨테이너에는 Prometheus Exporter와 Filebeat가 내장되어 있습니다. (PostgreSQL제외)
+  - Filebeat는 컨테이너 내부의 시스템 로그를 수집하여 System Logging Service로 전송합니다.
+  - Prometheus는 서비스 상태를 주기적으로 수집하며, Alert조건 발생시 Alertmanager로 직접 전송합니다.
+  - Alertmanager는 설정된 조건에 따라 Slack 등 외부 채널로 알림을 전송합니다.
 
-### 시스템 상태 감시
-- Prometheus가 서비스 상태 (Actuator 기반) 수집  
-- Grafana 대시보드에서 시각화  
-- Alertmanager를 통해 Slack 등으로 알림 전송  
+### 📦 EFK 구성 (System/Biz Log 공통 저장)
+- 로그 수집
+  - 시스템 로그 → Filebeat
+  - 비즈니스 로그 → Kafka 기반 직접 수집
+- 로그 저장(Elasticsearch)
+  - 인덱스 분리
+    - log-index → 비즈니스 로그
+    - sys-log-index → 시스템 로그
+- 로그 조회
+  - Kibana: 상세 검색
+  - Grafana: 시스템 추이 시각화
+
+### 🧠 시스템 상태 감시 및 알림
+- Prometheus: 각 서비스의 상태를 Actuator endpoint 기반으로 수집
+- Grafana: Prometheus로부터 수집된 데이터를 대시보드로 시각화
+- Alertmanager:
+  - Slack 등으로 자동 알림 발송
+  - 알림 조건 및 정책은 README.md에 명시됨
+  <!-- - 알림 조건 및 정책은 [Alert 정책 문서](#🧾-로그-처리-및-상태-감시-방식) 참고-->
 
 ---
 
