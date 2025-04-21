@@ -1,0 +1,9 @@
+rootProject.name = 'log-stream-alert-system'
+
+include 'log-stream-agent'
+include 'log-stream-common'
+include 'log-stream-mock-service'
+include 'log-stream-logging-service'
+include 'log-stream-sms-service'
+include 'log-stream-email-service'
+include 'log-stream-error-handle-service'
