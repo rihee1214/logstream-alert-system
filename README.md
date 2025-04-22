@@ -46,26 +46,33 @@
 
 ### 🔹 Mock Service
 - 실제 서비스처럼 로그 이벤트를 발생시키는 테스트용 서비스
-- Sidecar Agent와 함께 배포되어 로그를 전달
-
-### 🔹 Agent
-- Mock 서비스의 Sidecar로 배포되어 로그를 수집
-- Kafka의 `all-log-topic`으로 로그를 전송
+- 모든 로그를 Filebeat가 수집하여 Kafka로 전송
+  - 시스템 로그는 System Logging Service로 전송
+  - 비즈니스 로그는 Logging Service로 전송
 
 ### 🔹 Logging Service
-- Kafka에서 모든 로그를 수신하여 처리
-- 모든 로그는 Elasticsearch의 `{log-index}`로 저장
+- Kafka에서 비즈니스 로그를 수신하여 처리
+- Elasticsearch의 `{log-index}`에 저장
 - WARN, ERROR 이상 로그는 Notification Service로 라우팅
 
+### 🔹 System Logging Service
+- Prometheus의 Actuactor 호출로 인해 발생한 시스템 로그를 Kafka에서 수신
+- 컨테이너 초기화 시 발생한 로그도 포함
+- Elasticsearch의 `{sys-log-index}`에 저장
+
 ### 🔹 Notification Services (SMS, Email)
-- Kafka 토픽(`sms-topic`, `email-topic`)으로부터 메시지 수신
-- Redis → PostgreSQL 순으로 수신자 정보를 조회
-- 전송 실패 시 Kafka의 `send-error-topic`으로 메시지를 이동
+- Kafka 토픽(`sms-topic`, `email-topic`)에서 메시지 수신
+- 수신자 정보는 Redis → PostgreSQL 순으로 조회
+- 전송 실패 시 Kafka의 `send-error-topic`으로 메시지 이동
 
 ### 🔹 Error Handler
-- 실패 메시지를 수신하여 최대 5회까지 재시도  
-- 재시도 실패 시 Elasticsearch `{fail-log-index}`에 저장  
-- 실패 사유는 리스트로 기록 (e.g. timeout, connection refused 등)
+- `{send-error-topic}`으로 전달된 실패 메시지를 수신
+- 최대 5회까지 재시도, 이후에도 실패 시 Elasticsearch의 `{fail-log-index}`에 저장  
+- 실패 사유는 리스트 형태로 기록 (e.g. timeout, connection refused 등)
+
+### 🔹 Alertmanager
+- Prometheus가 Actuator를 호출해 수집한 오류 상태 로그를 직접 수신
+- 설정된 조건에 따라 오류로 판단시, Slack을 통해 즉시 알림 전송
 
 ---
 
@@ -130,3 +137,8 @@
 - EFK 구조 로그 수집 파이프라인 구성  
 - Prometheus + Grafana 상태 감시 시스템 연동  
 - 장애 처리(DLQ, 재시도, Slack 알림) 전략 적용 경험  
+
+---
+## 📄 별첨 문서
+- [작업 진행 이력(workflow.md)](./docs/workflow.md)
+- [아키텍처 정의 및 변경 이력](./docs/architecture/architecture.md)
