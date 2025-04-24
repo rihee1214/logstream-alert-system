@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="10 seconds">
 
-    <!-- 콘솔 출력 -->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="BIZ_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/var/log/app/biz.log</file>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
@@ -13,11 +13,12 @@
                     <pattern>
                         {
                         "level": "%level",
-                        "logger": "%logger",
-                        "thread": "%thread",
-                        "message": "%message",
+                        "service": "%X{service:-}",
                         "traceId": "%X{traceId:-}",
-                        "spanId": "%X{spanId:-}"
+                        "spanId": "%X{spanId:-}",
+                        "class": "%class",
+                        "message": "%message",
+                        "meta":%X{meta:-{}}
                         }
                     </pattern>
                 </pattern>
@@ -26,8 +27,40 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
+    <appender name="SYS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/var/log/app/sys.log</file>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                    <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSZ</pattern>
+                </timestamp>
+                <pattern>
+                    <pattern>
+                        {
+                        "level": "%level",
+                        "service": "%X{service:-}",
+                        "host": "%X{host:-}",
+                        "container": "%X{container:-}",
+                        "meta":%X{meta:-{}}
+                        }
+                    </pattern>
+                </pattern>
+                <stackTrace />
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- logger 설정 -->
+    <logger name="biz" level="INFO" additivity="false">
+        <appender-ref ref="BIZ_FILE"/>
+    </logger>
+
+    <logger name="sys" level="INFO" additivity="false">
+        <appender-ref ref="SYS_FILE"/>
+    </logger>
+
+    <root level="WARN">
     </root>
 
 </configuration>
