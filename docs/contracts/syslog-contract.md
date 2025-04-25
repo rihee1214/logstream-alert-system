@@ -15,13 +15,16 @@
 
 ## 🧱 공통 필드 규약
 
-| 필드명         | 타입    | 설명                                                     |
-|-------------|---------|--------------------------------------------------------|
-| `timestamp` | string  | 로그 발생 시각 (ISO 8601 포맷)                                 |
-| `level`     | string  | 로그 레벨 (`INFO`, `WARN`, `ERROR`)                        |
-| `service`   | string  | 로그를 발생시킨 서비스 ID (예: `mock-svc`)<br>※ 비지니스 식별자          |
-| `host`      | string  | 컨테이너 또는 노드명<br>※ 컨테이너의 hostname (environment 주입)       |
-| `container` | string  | 컨테이너 이름 또는 ID<br>※ 컨테이너 id(environment 주입)             |
+| 필드명         | 타입    | 설명                                                      |
+|-------------|---------|---------------------------------------------------------|
+| `logtype`   | string  | 로그 타입 (`sys`) logging service에서 분기처리 후 저장 직전에 제거             |
+| `timestamp` | string  | 로그 발생 시각 (ISO 8601 포맷)                                  |
+| `level`     | string  | 로그 레벨 (`INFO`, `WARN`, `ERROR`)                         |
+| `service`   | string  | 로그를 발생시킨 서비스 ID (예: `mock-svc`)<br>※ 비지니스 식별자           |
+| `class`     | string  | 로그 발생 클래스 (fully qualified class name)                            |
+| `message`   | string  | 로그 메시지 본문                                               |
+| `host`      | string  | 컨테이너 또는 노드명<br>※ 컨테이너의 hostname (environment 주입)        |
+| `container` | string  | 컨테이너 이름 또는 ID<br>※ 컨테이너 id(environment 주입)              |
 | `meta`      | object  | 서비스별 부가 정보 (key-value)<br>※ Actuator기반 로그의 경우 아래 규약을 따름 |
 
 ### ✅ meta 필드 규약 (Actuator 기반 로그)
@@ -36,10 +39,13 @@
 ```json
 {
   "timestamp": "2025-04-28T11:35:22.000Z",
+  "logtype": "sys",
   "level": "WARN",
   "service": "mock-service",
+  "class": "com.example.MockHandler",
   "host": "mock-service-01",
   "container": "mock-service",
+  "message": "Init Complete",
   "meta": {
     "statusDetails": {
         "db": "up",

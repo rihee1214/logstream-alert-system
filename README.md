@@ -47,27 +47,24 @@
 ### 🔹 Mock Service
 - 실제 서비스처럼 로그 이벤트를 발생시키는 테스트용 서비스
 - 모든 로그를 Filebeat가 수집하여 Kafka로 전송
-  - 시스템 로그는 System Logging Service로 전송
-  - 비즈니스 로그는 Logging Service로 전송
+  - all-log-topic
 
 ### 🔹 Logging Service
-- Kafka에서 비즈니스 로그를 수신하여 처리
-- Elasticsearch의 `{log-index}`에 저장
+- Kafka에서 모든 로그를 수신하여 처리
+- Elasticsearch의 `${logtype}-log-%{+YYYY.MM.dd}`에 저장
+  - 로그 내의 logtype제거 후 저장
+  - 어느 로그도 저장되지 않은 default는 logtype 그대로 저장
 - WARN, ERROR 이상 로그는 Notification Service로 라우팅
-
-### 🔹 System Logging Service
-- Prometheus의 Actuactor 호출로 인해 발생한 시스템 로그를 Kafka에서 수신
-- 컨테이너 초기화 시 발생한 로그도 포함
-- Elasticsearch의 `{sys-log-index}`에 저장
+  - notification-topic
 
 ### 🔹 Notification Services (SMS, Email)
-- Kafka 토픽(`sms-topic`, `email-topic`)에서 메시지 수신
+- Kafka 토픽(`notification-topic`)에서 메시지 수신
 - 수신자 정보는 Redis → PostgreSQL 순으로 조회
-- 전송 실패 시 Kafka의 `send-error-topic`으로 메시지 이동
+- 전송 실패 시 Kafka의 `error-topic`으로 메시지 이동
 
 ### 🔹 Error Handler
-- `{send-error-topic}`으로 전달된 실패 메시지를 수신
-- 최대 5회까지 재시도, 이후에도 실패 시 Elasticsearch의 `{fail-log-index}`에 저장  
+-  Kafka 토픽(`error-topic`)으로 전달된 실패 메시지를 수신
+- 최대 5회까지 재시도, 이후에도 실패 시 Elasticsearch의 `fail-log-%{+YYYY.MM.dd}`에 저장  
 - 실패 사유는 리스트 형태로 기록 (e.g. timeout, connection refused 등)
 
 ### 🔹 Alertmanager
@@ -75,18 +72,6 @@
 - 설정된 조건에 따라 오류로 판단시, Slack을 통해 즉시 알림 전송
 
 ---
-
-## 🧾 로그 처리 및 상태 감시 방식
-### 📄 로그 분류 및 수집
-1. Biz Log – Logging Service
-  - Mock 서비스와 Agent에서 수집된 비즈니스 로그(Biz Log)는 Kafka로 전송되어 Logging Service에서 처리됩니다.
-  - Logging Service는 해당 로그를 Elasticsearch에 저장하며, 알림이 필요한 로그는 별도의 Kafka Topic을 통해 알림 서비스로 전달합니다.
-
-2. System Log – System Logging Service
-  - 모든 컨테이너에는 Prometheus Exporter와 Filebeat가 내장되어 있습니다. (PostgreSQL제외)
-  - Filebeat는 컨테이너 내부의 시스템 로그를 수집하여 System Logging Service로 전송합니다.
-  - Prometheus는 서비스 상태를 주기적으로 수집하며, Alert조건 발생시 Alertmanager로 직접 전송합니다.
-  - Alertmanager는 설정된 조건에 따라 Slack 등 외부 채널로 알림을 전송합니다.
 
 ### 📦 EFK 구성 (System/Biz Log 공통 저장)
 - 로그 수집
