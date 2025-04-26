@@ -28,7 +28,6 @@
 | Messaging        | Apache Kafka                         			                  | 이벤트 기반 로그 처리 및 알림 트리거를 위한 메시지 브로커			          						                                                                     |
 | Database         | PostgreSQL<br> Redis                 			                  | 사원/부서 정보를 저장하는 영속 저장소<br>알림 대상 정보 캐싱을 통한 성능 개선 및 트래픽 분산		 		                                                             |
 | Log Storage      | Elasticsearch                        			                  | 업무 및 시스템 로그 저장, kibana 연동을 통한 검색 및 조회 기능 제공							   	                                                                   |
-| Log Shipping     | Filebeat (EFK 구성)                   			                   | 가볍고 빠른 로그 전송용 에이전트 (Logstash보다 설정이 간단)										                                                                         |
 | Monitoring       | Prometheus<br>Alertmanager<br>Grafana<br>Kibana<br>Zipkin | 서비스 상태 수집을 위한 모니터링 시스템<br>이상 상태 감지 시 알림 전송(Slack, 메일 등 연동 가능)<br>그래프 기반 대시보드 시각화<br>상세 로그 검색 및 분석<br>서비스 호출 흐름 및 트레이스 추적 |
 | Build Tool       | Gradle (Groovy DSL)                  			                  | 멀티 모듈 환경에서 효율적인 의존성 및 빌드 관리												                                                                                  |
 | Deployment       | Docker Compose<br>Kubernetes         			                  | 로컬 테스트용 경량 환경 구성<br>운영 환경에서 안정적이고 확장 가능한 MSA 배포를 위한 클러스터 			                                                             |

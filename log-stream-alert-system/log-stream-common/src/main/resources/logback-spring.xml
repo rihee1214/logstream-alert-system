@@ -1,112 +1,259 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="10 seconds">
 
-    <!-- 분기 로직 -->
-    <logger name="BIZ_LOGGER" level="INFO" additivity="false">
-        <appender-ref ref="BIZ">
-            <filter class="ch.qos.logback.classic.filter.MDCFilter">
-                <MDCKey>logtype</MDCKey>
-                <MDCValue>biz</MDCValue>
-                <OnMatch>ACCEPT</OnMatch>
-                <OnMismatch>DENY</OnMismatch>
-            </filter>
-        </appender-ref>
-    </logger>
-
-    <logger name="SYS_LOGGER" level="INFO" additivity="false">
-        <appender-ref ref="SYS">
-            <filter class="ch.qos.logback.classic.filter.MDCFilter">
-                <MDCKey>logtype</MDCKey>
-                <MDCValue>sys</MDCValue>
-                <OnMatch>ACCEPT</OnMatch>
-                <OnMismatch>DENY</OnMismatch>
-            </filter>
-        </appender-ref>
-    </logger>
-
     <!-- BIZ 로그 전용 Appender -->
-    <appender name="BIZ" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="BIZ_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
                     <fieldName>timestamp</fieldName>
                     <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSZ</pattern>
                 </timestamp>
-                <pattern>
-                    <pattern>
-                        {
-                        "logtype": "%X{logtype:biz}",
-                        "level": "%level",
-                        "service": "%X{service:-}",
-                        "traceId": "%X{traceId:-}",
-                        "spanId": "%X{spanId:-}",
-                        "class": "%class",
-                        "host": "%X{host:-}",
-                        "container": "%X{container:-}",
-                        "message": "%message",
-                        "meta":%X{meta:-{}}
-                        }
-                    </pattern>
-                </pattern>
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+                <mdc>
+                    <fieldNames>
+                        <fieldName>logtype</fieldName>
+                        <fieldName>service</fieldName>
+                        <fieldName>traceId</fieldName>
+                        <fieldName>spanId</fieldName>
+                        <fieldName>host</fieldName>
+                        <fieldName>container</fieldName>
+                        <fieldName>meta</fieldName>
+                    </fieldNames>
+                </mdc>
+                <loggerName>
+                    <fieldName>class</fieldName>
+                </loggerName>
+                <message/>
             </providers>
         </encoder>
     </appender>
 
     <!-- SYS 로그 전용 Appender -->
-    <appender name="SYS" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="SYS_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
                     <fieldName>timestamp</fieldName>
                     <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSZ</pattern>
                 </timestamp>
-                <pattern>
-                    <pattern>
-                        {
-                        "logtype": "%X{logtype:sys}",
-                        "level": "%level",
-                        "service": "%X{service:-}",
-                        "class": "%class",
-                        "host": "%X{host:-}",
-                        "container": "%X{container:-}",
-                        "message": "%message",
-                        "meta":%X{meta:-{}}
-                        }
-                    </pattern>
-                </pattern>
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+                <mdc>
+                    <fieldNames>
+                        <fieldName>logtype</fieldName>
+                        <fieldName>service</fieldName>
+                        <fieldName>host</fieldName>
+                        <fieldName>container</fieldName>
+                        <fieldName>meta</fieldName>
+                    </fieldNames>
+                </mdc>
+                <loggerName>
+                    <fieldName>class</fieldName>
+                </loggerName>
+                <message/>
                 <stackTrace />
             </providers>
         </encoder>
     </appender>
 
     <!-- 디폴트 로그 전용 Appender -->
-    <appender name="DEFAULT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="DEFAULT_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
                     <fieldName>timestamp</fieldName>
                     <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSZ</pattern>
                 </timestamp>
-                <pattern>
-                    <pattern>
-                        {
-                        "logtype": "%X{logtype:default}",
-                        "level": "%level",
-                        "service": "%X{service:-}",
-                        "class": "%class",
-                        "host": "%X{host:-}",
-                        "container": "%X{container:-}",
-                        "message": "%message",
-                        "meta":%X{meta:-{}}
-                        }
-                    </pattern>
-                </pattern>
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+                <mdc>
+                    <fieldNames>
+                        <fieldName>logtype</fieldName>
+                        <fieldName>service</fieldName>
+                        <fieldName>host</fieldName>
+                        <fieldName>container</fieldName>
+                        <fieldName>meta</fieldName>
+                    </fieldNames>
+                </mdc>
+                <loggerName>
+                    <fieldName>class</fieldName>
+                </loggerName>
+                <message/>
+                <stackTrace />
             </providers>
         </encoder>
     </appender>
 
-    <root level="INFO">
-        <appender-ref ref="DEFAULT" />
-    </root>
+    <!-- 개발 환경(dev): ConsoleAppender만 사용 -->
+    <springProfile name="dev">
+        <!-- 분기 로직 -->
+        <logger name="BIZ_LOGGER" level="INFO" additivity="false">
+            <filter class="ch.qos.logback.classic.filter.MDCFilter">
+                <MDCKey>logtype</MDCKey>
+                <MDCValue>biz</MDCValue>
+                <OnMatch>ACCEPT</OnMatch>
+                <OnMismatch>DENY</OnMismatch>
+            </filter>
+            <appender-ref ref="BIZ_CONSOLE"/>
+        </logger>
+
+        <logger name="SYS_LOGGER" level="INFO" additivity="false">
+            <filter class="ch.qos.logback.classic.filter.MDCFilter">
+                <MDCKey>logtype</MDCKey>
+                <MDCValue>sys</MDCValue>
+                <OnMatch>ACCEPT</OnMatch>
+                <OnMismatch>DENY</OnMismatch>
+            </filter>
+            <appender-ref ref="SYS_CONSOLE"/>
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="DEFAULT_CONSOLE" />
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <!-- 운영 환경(prod): Kafka + Console 둘 다 사용 -->
+
+        <logger name="BIZ_LOGGER" level="INFO" additivity="false">
+            <filter class="ch.qos.logback.classic.filter.MDCFilter">
+                <MDCKey>logtype</MDCKey>
+                <MDCValue>biz</MDCValue>
+                <OnMatch>ACCEPT</OnMatch>
+                <OnMismatch>DENY</OnMismatch>
+            </filter>
+            <appender-ref ref="BIZ_CONSOLE"/>
+            <appender-ref ref="BIZ_KAFKA"/>
+        </logger>
+
+        <logger name="SYS_LOGGER" level="INFO" additivity="false">
+            <filter class="ch.qos.logback.classic.filter.MDCFilter">
+                <MDCKey>logtype</MDCKey>
+                <MDCValue>sys</MDCValue>
+                <OnMatch>ACCEPT</OnMatch>
+                <OnMismatch>DENY</OnMismatch>
+            </filter>
+            <appender-ref ref="SYS_CONSOLE"/>
+            <appender-ref ref="SYS_KAFKA"/>
+        </logger>
+
+        <!-- KafkaAppender 추가 -->
+        <appender name="BIZ_KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+            <topic>${kafka.log-topic}</topic>
+            <producerConfig>
+                <entry key="bootstrap.servers" value="${kafka.bootstrap-servers}"/>
+                <entry key="acks" value="${kafka.acks}"/>
+                <entry key="key.serializer" value="${kafka.key-serializer}"/>
+                <entry key="value.serializer" value="${kafka.value-serializer}"/>
+            </producerConfig>
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp>
+                        <fieldName>timestamp</fieldName>
+                        <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSZ</pattern>
+                    </timestamp>
+                    <logLevel>
+                        <fieldName>level</fieldName>
+                    </logLevel>
+                    <mdc>
+                        <fieldNames>
+                            <fieldName>logtype</fieldName>
+                            <fieldName>service</fieldName>
+                            <fieldName>traceId</fieldName>
+                            <fieldName>spanId</fieldName>
+                            <fieldName>host</fieldName>
+                            <fieldName>container</fieldName>
+                            <fieldName>meta</fieldName>
+                        </fieldNames>
+                    </mdc>
+                    <loggerName>
+                        <fieldName>class</fieldName>
+                    </loggerName>
+                    <message/>
+                </providers>
+            </encoder>
+        </appender>
+
+        <appender name="SYS_KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+            <topic>${kafka.log-topic}</topic>
+            <producerConfig>
+                <entry key="bootstrap.servers" value="${kafka.bootstrap-servers}"/>
+                <entry key="acks" value="${kafka.acks}"/>
+                <entry key="key.serializer" value="${kafka.key-serializer}"/>
+                <entry key="value.serializer" value="${kafka.value-serializer}"/>
+            </producerConfig>
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp>
+                        <fieldName>timestamp</fieldName>
+                        <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSZ</pattern>
+                    </timestamp>
+                    <logLevel>
+                        <fieldName>level</fieldName>
+                    </logLevel>
+                    <mdc>
+                        <fieldNames>
+                            <fieldName>logtype</fieldName>
+                            <fieldName>service</fieldName>
+                            <fieldName>host</fieldName>
+                            <fieldName>container</fieldName>
+                            <fieldName>meta</fieldName>
+                        </fieldNames>
+                    </mdc>
+                    <loggerName>
+                        <fieldName>class</fieldName>
+                    </loggerName>
+                    <message/>
+                    <stackTrace />
+                </providers>
+            </encoder>
+        </appender>
+
+        <appender name="DEFAULT_KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+            <topic>${kafka.log-topic}</topic>
+            <producerConfig>
+                <entry key="bootstrap.servers" value="${kafka.bootstrap-servers}"/>
+                <entry key="acks" value="${kafka.acks}"/>
+                <entry key="key.serializer" value="${kafka.key-serializer}"/>
+                <entry key="value.serializer" value="${kafka.value-serializer}"/>
+            </producerConfig>
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp>
+                        <fieldName>timestamp</fieldName>
+                        <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSZ</pattern>
+                    </timestamp>
+                    <logLevel>
+                        <fieldName>level</fieldName>
+                    </logLevel>
+                    <mdc>
+                        <fieldNames>
+                            <fieldName>logtype</fieldName>
+                            <fieldName>service</fieldName>
+                            <fieldName>host</fieldName>
+                            <fieldName>container</fieldName>
+                            <fieldName>meta</fieldName>
+                        </fieldNames>
+                    </mdc>
+                    <loggerName>
+                        <fieldName>class</fieldName>
+                    </loggerName>
+                    <message/>
+                    <stackTrace />
+                </providers>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="DEFAULT_CONSOLE"/>
+            <appender-ref ref="DEFAULT_KAFKA"/>
+        </root>
+
+    </springProfile>
 
 </configuration>
