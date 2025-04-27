@@ -1,28 +1,57 @@
 package com.rihee.alerting.common.log;
 
+import ch.qos.logback.classic.Logger;
+import com.rihee.alerting.common.log.appender.MemoryAppender;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.boot.test.context.SpringBootTest;
 
+/**
+ * 로그 설정 및 로깅 기능 검증 테스트
+ */
 @SpringBootTest
 public class LoggerConfigurationTests {
 
-    private static final Logger log = LoggerFactory.getLogger(LoggerConfigurationTests.class);
+    private static final StructuredLogger log = StructuredLoggerFactory.getLogger(LoggerConfigurationTests.class);
+    private final MemoryAppender memoryAppender;
 
+    /**
+     * MemoryAppender를 Root Logger에 추가하여
+     * 테스트 중 발생하는 모든 로그를 수집한다.
+     */
+    public LoggerConfigurationTests() {
+        Logger rootLogger =(Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+
+        memoryAppender = new MemoryAppender();
+        memoryAppender.setContext(rootLogger.getLoggerContext());
+        memoryAppender.start();
+
+        rootLogger.addAppender(memoryAppender);
+    }
+
+    /**
+     * BIZ, SYS 로그가 올바르게 찍히는지 검증한다.
+     * - 각 로그에 "logtype" 키가 포함되어 있는지
+     * - 로그 레벨이 "INFO"로 출력되는지
+     */
     @Test
     void printLogsAccordingToLogbackConfiguration() {
-        MDC.put("logtype", "sys");
         MDC.put("service", "log-test");
         MDC.put("host", "tester");
         MDC.put("container", "tester");
 
-        log.debug("test-message");
+        log.infoSys("sys-test-message");
+        log.infoBiz("biz-test-message");
 
-        MDC.remove("logtype");
-        MDC.remove("service");
-        MDC.remove("host");
-        MDC.remove("container");
+        Assertions.assertAll(
+            () -> memoryAppender.getLoggedEvents().forEach(event ->{
+                String formattedMessage = event.getFormattedMessage();
+                Assertions.assertTrue(formattedMessage.contains("\"logtype\""), "logtype이 누락되었습니다.");
+                Assertions.assertTrue(formattedMessage.contains("\"level\":\"INFO\""), "level이 INFO가 아닙니다.");
+            })
+        );
+
     }
 }
