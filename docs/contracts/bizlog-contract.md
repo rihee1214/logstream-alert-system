@@ -15,19 +15,20 @@
 
 ## 🧱 공통 필드 규약
 
-| 필드명         | 타입    | 설명                                               |
-|-------------|---------|--------------------------------------------------|
-| `logtype`   | string  | 로그 타입 (`biz`) logging service에서 분기처리 후 저장 직전에 제거 |
-| `timestamp` | string  | 로그 발생 시각 (ISO 8601 포맷)                           |
-| `level`     | string  | 로그 레벨 (`INFO`, `WARN`, `ERROR`)                  |
-| `service`   | string  | 로그를 발생시킨 서비스 ID (예: `mock-svc`)                  |
-| `traceId`   | string  | 하나의 요청 전체 흐름을 식별하는 ID (분산 시스템 전반에 걸쳐 동일한 값 사용)   |
-| `spanId`    | string  | 요청 흐름 내 개별 작업 단위를 식별하는 ID (각 서비스 또는 메서드 수준에서 고유함) |
-| `class`     | string  | 로그 발생 클래스 (fully qualified class name)           |
-| `host`      | string  | 컨테이너 또는 노드명<br>※ 컨테이너의 hostname (environment 주입) |
-| `container` | string  | 컨테이너 이름 또는 ID<br>※ 컨테이너 id(environment 주입)       |
-| `message`   | string  | 로그 메시지 본문                                        |
-| `meta`      | object  | 서비스별 부가 정보 (key-value)                           |
+| 필드명            | 타입    | 설명                                                         |
+|----------------|---------|------------------------------------------------------------|
+| `logtype`      | string  | 로그 타입 구분용 임시 필드 (`biz`) logging service에서 분기처리 후 저장 직전에 제거 |
+| `timestamp`    | string  | 로그 발생 시각 (ISO 8601 포맷)                                     |
+| `level`        | string  | 로그 레벨 (`INFO`, `WARN`, `ERROR`)                            |
+| `service`      | string  | 로그를 발생시킨 서비스 ID (예: `mock-svc`)                            |
+| `traceId`      | string  | 하나의 요청 전체 흐름을 식별하는 ID (분산 시스템 전반에 걸쳐 동일한 값 사용)             |
+| `spanId`       | string  | 요청 흐름 내 개별 작업 단위를 식별하는 ID (각 서비스 또는 메서드 수준에서 고유함)          |
+| `parentSpanId` | string  | 호출 관계 추적 및 트리 구조 복원을 위한 상위 작업의 spanId                      |
+| `class`        | string  | 로그 발생 클래스 (fully qualified class name)                     |
+| `host`         | string  | 컨테이너 또는 노드명<br>※ 컨테이너의 hostname (환경변수 주입)                  |
+| `container`    | string  | 컨테이너 이름 또는 ID<br>※ 컨테이너 id(환경변수 주입)                        |
+| `message`      | string  | 로그 메시지 본문                                                  |
+| `meta`         | object  | 서비스별 부가 정보 (key-value)                                     |
 
 예시 JSON:
 ```json

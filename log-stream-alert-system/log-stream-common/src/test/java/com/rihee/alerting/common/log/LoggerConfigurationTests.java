@@ -2,6 +2,7 @@ package com.rihee.alerting.common.log;
 
 import ch.qos.logback.classic.Logger;
 import com.rihee.alerting.common.log.appender.MemoryAppender;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,8 @@ public class LoggerConfigurationTests {
         Assertions.assertAll(
             () -> memoryAppender.getLoggedEvents().forEach(event ->{
                 String formattedMessage = event.getFormattedMessage();
+
+                Assertions.assertDoesNotThrow(() -> new JSONObject(formattedMessage));
                 Assertions.assertTrue(formattedMessage.contains("\"logtype\""), "logtype이 누락되었습니다.");
                 Assertions.assertTrue(formattedMessage.contains("\"level\":\"INFO\""), "level이 INFO가 아닙니다.");
             })
