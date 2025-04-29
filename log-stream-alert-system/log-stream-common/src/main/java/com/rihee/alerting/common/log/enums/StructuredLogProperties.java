@@ -8,6 +8,11 @@ package com.rihee.alerting.common.log.enums;
 public enum StructuredLogProperties {
 
     /**
+     * 로그 타입.<br>
+     * 업무 : biz, 시스템 : sys, 기타 : default
+     */
+    LOG_TYPE("logtype"),
+    /**
      * 로그 발생 시간.<br>
      * 포맷: ISO 8601 DateTime + Offset (예: 2025-04-27T15:16:15.641+0900)
      */
