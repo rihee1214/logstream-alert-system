@@ -1,0 +1,8 @@
+- [ ] docs 템플릿 Obsidian화
+- [ ] Obsidian 운영방식 및 사용하고 있는 tool에 대한 목록 README 정리
+  - [ ] JDK (openjdk 21)
+  - [ ] IDE (intellij)
+  - [ ] Obsidian
+  - [ ] Plugin (checkstyle)
+- [ ] spanId 변경 관련 AOP, Interceptor 구조 재검토
+- [ ] 기존 로그 구조 리팩토링 필요성 분석 및 로거 인터페이스 분리 (새로운 로거 추가 및 정책 변경시 변경의 용이성을 획득하기 위함)

@@ -1,22 +1,26 @@
-# 📋 Known Issues List
+# 📋 2025-04-27 | Mockito self-attach 경고 발생
 
 ---
 
-## 2025-04-27 | Mockito self-attach 경고 발생
+- **type: 프로젝트 연관 이슈**
+
+---
+
+## 전체 개요
 
 - **발생 일자:** 2025-04-27
 - **제목:** Mockito self-attach warning during test execution
 - **상세 내용:**
-    - Mockito가 inline-mock-maker를 활성화하기 위해 self-attach를 시도함
-    - 이 방식은 JDK 미래 버전(23 이상)에서 기본적으로 차단될 예정
-    - 현재 테스트에는 영향 없으며, JVM 옵션 `-XX:+EnableDynamicAgentLoading`으로 임시 대응 중
+  - Mockito가 inline-mock-maker를 활성화하기 위해 self-attach를 시도함
+  - 이 방식은 JDK 미래 버전(23 이상)에서 기본적으로 차단될 예정
+  - 현재 테스트에는 영향 없으며, JVM 옵션 `-XX:+EnableDynamicAgentLoading`으로 임시 대응 중
 - **현재 상태:**
-    - 무시 가능 (운영 영향 없음)
-    - 단, 추후 JDK 업그레이드 시 agent 설정 필요
+  - 무시 가능 (운영 영향 없음)
+  - 단, 추후 JDK 업그레이드 시 agent 설정 필요
 - **대응 방안:**
-    - Mockito 공식 문서 기준에 맞춰 JVM argument 설정 추가.
+  - Mockito 공식 문서 기준에 맞춰 JVM argument 설정 추가.
 - **참고 링크:**
-    - [Mockito GitHub 이슈 #3037 - Self-Attaching Deprecated 논의](https://github.com/mockito/mockito/issues/3037)
+  - [Mockito GitHub 이슈 #3037 - Self-Attaching Deprecated 논의](https://github.com/mockito/mockito/issues/3037)
 
 ---
 

@@ -1,4 +1,4 @@
-package com.rihee.alerting.common.log.annotation;
+package com.rihee.alerting.common.annotation;
 
 import org.springframework.web.bind.annotation.RestController;
 

@@ -1,6 +1,6 @@
 package com.rihee.alerting.common.log.mockup;
 
-import com.rihee.alerting.common.log.annotation.StructuredRestController;
+import com.rihee.alerting.common.annotation.StructuredRestController;
 import com.rihee.alerting.common.log.enums.StructuredLogProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

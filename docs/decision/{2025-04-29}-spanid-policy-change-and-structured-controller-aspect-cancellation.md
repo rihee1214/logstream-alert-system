@@ -4,7 +4,7 @@
 
 ## 0. 결정 여부
 
-- 적용 예정
+- 🔁 적용 예정
 
 ---
 
@@ -20,7 +20,7 @@ SpanId 규칙 변경 및 StructuredRestController 기반 AOP 적용 계획 취�
 - 특히, 하나의 요청 흐름 안에서 동일 서비스에 여러 번 호출이 발생하면 SpanId가 중복되어 추적이 불가능해질 수 있다.
 - 이를 해결하기 위해 SpanId 규칙을 "서비스명-업무명-seq번호" 형태로 변경한다.
 - 또한, 기존에는 @StructuredRestController로 클래스 단위로 AOP를 걸어 MDC를 설정하려 했었다.
-  - 메서드별 업무명을 명확히 지정할 필요가 생겼기에 메서드 단위로 AOP를 걸고 별도의 Annotation에서 업무명을 관리해야 하는 방향으로 변경한다.
+  - 메서드별 업무명을 명확히 지정할 필요가 생겼기에 메서드 단위로 AOP를 걸고 별도의 Annotation에서 업무명을 관리해야 하는 방향으로 변경해야 한다.
 
 ---
 
@@ -66,7 +66,7 @@ SpanId 규칙 변경 및 StructuredRestController 기반 AOP 적용 계획 취�
 
 ## 6. 계속 고민할 사항(Still Open Issues)
 
-- 초기 업무명 네이밍 기준을 어떻게 잡고, 규칙을 강조할 수 있는지
+- 인터셉터를 어떻게 구현할 것인지
 
 ___
 
@@ -74,10 +74,15 @@ ___
 
 ## 관련 코드(Linked Code)
 
-| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                                   | 비고       |
-|--------|--------------------|---------------------------------------------------------------------|----------|
-| common | src/main/java      | com.rihee.alerting.common.log.aspect.StructuredMdcAspect             | 기존 방식 폐기 |
-| common | src/main/java      | com.rihee.alerting.common.log.annotation.StructuredMapping          | 새롭게 작성 예정 Annotation |
+| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                                 | 비고             |
+|------------|--------------------|-------------------------------------------------------------------|----------------|
+| common     | src/main/java      | com.rihee.alerting.common.log.annotation.StructuredRestController | 기존 방식 폐기       |
+| common     | src/main/java      | com.rihee.alerting.common.log.annotation.StructuredRequestMapping | 새로운 Annotation |
+| common     | src/main/java      | com.rihee.alerting.common.log.annotation.StructuredGetMapping     | 새로운 Annotation |
+| common     | src/main/java      | com.rihee.alerting.common.log.annotation.StructuredPostMapping    | 새로운 Annotation |
+| common     | src/main/java      | com.rihee.alerting.common.log.annotation.StructuredPutMapping     | 새로운 Annotation |
+| common     | src/main/java      | com.rihee.alerting.common.log.annotation.StructuredDeleteMapping  | 새로운 Annotation |
+| common     | src/main/java      | com.rihee.alerting.common.log.annotation.StructuredPatchMapping   | 새로운 Annotation |
 
 ## 대안 방안(Alternative Options)
 
@@ -97,8 +102,8 @@ ___
 
 # 📚 작성 규칙
 
-- 가능한 간단한 문장으로 명확하게.
-- 문장마다 한 가지 의미만 담을 것.
-- 특히 거차한 문체보다는 가능히 실제 본인의 생각 흉름에 가까이 가게 작성할 것.
+- 문장은 간결하고 명확하게.
+- 하나의 문장에는 하나의 의미만.
+- 실제 생각의 흐름에 가깝게 기술할 것.
 
 ---

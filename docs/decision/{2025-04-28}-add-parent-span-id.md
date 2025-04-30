@@ -1,10 +1,10 @@
-# 📝 사고 및 결정 사항 기록 템플릿 (Blank Template)
+# 📝 사고 및 결정 사항 기록
 
 ---
 
 ## 0. 결정 여부
 
-- 적용 완료
+- ✅ 적용 완료
 
 ---
 
@@ -69,9 +69,9 @@ ___
 
 ## 관련 코드(Linked Code)
 
-| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                                   | 비고       |
-|--------|--------------------|---------------------------------------------------------------------|----------|
-| common | src/main/java      | com.rihee.alerting.common.log.aspect.StructuredMdcAspect            | MDC 초기화 및 ParentSpanId 적용 예정 |
+| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                        | 비고                           |
+|------------|--------------------|----------------------------------------------------------|------------------------------|
+| common     | src/main/java      | com.rihee.alerting.common.log.aspect.StructuredMdcAspect | MDC 초기화 및 ParentSpanId 적용 예정 |
 
 ## 대안 방안(Alternative Options)
 
@@ -91,8 +91,8 @@ ___
 
 # 📚 작성 규칙
 
-- 가능한 간단한 문장으로 명확하게.
-- 문장마다 한 가지 의미만 담을 것.
-- 특히 거차한 문체보다는 가능히 실제 본인의 생각 흉름에 가까이 가게 작성할 것.
+- 문장은 간결하고 명확하게.
+- 하나의 문장에는 하나의 의미만.
+- 실제 생각의 흐름에 가깝게 기술할 것.
 
 ---

@@ -6,6 +6,8 @@ import static com.rihee.alerting.common.log.enums.StructuredLogProperties.PARENT
 import static com.rihee.alerting.common.log.enums.StructuredLogProperties.SERVICE;
 import static com.rihee.alerting.common.log.enums.StructuredLogProperties.HOST;
 import static com.rihee.alerting.common.log.enums.StructuredLogProperties.CONTAINER;
+
+import com.rihee.alerting.common.annotation.StructuredRestController;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -19,7 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * {@link com.rihee.alerting.common.log.annotation.StructuredRestController}가 붙은 클래스의 요청 흐름에 대해
+ * {@link StructuredRestController}가 붙은 클래스의 요청 흐름에 대해
  * StructuredLogger용 MDC 세팅을 자동으로 처리하는 AOP Aspect.
  *
  * <p>
@@ -41,7 +43,7 @@ import java.util.UUID;
  *     <li>휴먼 에러를 최소화하고 개발 편의성 극대화</li>
  * </ul>
  *
- * @see com.rihee.alerting.common.log.annotation.StructuredRestController
+ * @see StructuredRestController
  * @see org.slf4j.MDC
  */
 @Aspect

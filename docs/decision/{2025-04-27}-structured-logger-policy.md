@@ -4,7 +4,10 @@
 
 ## 0. 결정 여부
 
-- 적용 완료
+- ❌ **_결정 취소_** → [\{2025-04-30\}-mdc-handlerinterceptor-conversion.md](./{2025-04-30}-mdc-handlerinterceptor-conversion.md)
+  - **취소 사유**
+    - AOP 기반 클래스 단위 MDC 처리 방식 한계
+    - Annotation 적용을 클래스에서 메서드로 변경함에 따라 메서드 단위 제어에 불리하여 구조 전환 필요
 
 ---
 
@@ -86,11 +89,11 @@ ___
 
 ## 관련 코드(Linked Code)
 
-| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                               | 비고       |
-|--------|--------------------|-----------------------------------------------------------------|----------|
-| common | src/main/java      | com.rihee.alerting.common.log.StructuredLogger                  | 실제 서비스용  |
-| common | src/main/java      | com.rihee.alerting.common.log.StructuredLoggerFactory           | 실제 서비스용  |
-| common | src/test/java      | com.rihee.alerting.common.log.MemoryAppender                    | 테스트 전용   |
+| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                     | 비고      |
+|------------|--------------------|-------------------------------------------------------|---------|
+| common     | src/main/java      | com.rihee.alerting.common.log.StructuredLogger        | 실제 서비스용 |
+| common     | src/main/java      | com.rihee.alerting.common.log.StructuredLoggerFactory | 실제 서비스용 |
+| common     | src/test/java      | com.rihee.alerting.common.log.MemoryAppender          | 테스트 전용  |
 
 ## 대안 방안(Alternative Options)
 

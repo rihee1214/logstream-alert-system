@@ -3,12 +3,15 @@ plugins {
 	id 'eclipse'
 	id 'org.springframework.boot' version '3.4.4' apply false
 	id 'io.spring.dependency-management' version '1.1.7'
+	// 컴파일시 규칙 위반을 잡기 위한 도구
+	id 'checkstyle'
 }
 
 // 하위 모든 모듈에서 사용할 spring-boot에 의존성이 없는 dependency에 대한 버전 관리용
 ext {
 	set('logstashEncoderVersion', '7.4')
 	set('jakartaServletApiVersion', '6.0.0')
+	set('checkStyleVersion', '10.3.1')
 }
 
 group = 'com.rihee.alerting'
@@ -20,6 +23,16 @@ A centralized Spring Boot multi-module project designed to simulate log collecti
 
 repositories {
 	mavenCentral()
+}
+
+checkstyle {
+	toolVersion = '${checkStyleVersion}'
+	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+}
+
+tasks.named('check').configure {
+	dependsOn 'checkstyleMain'
+	dependsOn 'checkstyleTest'
 }
 
 subprojects {

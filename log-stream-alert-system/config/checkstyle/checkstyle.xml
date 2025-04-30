@@ -1,0 +1,13 @@
+<module name="Checker">
+    <module name="TreeWalker">
+        <module name="IllegalImport">
+            <property name="illegalPkgs"
+                      value="org.springframework.web.bind.annotation.GetMapping,org.springframework.web.bind.annotation.PostMapping,org.springframework.web.bind.annotation.PutMapping,org.springframework.web.bind.annotation.DeleteMapping,org.springframework.web.bind.annotation.PatchMapping,org.springframework.web.bind.annotation.RequestMapping"/>
+            <property name="illegalClasses"
+                      value="GetMapping,PostMapping,PutMapping,DeleteMapping,PatchMapping,RequestMapping"/>
+            <message key="illegal.import"
+                     value="{0} 사용 금지! common/annotation에 정의된 StructuredMapping만 사용하세요."/>
+            <property name="excludes" value="**/common/annotation/**"/>
+        </module>
+    </module>
+</module>
