@@ -1,13 +1,24 @@
+---
+title: structured-logger-policy
+date: 2025-04-27
+status: canceled
+---
+
 # 📝 사고 및 결정 사항 기록
 
 ---
 
 ## 0. 결정 여부
 
-- ❌ **_결정 취소_** → [\{2025-04-30\}-mdc-handlerinterceptor-conversion.md](./{2025-04-30}-mdc-handlerinterceptor-conversion.md)
-  - **취소 사유**
-    - AOP 기반 클래스 단위 MDC 처리 방식 한계
-    - Annotation 적용을 클래스에서 메서드로 변경함에 따라 메서드 단위 제어에 불리하여 구조 전환 필요
+- ❌ **_결정 취소_** 
+	- 대상 문서 : [\{2025-04-30\}-mdc-handlerinterceptor-conversion.md](./{2025-04-30}-mdc-handlerinterceptor-conversion.md)
+	 - **취소 사유**
+		  - AOP 기반 클래스 단위 MDC 처리 방식 한계
+		  - Annotation 적용을 클래스에서 메서드로 변경함에 따라 메서드 단위 제어에 불리하여 구조 전환 필요
+	   - 취소 일자 : 2025-04-28
+	- 작성자 : 이리희
+    - 참석자 : 이리희
+    - 관련 문서 : n/a 
 
 ---
 

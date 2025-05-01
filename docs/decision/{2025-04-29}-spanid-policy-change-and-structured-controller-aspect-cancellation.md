@@ -1,10 +1,21 @@
-# 📝 사고 및 결정 사항 기록 템플릿 (Blank Template)
+---
+title: spanid-policy-change-and-structured-controller-aspect-cancellation
+date: 2025-04-29
+status: in-progress
+---
+
+# 📝 사고 및 결정 사항 기록
 
 ---
 
 ## 0. 결정 여부
 
 - 🔁 적용 예정
+	- 작업자 : 이리희
+    - 작업 완료 예정일 : ASAP
+    - 작성자 : 이리희
+    - 참석자 : 이리희
+    - 관련 문서 : n/a
 
 ---
 
