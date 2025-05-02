@@ -48,3 +48,10 @@
     "action": "fetch-user"
   }
 }
+```
+
+---
+
+## spanId 규약
+
+서비스 네임 - 업무 네임(Annotation에 기재) - seq

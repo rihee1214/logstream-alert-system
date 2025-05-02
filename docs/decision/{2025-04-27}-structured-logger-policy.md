@@ -11,6 +11,7 @@ status: canceled
 ## 0. 결정 여부
 
 - ❌ **_결정 취소_** 
+	- 취소 일자 : 2025-04-30
 	- 대상 문서 : [\{2025-04-30\}-mdc-handlerinterceptor-conversion.md](./{2025-04-30}-mdc-handlerinterceptor-conversion.md)
 	 - **취소 사유**
 		  - AOP 기반 클래스 단위 MDC 처리 방식 한계

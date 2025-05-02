@@ -10,6 +10,8 @@ Mock service that simulates log-generating applications for testing the distribu
 '''
 
 dependencies {
+	implementation project(':log-stream-common')
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

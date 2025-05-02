@@ -31,6 +31,6 @@ public class StructuredLoggerFactory {
 
     public static StructuredLogger getLogger(Class<?> clazz) {
         Logger logger = LoggerFactory.getLogger(clazz);
-        return new StructuredLogger(logger);
+        return new StructuredLoggerImpl(logger);
     }
 }

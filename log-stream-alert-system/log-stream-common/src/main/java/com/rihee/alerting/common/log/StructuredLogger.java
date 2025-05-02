@@ -1,189 +1,202 @@
 package com.rihee.alerting.common.log;
 
-import org.slf4j.Logger;
-import org.slf4j.MDC;
-
 import java.util.Map;
 
 /**
- * 로그를 structured하게 찍기 위해 wrapping한 Logger.
+ * {@code StructuredLogger}는 시스템 로그와 비즈니스 로그를 구분하여 structured logging을 지원하는 인터페이스입니다.
+ * <p>
+ * 이 인터페이스는 로그 타입(sys/biz)을 명확히 구분하며,
+ * 로그 레벨별로 메시지, 예외, 포맷 파라미터를 유연하게 처리할 수 있도록 다양한 오버로드 메서드를 제공합니다.
+ * </p>
  *
  * <p>
- * - BIZ 로그: 일반 정보성 로그
- * - SYS 로그: 시스템 에러/예외성 로그 (Throwable 포함 가능)
- * <p>
- * 초기화 시 MDC 값을 함께 설정할 수 있으며, 이후 자동으로 처리된다.
+ * 로그 호출 시 내부적으로 MDC를 활용하여 {@code log_type}, {@code traceId}, {@code spanId}, {@code parentSpanId} 등
+ * 컨텍스트 정보를 자동으로 설정 및 정리합니다.
+ * 이를 통해 분산 환경에서도 로그 추적성을 보장합니다.
+ * </p>
+ *
+ * <p><b>사용 예시</b>: {@code StructuredLoggerFactory.getLogger(MyClass.class)} 를 통해 생성</p>
  */
-public class StructuredLogger {
-
-    private static final String LOG_TYPE_KEY = "logtype";
-    private static final String SYS_LOG_TYPE = "sys";
-    private static final String BIZ_LOG_TYPE = "biz";
-
-    private final Logger log;
+public interface StructuredLogger {
 
     /**
-     * 생성자 - 외부에서 직접 호출하지 않고 StructuredLoggerFactory를 사용할 것.
-     * @param log SLF4J Logger
-     */
-    StructuredLogger(Logger log) {
-        this.log = log;
-    }
-
-    /**
-     * 추가적인 공통 MDC 값을 초기화할 때 사용한다.
+     * MDC에 공통 key-value context 정보를 초기화합니다.
      *
-     * @param context 초기화할 MDC key-value Map
+     * @param context MDC에 넣을 key-value 쌍
      */
-    public void initializeMdc(Map<String, String> context) {
-        if (context != null) {
-            context.forEach(MDC::put);
-        }
-    }
+    void initializeMdc(Map<String, String> context);
 
-    /* ============================== SYS 로그 영역 ============================== */
-
-    /** 시스템(debug) 로그를 남긴다. */
-    public void debugSys(String message) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.debug(message));
-    }
-
-    /** 시스템(debug) 로그를 포맷 파라미터와 함께 남긴다. */
-    public void debugSys(String message, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.debug(message, args));
-    }
-
-    /** 시스템(debug) 로그를 예외와 함께 남긴다. */
-    public void debugSys(String message, Throwable t) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.debug(message, t));
-    }
-
-    /** 시스템(debug) 로그를 예외와 포맷 파라미터 모두와 함께 남긴다. */
-    public void debugSys(String message, Throwable t, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.debug(message, args, t));
-    }
-
-    /** 시스템(info) 로그를 남긴다. */
-    public void infoSys(String message) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.info(message));
-    }
-
-    /** 시스템(info) 로그를 포맷 파라미터와 함께 남긴다. */
-    public void infoSys(String message, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.info(message, args));
-    }
-
-    /** 시스템(info) 로그를 예외와 함께 남긴다. */
-    public void infoSys(String message, Throwable t) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.info(message, t));
-    }
-
-    /** 시스템(info) 로그를 예외와 포맷 파라미터 모두와 함께 남긴다. */
-    public void infoSys(String message, Throwable t, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.info(message, args, t));
-    }
-
-    /** 시스템(warn) 로그를 남긴다. */
-    public void warnSys(String message) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.warn(message));
-    }
-
-    /** 시스템(warn) 로그를 포맷 파라미터와 함께 남긴다. */
-    public void warnSys(String message, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.warn(message, args));
-    }
-
-    /** 시스템(warn) 로그를 예외와 함께 남긴다. */
-    public void warnSys(String message, Throwable t) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.warn(message, t));
-    }
-
-    /** 시스템(warn) 로그를 예외와 포맷 파라미터 모두와 함께 남긴다. */
-    public void warnSys(String message, Throwable t, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.warn(message, args, t));
-    }
-
-    /** 시스템(error) 로그를 남긴다. */
-    public void errorSys(String message) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.error(message));
-    }
-
-    /** 시스템(error) 로그를 포맷 파라미터와 함께 남긴다. */
-    public void errorSys(String message, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.error(message, args));
-    }
-
-    /** 시스템(error) 로그를 예외와 함께 남긴다. */
-    public void errorSys(String message, Throwable t) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.error(message, t));
-    }
-
-    /** 시스템(error) 로그를 예외와 포맷 파라미터 모두와 함께 남긴다. */
-    public void errorSys(String message, Throwable t, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.error(message, args, t));
-    }
-
-    /* ============================== BIZ 로그 영역 ============================== */
-
-    /** 비즈니스(debug) 로그를 남긴다. */
-    public void debugBiz(String message) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.debug(message));
-    }
-
-    /** 비즈니스(debug) 로그를 포맷 파라미터와 함께 남긴다. */
-    public void debugBiz(String message, Object... args) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.debug(message, args));
-    }
-
-    /** 비즈니스(info) 로그를 남긴다. */
-    public void infoBiz(String message) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.info(message));
-    }
-
-    /** 비즈니스(info) 로그를 포맷 파라미터와 함께 남긴다. */
-    public void infoBiz(String message, Object... args) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.info(message, args));
-    }
-
-    /** 비즈니스(warn) 로그를 남긴다. */
-    public void warnBiz(String message) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.warn(message));
-    }
-
-    /** 비즈니스(warn) 로그를 포맷 파라미터와 함께 남긴다. */
-    public void warnBiz(String message, Object... args) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.warn(message, args));
-    }
-
-    /** 비즈니스(error) 로그를 남긴다. */
-    public void errorBiz(String message) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.error(message));
-    }
-
-    /** 비즈니스(error) 로그를 포맷 파라미터와 함께 남긴다. */
-    public void errorBiz(String message, Object... args) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.error(message, args));
-    }
-
-    /* ============================== 내부 공통 처리 ============================== */
+    // SYS 로그
+    /**
+     * 시스템 로그(DEBUG 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     */
+    void debugSys(String message);
+    /**
+     * 시스템 로그(DEBUG 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param args    포맷 인자
+     */
+    void debugSys(String message, Object... args);
+    /**
+     * 시스템 로그(DEBUG 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param t       예외 객체
+     */
+    void debugSys(String message, Throwable t);
+    /**
+     * 시스템 로그(DEBUG 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param t       예외 객체
+     * @param args    포맷 인자
+     */
+    void debugSys(String message, Throwable t, Object... args);
 
     /**
-     * logtype을 MDC에 지정한 뒤 로깅을 수행하고, 이후 MDC를 복원한다.
+     * 시스템 로그(INFO 레벨)를 기록합니다.
      *
-     * @param logType 'biz' 또는 'sys'
-     * @param runnable 로그를 실행하는 람다
+     * @param message 출력할 로그 메시지
      */
-    private void logWithMdc(String logType, Runnable runnable) {
-        Map<String, String> contextSnapshot = MDC.getCopyOfContextMap();
-        try {
-            MDC.put(LOG_TYPE_KEY, logType);
-            runnable.run();
-        } finally {
-            if (contextSnapshot != null) {
-                MDC.setContextMap(contextSnapshot);
-            } else {
-                MDC.clear();
-            }
-        }
-    }
+    void infoSys(String message);
+    /**
+     * 시스템 로그(INFO 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param args    포맷 인자
+     */
+    void infoSys(String message, Object... args);
+    /**
+     * 시스템 로그(INFO 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param t       예외 객체
+     */
+    void infoSys(String message, Throwable t);
+    /**
+     * 시스템 로그(INFO 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param t       예외 객체
+     * @param args    포맷 인자
+     */
+    void infoSys(String message, Throwable t, Object... args);
+
+    /**
+     * 시스템 로그(WARN 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     */
+    void warnSys(String message);
+    /**
+     * 시스템 로그(WARN 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param args    포맷 인자
+     */
+    void warnSys(String message, Object... args);
+    /**
+     * 시스템 로그(WARN 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param t       예외 객체
+     */
+    void warnSys(String message, Throwable t);
+    /**
+     * 시스템 로그(WARN 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param t       예외 객체
+     * @param args    포맷 인자
+     */
+    void warnSys(String message, Throwable t, Object... args);
+
+    /**
+     * 시스템 로그(ERROR 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     */
+    void errorSys(String message);
+    /**
+     * 시스템 로그(ERROR 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param args    포맷 인자
+     */
+    void errorSys(String message, Object... args);
+    /**
+     * 시스템 로그(ERROR 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param t       예외 객체
+     */
+    void errorSys(String message, Throwable t);
+    /**
+     * 시스템 로그(ERROR 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     * @param t       예외 객체
+     * @param args    포맷 인자
+     */
+    void errorSys(String message, Throwable t, Object... args);
+
+    // BIZ 로그
+    /**
+     * 비즈니스 로그(DEBUG 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     */
+    void debugBiz(String message);
+    /**
+     * 비즈니스 로그(DEBUG 레벨)를 포맷 문자열과 인자를 이용해 기록합니다.
+     *
+     * @param message 포맷 문자열
+     * @param args    포맷 인자
+     */
+    void debugBiz(String message, Object... args);
+
+    /**
+     * 비즈니스 로그(INFO 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     */
+    void infoBiz(String message);
+    /**
+     * 비즈니스 로그(INFO 레벨)를 포맷 문자열과 인자를 이용해 기록합니다.
+     *
+     * @param message 포맷 문자열
+     * @param args    포맷 인자
+     */
+    void infoBiz(String message, Object... args);
+
+    /**
+     * 비즈니스 로그(WARN 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     */
+    void warnBiz(String message);
+    /**
+     * 비즈니스 로그(WARN 레벨)를 포맷 문자열과 인자를 이용해 기록합니다.
+     *
+     * @param message 포맷 문자열
+     * @param args    포맷 인자
+     */
+    void warnBiz(String message, Object... args);
+
+    /**
+     * 비즈니스 로그(ERROR 레벨)를 기록합니다.
+     *
+     * @param message 출력할 로그 메시지
+     */
+    void errorBiz(String message);
+    /**
+     * 비즈니스 로그(ERROR 레벨)를 포맷 문자열과 인자를 이용해 기록합니다.
+     *
+     * @param message 포맷 문자열
+     * @param args    포맷 인자
+     */
+    void errorBiz(String message, Object... args);
 }

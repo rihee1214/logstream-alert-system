@@ -38,10 +38,11 @@ labelBlock += `<!-- label-end -->`;
 // 본문에 labelBlock 넣기
 result += labelBlock + "\n";
 if (status === "canceled") {
-  result += `    - 대상 문서 : (취소 후 결정 문서명)[경로]\n`;
-  result += `    - 취소사유\n`;
-  result += `        - 취소사유 1: \n`;
-  result += `        - 취소사유 2: \n`;
+  result += `    - 취소 일자 : YYYY-MM-DD\n`;
+  result += `    - 대상 문서 : \\`[취소 후 결정 문서명](경로)\\`\n`;
+  result += `    - 취소 사유\n`;
+  result += `        - 취소 사유 1: \n`;
+  result += `        - 취소 사유 2: \n`;
 } else if (status === "in-progress") {
   result += `    - 작업자 : 이름 \n`;
   result += `    - 작업 완료 예정일 : YYYY-MM-DD (or ASAP) \n`;
@@ -51,7 +52,7 @@ if (status === "canceled") {
 }
 result += `    - 작성자 : 이름\n`;
 result += `    - 참석자 : 이름1, 이름2\n`;
-result += `    - 관련 문서 : (관련 문서명)[경로] \n`;
+result += `    - 관련 문서 : \\`[관련 문서명](경로)\\` \n`;
 
 result += `\n_(해당 문서의 결정 사항이 실제 코드에 반영되었는지, 혹은 그에 준하는 행위가 이루어졌는지 표시)_\n`;
 

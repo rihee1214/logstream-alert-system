@@ -1,7 +1,7 @@
 ---
 title: mdc-handlerinterceptor-conversion
 date: 2025-04-30
-status: in-progress
+status: canceled
 ---
 
 # 📝 사고 및 결정 사항 기록
@@ -10,12 +10,17 @@ status: in-progress
 
 ## 0. 결정 여부
 
-- 🔁 적용 예정
-	- 작업자 : 이리희
-    - 작업 완료 예정일 : ASAP
+- ❌ 결정 취소
+	- 취소 일자 : 2025-05-02
+	- 취소 사유:
+	    - KafkaAppender가 logger 수와 직접적인 병목을 일으키지 않음이 확인됨
+		- Appender는 동기화 되어있어 인스턴스가 많아질 이유가 없음
+	    - 현재는 biz/sys/default 총 3개의 Appender만 존재하며, 이는 충분히 경량 구조임
+	    - Appender 레벨의 병목이 발생해도 이는 컨테이너 스케줄링 및 복제를 통해 대응 가능
+	    - 따라서 기존 구조(클래스별 logger 유지)를 그대로 유지하기로 결정
     - 작성자 : 이리희
     - 참석자 : 이리희
-    - 관련 문서 : n/a
+    - 관련 문서 : [Logback공식문서(Chaper4:appenders)](https://logback.qos.ch/manual/appenders.html?utm_source=chatgpt.com)
 
 ---
 
@@ -48,14 +53,17 @@ StructuredLogger의 logger 생성 방식 및 KafkaAppender 적용 정책 결정
 
 ## 4. 최종 결정(Final Decision)
 
-- StructuredLoggerFactory.getBizLogger(), StructuredLoggerFactory.getSysLogger() 방식으로 logger 인스턴스를 제한한다.
-- 클래스명은 로깅 파라미터로 전달하여 MDC에 자동 주입한다.
-- 인터페이스는 StructuredLogger.info(String message) 형태로 단순화하고, 내부에서 caller class를 추적하여 class명을 MDC에 넣는 구조로 설계한다.
-- KafkaAppender 설정은 공통 appender로 구성하며, buffer 오버 시 block timeout 설정 및 fallback 대응도 함께 구성한다.
-- 이 결정은 단순한 기술적 효율성 확보가 아니라, **비즈니스 로직 중심의 트랜잭션 흐름을 정확히 추적하고 분석 가능한 로깅 구조를 설계하는 데 중점을 둔 판단이다**.
-  - 많은 로그가 발생하는 시스템은 오히려 **트래픽 과부하 상태로 간주**되어야 하며,
-  - 정상적이고 예측 가능한 요청 흐름 속에서의 로그가 추적성과 분석력을 높인다.
-  - 따라서 **logger 수는 줄이되, 컨테이너 레벨의 수평 확장과 분산 로그 추적 구조를 병행**하는 방향으로 구성한다.
+- ~~StructuredLoggerFactory.getBizLogger(), StructuredLoggerFactory.getSysLogger() 방식으로 logger 인스턴스를 제한한다.~~
+- ~~클래스명은 로깅 파라미터로 전달하여 MDC에 자동 주입한다.~~
+- ~~인터페이스는 StructuredLogger.info(String message) 형태로 단순화하고, 내부에서 caller class를 추적하여 class명을 MDC에 넣는 구조로 설계한다.~~
+- ~~KafkaAppender 설정은 공통 appender로 구성하며, buffer 오버 시 block timeout 설정 및 fallback 대응도 함께 구성한다.~~
+- ~~이 결정은 단순한 기술적 효율성 확보가 아니라, **비즈니스 로직 중심의 트랜잭션 흐름을 정확히 추적하고 분석 가능한 로깅 구조를 설계하는 데 중점을 둔 판단이다**.~~
+  - ~~많은 로그가 발생하는 시스템은 오히려 **트래픽 과부하 상태로 간주**되어야 하며,~~
+  - ~~정상적이고 예측 가능한 요청 흐름 속에서의 로그가 추적성과 분석력을 높인다.~~
+  - ~~따라서 **logger 수는 줄이되, 컨테이너 레벨의 수평 확장과 분산 로그 추적 구조를 병행**하는 방향으로 구성한다.~~
+> ⚠️ 해당 결정은 2025-05-02부로 취소됨.  
+> 구조적 단순화를 위한 시도였으나, Appender 병목 우려는 과도한 추정이었음이 확인되었고,  
+> 클래스별 Logger 유지가 추적성과 확장성 면에서 더 적합하다고 판단됨.
 
 ---
 

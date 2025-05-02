@@ -1,13 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="Checker">
+    <!-- SuppressionFilter로 예외 경로 지정 -->
+    <module name="SuppressionFilter">
+        <property name="file" value="${suppressionsFile}" default="config/checkstyle/suppressions.xml"/>
+    </module>
     <module name="TreeWalker">
+        <!-- public API에 사용되는 기본 Mapping Annotation 대신 프로젝트 내에 정의된 Annotation 사용 강제 -->
         <module name="IllegalImport">
-            <property name="illegalPkgs"
-                      value="org.springframework.web.bind.annotation.GetMapping,org.springframework.web.bind.annotation.PostMapping,org.springframework.web.bind.annotation.PutMapping,org.springframework.web.bind.annotation.DeleteMapping,org.springframework.web.bind.annotation.PatchMapping,org.springframework.web.bind.annotation.RequestMapping"/>
             <property name="illegalClasses"
-                      value="GetMapping,PostMapping,PutMapping,DeleteMapping,PatchMapping,RequestMapping"/>
+                      value="org.springframework.web.bind.annotation.GetMapping,
+                            org.springframework.web.bind.annotation.PostMapping,
+                            org.springframework.web.bind.annotation.PutMapping,
+                            org.springframework.web.bind.annotation.DeleteMapping,
+                            org.springframework.web.bind.annotation.PatchMapping,
+                            org.springframework.web.bind.annotation.RequestMapping"/>
             <message key="illegal.import"
                      value="{0} 사용 금지! common/annotation에 정의된 StructuredMapping만 사용하세요."/>
-            <property name="excludes" value="**/common/annotation/**"/>
+        </module>
+        <!-- 일반 Logger class 대신 프로젝트 내에 정의된 Logger 사용 강제 -->
+        <module name="IllegalImport">
+            <property name="illegalClasses"
+                      value="java.lang.System.Logger,
+                            java.util.logging.Logger,
+                            org.log4j.Logger,
+                            ch.qos.logback.classic.Logger,
+                            org.apache.logging.log4j.Logger,
+                            org.yaml.snakeyaml.internal.Logger,
+                            org.log4j.LoggerFactory"/>
+            <message key="illegal.import"
+                     value="{0} 사용 금지! common/log에 정의된 StructuredLoggerFactory를 이용해 생성한 StructuredLogger의 인스턴스만 사용하세요."/>
         </module>
     </module>
 </module>

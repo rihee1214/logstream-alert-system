@@ -25,11 +25,6 @@ repositories {
 	mavenCentral()
 }
 
-checkstyle {
-	toolVersion = '${checkStyleVersion}'
-	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-}
-
 tasks.named('check').configure {
 	dependsOn 'checkstyleMain'
 	dependsOn 'checkstyleTest'
@@ -39,6 +34,7 @@ subprojects {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
 	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'checkstyle'
 	
 	if (project.name != 'common') {
         apply plugin: 'org.springframework.boot'
@@ -70,10 +66,27 @@ subprojects {
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
 		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	}
-	
-	tasks.named('test', Test).configure {
-		useJUnitPlatform()
-		jvmArgs += "-XX:+EnableDynamicAgentLoading"
+
+	checkstyle {
+		toolVersion = "${checkStyleVersion}"
+		configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+		configProperties = [
+				"suppressionsFile": file("${rootDir}/config/checkstyle/suppressions.xml").absolutePath
+		]
+		ignoreFailures = false   // 위반 시 빌드 실패
+		showViolations = true    // 콘솔에 위반 사항 출력
+	}
+
+	afterEvaluate {
+		checkstyle.sourceSets = [sourceSets.main, sourceSets.test]
 	}
 	
+	tasks.named('test', Test).configure {
+		test.useJUnitPlatform()
+		jvmArgs += "-XX:+EnableDynamicAgentLoading"
+	}
+
+	tasks.named('check').configure {
+		dependsOn 'checkstyleMain', 'checkstyleTest'
+	}
 }
