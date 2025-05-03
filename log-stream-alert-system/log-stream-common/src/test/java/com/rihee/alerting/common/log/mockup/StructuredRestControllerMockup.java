@@ -8,6 +8,7 @@ import org.slf4j.MDC;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @StructuredRestController
+@Deprecated
 public class StructuredRestControllerMockup {
 
     private static final Logger logger = LoggerFactory.getLogger(StructuredRestControllerMockup.class);

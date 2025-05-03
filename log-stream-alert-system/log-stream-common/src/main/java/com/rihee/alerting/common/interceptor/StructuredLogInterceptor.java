@@ -2,12 +2,12 @@ package com.rihee.alerting.common.interceptor;
 
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
+import com.rihee.alerting.common.log.enums.LogType;
 import io.micrometer.common.lang.NonNullApi;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -48,9 +48,9 @@ public class StructuredLogInterceptor implements HandlerInterceptor {
      * @param containerName MDC에 기본 세팅될 컨테이너 정보
      */
     public StructuredLogInterceptor(SpanLabelRegistry registry,
-                                    @Value("${service.name:unknown-service}") String serviceName,
-                                    @Value("${host.name:unknown-host}") String hostName,
-                                    @Value("${container.name:unknown-container}") String containerName) {
+                                    String serviceName,
+                                    String hostName,
+                                    String containerName) {
         this.registry = registry;
         this.serviceName = serviceName;
         this.hostName = hostName;
@@ -106,7 +106,7 @@ public class StructuredLogInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) {
         // 요청 중 예외 발생시 StructuredLogging처리
         if (ex != null) {
-            logger.errorSys("Exception during request", ex);
+            logger.error(LogType.SYS, "Exception during request", ex);
         }
         // MDC 정리 (thread-local 메모리 누수 방지)
         MDC.clear();

@@ -7,6 +7,8 @@
 - [ ] git, github branch 전략 고민하기
 - [ ] checkstyle 제대로 동작 안하는 현상 고쳐야함
 - [ ] SpanLabelBeanPostProcessor의 postProcessAfterInitialization메서드 리팩토링
+
+- [ ] KafkaAppender를 제거하고 다시 FileBeat를 사용하도록 수정
 # 이미 작업한 목록
 - [x] docs 템플릿 Obsidian화
 - [x] 사용하고 있는 tool에 대한 목록 README 정리
@@ -16,3 +18,5 @@
 - [x] 기존 로그 구조 리팩토링 필요성 분석 및 로거 인터페이스 분리 (새로운 로거 추가 및 정책 변경시 변경의 용이성을 획득하기 위함)
 - [x] StructuredLoggerImpl class는 외부에서는 보이지 않고 interface를 통해 사용하도록 해야함.
 	- [x] 그렇게 하는 방법이 없어서 그냥 interface에 주석만 달았음
+- [x] mockup을 제외한 나머지 모듈들이 오류가 발생했을때 로그를 어떻게 처리해야할지 고민하기
+      (그저 alertmanager에게만 의존하기로 결정)

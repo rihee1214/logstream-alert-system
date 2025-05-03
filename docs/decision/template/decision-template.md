@@ -30,16 +30,11 @@ result += `# 📝 사고 및 결정 사항 기록\n\n`;
 result += `---\n\n`;
 result += `## 0. 결정 여부\n\n`;
 
-// 라벨 블록만 별도 생성
-let labelBlock = `<!-- label-start -->\n`;
-labelBlock += `- ${label}\n`;
-labelBlock += `<!-- label-end -->`;
-
 // 본문에 labelBlock 넣기
-result += labelBlock + "\n";
+result += `- ${label}\n`;
 if (status === "canceled") {
   result += `    - 취소 일자 : YYYY-MM-DD\n`;
-  result += `    - 대상 문서 : \\`[취소 후 결정 문서명](경로)\\`\n`;
+  result += `    - 대상 문서 : [취소 후 결정 문서명](경로)\n`;
   result += `    - 취소 사유\n`;
   result += `        - 취소 사유 1: \n`;
   result += `        - 취소 사유 2: \n`;
@@ -52,14 +47,14 @@ if (status === "canceled") {
 }
 result += `    - 작성자 : 이름\n`;
 result += `    - 참석자 : 이름1, 이름2\n`;
-result += `    - 관련 문서 : \\`[관련 문서명](경로)\\` \n`;
+result += `    - 관련 문서 : [관련 문서명](경로)\n`;
 
 result += `\n_(해당 문서의 결정 사항이 실제 코드에 반영되었는지, 혹은 그에 준하는 행위가 이루어졌는지 표시)_\n`;
 
 result += `\n---\n\n`;
 result += `## 1. 주제(Title)\n\n_(이슈 혹은 고민 주제를 간단명료하게 적는다)_\n\n`;
 result += `---\n\n`;
-result += `## 2. 문제 인시(Problem Recognition)\n\n_(왜 이 고민이 발생했는지 배경을 간략히 설명한다)_\n\n`;
+result += `## 2. 문제 인식(Problem Recognition)\n\n_(왜 이 고민이 발생했는지 배경을 간략히 설명한다)_\n\n`;
 result += `---\n\n`;
 result += `## 3. 고려사항(Considerations)\n\n`;
 result += `- **Option 1: [옵션 이름]**\n  - 장점\n  - 단점\n\n`;

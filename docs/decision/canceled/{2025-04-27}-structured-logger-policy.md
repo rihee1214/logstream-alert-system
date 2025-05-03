@@ -12,7 +12,7 @@ status: canceled
 
 - ❌ **_결정 취소_** 
 	- 취소 일자 : 2025-04-30
-	- 대상 문서 : [\{2025-04-30\}-mdc-handlerinterceptor-conversion.md](./{2025-04-30}-mdc-handlerinterceptor-conversion.md)
+	- 대상 문서 : [\{2025-04-30\}-mdc-handlerinterceptor-conversion.md]({2025-04-30}-mdc-handlerinterceptor-conversion.md)
 	 - **취소 사유**
 		  - AOP 기반 클래스 단위 MDC 처리 방식 한계
 		  - Annotation 적용을 클래스에서 메서드로 변경함에 따라 메서드 단위 제어에 불리하여 구조 전환 필요

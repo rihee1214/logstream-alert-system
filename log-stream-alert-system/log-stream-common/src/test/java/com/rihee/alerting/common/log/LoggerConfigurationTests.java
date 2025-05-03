@@ -2,6 +2,7 @@ package com.rihee.alerting.common.log;
 
 import ch.qos.logback.classic.Logger;
 import com.rihee.alerting.common.log.appender.MemoryAppender;
+import com.rihee.alerting.common.log.enums.LogType;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -43,8 +44,7 @@ public class LoggerConfigurationTests {
         MDC.put("host", "tester");
         MDC.put("container", "tester");
 
-        log.infoSys("sys-test-message");
-        log.infoBiz("biz-test-message");
+        log.info(LogType.SYS, "sys-test-message");
 
         Assertions.assertAll(
             () -> memoryAppender.getLoggedEvents().forEach(event ->{

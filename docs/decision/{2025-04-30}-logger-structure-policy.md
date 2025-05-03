@@ -1,5 +1,5 @@
 ---
-title: logger-structure-and-kafka-append-policy
+title: logger-structure-policy
 date: 2025-04-30
 status: in-progress
 ---
@@ -16,8 +16,8 @@ status: in-progress
     - 작성자 : 이리희
     - 참석자 : 이리희
     - 관련 문서
-		- **취소된 결정 :** [{2025-04-27}-structured-logger-policy.md](2025-05-01-structured-logger-policy.md.md)
-		- **참고 결정1 :** [{2025-04-28}-add-parent-span-id.md](./{2025-04-28}-add-parent-span-id.md)
+		- **취소된 결정 :** [{2025-04-27}-structured-logger-policy.md](./canceled/{2025-04-27}-structured-logger-policy.md)
+		- **참고 결정1 :** [{2025-04-28}-add-parent-span-id.md](./done/{2025-04-28}-add-parent-span-id.md)
 		- **참고 결정2 :** [{2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md](./{2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md)
 
 ---
@@ -78,10 +78,13 @@ ___
 
 ## 관련 코드(Linked Code)
 
-| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                              | 비고    |
-|------------|--------------------|----------------------------------------------------------------|-------|
-| common     | src/main/java      | com.rihee.alerting.common.log.aspect.StructuredMdcAspect       | 삭제    |
-| common     | src/main/java      | com.rihee.alerting.common.interceptor.StructuredLogInterceptor | 신규 구현 |
+| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                                | 비고    |
+| ---------- | ------------------ |------------------------------------------------------------------| ----- |
+| common     | src/main/java      | com.rihee.alerting.common.log.aspect.StructuredMdcAspect         | 삭제    |
+| common     | src/main/java      | com.rihee.alerting.common.interceptor.SpanLabelRegistry          | 신규 구현 |
+| common     | src/main/java      | com.rihee.alerting.common.interceptor.SpanLabelBeanPostProcessor | 신규 구현 |
+| common     | src/main/java      | com.rihee.alerting.common.interceptor.StructuredLogInterceptor   | 신규 구현 |
+| common     | src/main/java      | com.rihee.alerting.common.config.WebConfig                       | 신규 구현 |
 
 ## 대안 방안(Alternative Options)
 

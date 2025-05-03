@@ -1,5 +1,6 @@
 package com.rihee.alerting.common.annotation;
 
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -45,27 +46,32 @@ public @interface StructuredPatchMapping {
      * URL 경로 매핑.
      * 예: "/users", "/api/items"
      */
+    @AliasFor(annotation = RequestMapping.class, attribute = "value")
     String[] value() default {};
     /**
      * {@link RequestMapping#consumes}
      * 소비 가능한 MIME 타입.
      * 예: "application/json"
      */
+    @AliasFor(annotation = RequestMapping.class, attribute = "consumes")
     String[] consumes() default {};
     /**
      * {@link RequestMapping#produces}
      * 생성 가능한 MIME 타입.
      * 예: "application/json"
      */
+    @AliasFor(annotation = RequestMapping.class, attribute = "produces")
     String[] produces() default {};
     /**
      * {@link RequestMapping#headers}
      * 요청 헤더 조건.
      */
+    @AliasFor(annotation = RequestMapping.class, attribute = "headers")
     String[] headers() default {};
     /**
      * {@link RequestMapping#params}
      * 요청 파라미터 조건.
      */
+    @AliasFor(annotation = RequestMapping.class, attribute = "params")
     String[] params() default {};
 }

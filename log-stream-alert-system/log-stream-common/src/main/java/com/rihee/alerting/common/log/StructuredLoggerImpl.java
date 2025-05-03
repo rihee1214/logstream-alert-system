@@ -1,9 +1,11 @@
 package com.rihee.alerting.common.log;
 
+import com.rihee.alerting.common.log.enums.LogType;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static com.rihee.alerting.common.log.enums.StructuredLogProperties.LOG_TYPE;
 
@@ -17,7 +19,8 @@ import static com.rihee.alerting.common.log.enums.StructuredLogProperties.LOG_TY
  *
  * <p>
  * - BIZ 로그: 일반 정보성 로그<br>
- * - SYS 로그: 시스템 오류 및 예외성 로그 (Throwable 포함 가능)
+ * - SYS 로그: 시스템 오류 및 예외성 로그 (Throwable 포함 가능)<br>
+ * - ACT 로그: 시스템 metric, health 관련 로그
  * </p>
  *
  * <p>
@@ -32,9 +35,6 @@ import static com.rihee.alerting.common.log.enums.StructuredLogProperties.LOG_TY
  * <p><b>생성 방법:</b> {@code StructuredLoggerFactory.getLogger(MyClass.class)}를 사용할 것.</p>
  */
 public class StructuredLoggerImpl implements StructuredLogger{
-
-    private static final String SYS_LOG_TYPE = "sys";
-    private static final String BIZ_LOG_TYPE = "biz";
 
     private final Logger log;
 
@@ -58,152 +58,102 @@ public class StructuredLoggerImpl implements StructuredLogger{
         }
     }
 
-    /* ============================== SYS 로그 영역 ============================== */
+    /* ==============================  로그 처리 영역 ============================== */
 
-    /** 시스템(debug) 로그를 남긴다. */
+    /** 지정된 {@code logType}으로 DEBUG 레벨 로그를 기록합니다. */
     @Override
-    public void debugSys(String message) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.debug(message));
+    public void debug(LogType logType, String message) {
+        logWithMdc(logType, () -> log.debug(message));
     }
 
-    /** 시스템(debug) 로그를 포맷 파라미터와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 DEBUG 레벨 로그를 포맷 문자열과 인자를 이용해 기록합니다. */
     @Override
-    public void debugSys(String message, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.debug(message, args));
+    public void debug(LogType logType, String message, Object... args) {
+        logWithMdc(logType, () -> log.debug(message, args));
     }
 
-    /** 시스템(debug) 로그를 예외와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 DEBUG 레벨 로그를 예외와 함께 기록합니다. */
     @Override
-    public void debugSys(String message, Throwable t) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.debug(message, t));
+    public void debug(LogType logType, String message, Throwable t) {
+        logWithMdc(logType, () -> log.debug(message, t));
     }
 
-    /** 시스템(debug) 로그를 예외와 포맷 파라미터 모두와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 DEBUG 레벨 로그를 예외 및 포맷 인자와 함께 기록합니다. */
     @Override
-    public void debugSys(String message, Throwable t, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.debug(message, args, t));
+    public void debug(LogType logType, String message, Throwable t, Object... args) {
+        logWithMdc(logType, () -> log.debug(message, args, t));
     }
 
-    /** 시스템(info) 로그를 남긴다. */
+    /** 지정된 {@code logType}으로 INFO 레벨 로그를 기록합니다. */
     @Override
-    public void infoSys(String message) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.info(message));
+    public void info(LogType logType, String message) {
+        logWithMdc(logType, () -> log.info(message));
     }
 
-    /** 시스템(info) 로그를 포맷 파라미터와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 INFO 레벨 로그를 포맷 문자열과 인자를 이용해 기록합니다. */
     @Override
-    public void infoSys(String message, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.info(message, args));
+    public void info(LogType logType, String message, Object... args) {
+        logWithMdc(logType, () -> log.info(message, args));
     }
 
-    /** 시스템(info) 로그를 예외와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 INFO 레벨 로그를 예외와 함께 기록합니다. */
     @Override
-    public void infoSys(String message, Throwable t) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.info(message, t));
+    public void info(LogType logType, String message, Throwable t) {
+        logWithMdc(logType, () -> log.info(message, t));
     }
 
-    /** 시스템(info) 로그를 예외와 포맷 파라미터 모두와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 INFO 레벨 로그를 예외 및 포맷 인자와 함께 기록합니다. */
     @Override
-    public void infoSys(String message, Throwable t, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.info(message, args, t));
+    public void info(LogType logType, String message, Throwable t, Object... args) {
+        logWithMdc(logType, () -> log.info(message, args, t));
     }
 
-    /** 시스템(warn) 로그를 남긴다. */
+    /** 지정된 {@code logType}으로 WARN 레벨 로그를 기록합니다. */
     @Override
-    public void warnSys(String message) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.warn(message));
+    public void warn(LogType logType, String message) {
+        logWithMdc(logType, () -> log.warn(message));
     }
 
-    /** 시스템(warn) 로그를 포맷 파라미터와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 WARN 레벨 로그를 포맷 문자열과 인자를 이용해 기록합니다. */
     @Override
-    public void warnSys(String message, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.warn(message, args));
+    public void warn(LogType logType, String message, Object... args) {
+        logWithMdc(logType, () -> log.warn(message, args));
     }
 
-    /** 시스템(warn) 로그를 예외와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 WARN 레벨 로그를 예외와 함께 기록합니다. */
     @Override
-    public void warnSys(String message, Throwable t) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.warn(message, t));
+    public void warn(LogType logType, String message, Throwable t) {
+        logWithMdc(logType, () -> log.warn(message, t));
     }
 
-    /** 시스템(warn) 로그를 예외와 포맷 파라미터 모두와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 WARN 레벨 로그를 예외 및 포맷 인자와 함께 기록합니다. */
     @Override
-    public void warnSys(String message, Throwable t, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.warn(message, args, t));
+    public void warn(LogType logType, String message, Throwable t, Object... args) {
+        logWithMdc(logType, () -> log.warn(message, args, t));
     }
 
-    /** 시스템(error) 로그를 남긴다. */
+    /** 지정된 {@code logType}으로 ERROR 레벨 로그를 기록합니다. */
     @Override
-    public void errorSys(String message) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.error(message));
+    public void error(LogType logType, String message) {
+        logWithMdc(logType, () -> log.error(message));
     }
 
-    /** 시스템(error) 로그를 포맷 파라미터와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 ERROR 레벨 로그를 포맷 문자열과 인자를 이용해 기록합니다. */
     @Override
-    public void errorSys(String message, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.error(message, args));
+    public void error(LogType logType, String message, Object... args) {
+        logWithMdc(logType, () -> log.error(message, args));
     }
 
-    /** 시스템(error) 로그를 예외와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 ERROR 레벨 로그를 예외와 함께 기록합니다. */
     @Override
-    public void errorSys(String message, Throwable t) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.error(message, t));
+    public void error(LogType logType, String message, Throwable t) {
+        logWithMdc(logType, () -> log.error(message, t));
     }
 
-    /** 시스템(error) 로그를 예외와 포맷 파라미터 모두와 함께 남긴다. */
+    /** 지정된 {@code logType}으로 ERROR 레벨 로그를 예외 및 포맷 인자와 함께 기록합니다. */
     @Override
-    public void errorSys(String message, Throwable t, Object... args) {
-        logWithMdc(SYS_LOG_TYPE, () -> log.error(message, args, t));
-    }
-
-    /* ============================== BIZ 로그 영역 ============================== */
-
-    /** 비즈니스(debug) 로그를 남긴다. */
-    @Override
-    public void debugBiz(String message) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.debug(message));
-    }
-
-    /** 비즈니스(debug) 로그를 포맷 파라미터와 함께 남긴다. */
-    @Override
-    public void debugBiz(String message, Object... args) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.debug(message, args));
-    }
-
-    /** 비즈니스(info) 로그를 남긴다. */
-    @Override
-    public void infoBiz(String message) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.info(message));
-    }
-
-    /** 비즈니스(info) 로그를 포맷 파라미터와 함께 남긴다. */
-    @Override
-    public void infoBiz(String message, Object... args) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.info(message, args));
-    }
-
-    /** 비즈니스(warn) 로그를 남긴다. */
-    @Override
-    public void warnBiz(String message) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.warn(message));
-    }
-
-    /** 비즈니스(warn) 로그를 포맷 파라미터와 함께 남긴다. */
-    @Override
-    public void warnBiz(String message, Object... args) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.warn(message, args));
-    }
-
-    /** 비즈니스(error) 로그를 남긴다. */
-    @Override
-    public void errorBiz(String message) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.error(message));
-    }
-
-    /** 비즈니스(error) 로그를 포맷 파라미터와 함께 남긴다. */
-    @Override
-    public void errorBiz(String message, Object... args) {
-        logWithMdc(BIZ_LOG_TYPE, () -> log.error(message, args));
+    public void error(LogType logType, String message, Throwable t, Object... args) {
+        logWithMdc(logType, () -> log.error(message, args, t));
     }
 
     /* ============================== 내부 공통 처리 ============================== */
@@ -211,13 +161,13 @@ public class StructuredLoggerImpl implements StructuredLogger{
     /**
      * {@code LOG_TYPE}을 {@code MDC}에 설정한 뒤 로그를 실행하고, 이전 MDC 상태로 복원합니다.
      *
-     * @param logType 'biz' 또는 'sys'
+     * @param logType {@link LogType} 참조
      * @param runnable 로그 실행 람다
      */
-    private void logWithMdc(String logType, Runnable runnable) {
+    private void logWithMdc(LogType logType, Runnable runnable) {
         Map<String, String> contextSnapshot = MDC.getCopyOfContextMap();
         try {
-            MDC.put(LOG_TYPE.getName(), logType);
+            MDC.put(LOG_TYPE.getName(), Objects.requireNonNullElse(logType, LogType.SYS).getCode());
             runnable.run();
         } finally {
             if (contextSnapshot != null) {

@@ -13,6 +13,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -48,6 +49,7 @@ import java.util.UUID;
  */
 @Aspect
 @Component
+@Deprecated
 public class StructuredMdcAspect {
 
     private final HttpServletRequest request;
@@ -63,7 +65,7 @@ public class StructuredMdcAspect {
      * @param hostName 호스트 이름
      * @param containerName 컨테이너 이름
      */
-    public StructuredMdcAspect(HttpServletRequest request,
+    public StructuredMdcAspect(@Qualifier("httpServletRequest") HttpServletRequest request,
                                @Value("${service.name:unknown-service}") String serviceName,
                                @Value("${host.name:unknown-host}") String hostName,
                                @Value("${container.name:unknown-container}") String containerName) {

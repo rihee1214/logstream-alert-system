@@ -6,7 +6,6 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -33,7 +32,6 @@ import java.util.Set;
  * @see SpanLabelRegistry
  */
 @NonNullApi
-@Component
 public class SpanLabelBeanPostProcessor implements BeanPostProcessor {
 
     /**

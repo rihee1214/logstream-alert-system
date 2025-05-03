@@ -1,5 +1,7 @@
 package com.rihee.alerting.common.log;
 
+import com.rihee.alerting.common.log.enums.LogType;
+
 import java.util.Map;
 
 /**
@@ -30,173 +32,132 @@ public interface StructuredLogger {
     /**
      * 시스템 로그(DEBUG 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      */
-    void debugSys(String message);
+    void debug(LogType logType, String message);
     /**
      * 시스템 로그(DEBUG 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param args    포맷 인자
      */
-    void debugSys(String message, Object... args);
+    void debug(LogType logType, String message, Object... args);
     /**
      * 시스템 로그(DEBUG 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param t       예외 객체
      */
-    void debugSys(String message, Throwable t);
+    void debug(LogType logType, String message, Throwable t);
     /**
      * 시스템 로그(DEBUG 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param t       예외 객체
      * @param args    포맷 인자
      */
-    void debugSys(String message, Throwable t, Object... args);
+    void debug(LogType logType, String message, Throwable t, Object... args);
 
     /**
      * 시스템 로그(INFO 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      */
-    void infoSys(String message);
+    void info(LogType logType, String message);
     /**
      * 시스템 로그(INFO 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param args    포맷 인자
      */
-    void infoSys(String message, Object... args);
+    void info(LogType logType, String message, Object... args);
     /**
      * 시스템 로그(INFO 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param t       예외 객체
      */
-    void infoSys(String message, Throwable t);
+    void info(LogType logType, String message, Throwable t);
     /**
      * 시스템 로그(INFO 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param t       예외 객체
      * @param args    포맷 인자
      */
-    void infoSys(String message, Throwable t, Object... args);
+    void info(LogType logType, String message, Throwable t, Object... args);
 
     /**
      * 시스템 로그(WARN 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      */
-    void warnSys(String message);
+    void warn(LogType logType, String message);
     /**
      * 시스템 로그(WARN 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param args    포맷 인자
      */
-    void warnSys(String message, Object... args);
+    void warn(LogType logType, String message, Object... args);
     /**
      * 시스템 로그(WARN 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param t       예외 객체
      */
-    void warnSys(String message, Throwable t);
+    void warn(LogType logType, String message, Throwable t);
     /**
      * 시스템 로그(WARN 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param t       예외 객체
      * @param args    포맷 인자
      */
-    void warnSys(String message, Throwable t, Object... args);
+    void warn(LogType logType, String message, Throwable t, Object... args);
 
     /**
      * 시스템 로그(ERROR 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      */
-    void errorSys(String message);
+    void error(LogType logType, String message);
     /**
      * 시스템 로그(ERROR 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param args    포맷 인자
      */
-    void errorSys(String message, Object... args);
+    void error(LogType logType, String message, Object... args);
     /**
      * 시스템 로그(ERROR 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param t       예외 객체
      */
-    void errorSys(String message, Throwable t);
+    void error(LogType logType, String message, Throwable t);
     /**
      * 시스템 로그(ERROR 레벨)를 기록합니다.
      *
+     * @param logType 로그 타입
      * @param message 출력할 로그 메시지
      * @param t       예외 객체
      * @param args    포맷 인자
      */
-    void errorSys(String message, Throwable t, Object... args);
-
-    // BIZ 로그
-    /**
-     * 비즈니스 로그(DEBUG 레벨)를 기록합니다.
-     *
-     * @param message 출력할 로그 메시지
-     */
-    void debugBiz(String message);
-    /**
-     * 비즈니스 로그(DEBUG 레벨)를 포맷 문자열과 인자를 이용해 기록합니다.
-     *
-     * @param message 포맷 문자열
-     * @param args    포맷 인자
-     */
-    void debugBiz(String message, Object... args);
-
-    /**
-     * 비즈니스 로그(INFO 레벨)를 기록합니다.
-     *
-     * @param message 출력할 로그 메시지
-     */
-    void infoBiz(String message);
-    /**
-     * 비즈니스 로그(INFO 레벨)를 포맷 문자열과 인자를 이용해 기록합니다.
-     *
-     * @param message 포맷 문자열
-     * @param args    포맷 인자
-     */
-    void infoBiz(String message, Object... args);
-
-    /**
-     * 비즈니스 로그(WARN 레벨)를 기록합니다.
-     *
-     * @param message 출력할 로그 메시지
-     */
-    void warnBiz(String message);
-    /**
-     * 비즈니스 로그(WARN 레벨)를 포맷 문자열과 인자를 이용해 기록합니다.
-     *
-     * @param message 포맷 문자열
-     * @param args    포맷 인자
-     */
-    void warnBiz(String message, Object... args);
-
-    /**
-     * 비즈니스 로그(ERROR 레벨)를 기록합니다.
-     *
-     * @param message 출력할 로그 메시지
-     */
-    void errorBiz(String message);
-    /**
-     * 비즈니스 로그(ERROR 레벨)를 포맷 문자열과 인자를 이용해 기록합니다.
-     *
-     * @param message 포맷 문자열
-     * @param args    포맷 인자
-     */
-    void errorBiz(String message, Object... args);
+    void error(LogType logType, String message, Throwable t, Object... args);
 }

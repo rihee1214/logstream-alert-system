@@ -14,10 +14,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	// log를 찍을때, json 형식으로 찍히도록 처리하는 dependency
 	implementation "net.logstash.logback:logstash-logback-encoder:${logstashEncoderVersion}"
-	// TODO AOP 제거예정
+	// AOP 전용 모듈
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	// Web core (tomcat 없이 web 기능만)
 	implementation 'org.springframework:spring-webmvc'
 	// http servlet용
-	compileOnly "jakarta.servlet:jakarta.servlet-api:${jakartaServletApiVersion}"
+	implementation  "jakarta.servlet:jakarta.servlet-api:${jakartaServletApiVersion}"
+	// 테스트에서만 Spring Boot Web 서버 환경 사용
+	testImplementation 'org.springframework.boot:spring-boot-starter-web'
 }
