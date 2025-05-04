@@ -25,6 +25,9 @@ import java.lang.annotation.*;
  * <p>이 어노테이션은 모든 HTTP 메서드(@GetMapping, @PostMapping 등)를 감싸는 메타 어노테이션으로도 사용될 수 있으며,</p>
  * <p>로깅, 추적 ID 할당(MDC 활용)을 위한 기반으로 활용됩니다.</p>
  *
+ * <p><b>NOTE:</b> 메타 어노테이션(하위 애노테이션)으로 감싸 사용하지 마십시오.
+ * 반드시 이 어노테이션을 직접 사용해야 합니다.</p>
+ *
  * @see org.springframework.web.bind.annotation.RequestMapping
  */
 @Target(ElementType.METHOD)
@@ -33,35 +36,37 @@ import java.lang.annotation.*;
 @RequestMapping
 public @interface StructuredRequestMapping {
     /**
-     * 요청에 대한 명확한 식별자 역할을 하는 {@code spanLabel} 속성. (spanId 지정에 필요)
-     * 로깅 및 추적용으로 사용되며, 반드시 명시되어야 합니다.
+     * <p>요청에 대한 명확한 식별자 역할을 하는 {@code spanLabel} 속성. (spanId 지정에 필요)</p>
+     * <p>로깅 및 추적용으로 사용되며, 반드시 명시되어야 합니다.</p>
+     * <p><b>주의:</b> 이 속성은 반드시 사용자가 명시해야 하며, 누락 시 컴파일 오류는 발생하지 않지만 런타임에서 로깅 정보가 누락됩니다.</p>
      */
     String spanLabel();
 
     /**
      * {@link RequestMapping#value}
-     * URL 경로 매핑.
-     * 예: "/users", "/api/items"
+     * <p>URL 경로 매핑.</p>
+     * <p>예: "/users", "/api/items"</p>
+     * <p><b>주의:</b> 이 속성은 반드시 사용자가 명시해야 하며, 누락 시 컴파일 오류는 발생하지 않지만 런타임에서 정보가 누락됩니다.</p>
      */
     @AliasFor(annotation = RequestMapping.class, attribute = "value")
     String[] value() default {};
     /**
      * {@link RequestMapping#method}
-     * 허용할 HTTP 메서드.
+     * 허용할 HTTP 메서드.<br>
      * 예: GET, POST 등.
      */
     @AliasFor(annotation = RequestMapping.class, attribute = "method")
     RequestMethod[] method() default {};
     /**
      * {@link RequestMapping#consumes}
-     * 소비 가능한 MIME 타입.
+     * 소비 가능한 MIME 타입.<br>
      * 예: "application/json"
      */
     @AliasFor(annotation = RequestMapping.class, attribute = "consumes")
     String[] consumes() default {};
     /**
      * {@link RequestMapping#produces}
-     * 생성 가능한 MIME 타입.
+     * 생성 가능한 MIME 타입.<br>
      * 예: "application/json"
      */
     @AliasFor(annotation = RequestMapping.class, attribute = "produces")

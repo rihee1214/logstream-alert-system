@@ -61,40 +61,55 @@ public class SpanLabelBeanPostProcessor implements BeanPostProcessor {
 
     /**
      * Bean 초기화 이후 실행되는 후처리 로직입니다.
-     * 클래스의 모든 메서드를 탐색하여 대상 어노테이션이 존재하는 경우 해당 어노테이션의 {@code spanLabel()} 값을 추출하고,
-     * {@link SpanLabelRegistry}에 해당 메서드와 함께 등록합니다.
+     * <p>
+     * 컨트롤러 클래스의 모든 메서드를 탐색하여, 구조화된 로깅 어노테이션이 붙어 있는 경우
+     * 해당 어노테이션의 {@code spanLabel()} 값을 추출하여 {@link SpanLabelRegistry}에 등록합니다.
+     * </p>
      *
-     * <p>메서드에 여러 어노테이션이 존재하더라도, 첫 번째 유효한 spanLabel만 등록됩니다.</p>
-     *
-     * @param bean      초기화된 Bean 객체
-     * @param beanName  Bean의 이름
-     * @return 원래의 Bean 객체 (변형 없음)
-     * @throws BeansException Spring Bean 처리 중 예외가 발생한 경우
+     * @param bean      초기화가 완료된 Bean 객체
+     * @param beanName  Bean 이름
+     * @return 원래의 Bean 객체(수정 없음)
+     * @throws BeansException Spring 초기화 중 예외 발생 시
      */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Class<?> targetClass = AopUtils.getTargetClass(bean);
 
-        spanLabelFinder : for (Method method : targetClass.getDeclaredMethods()){
-            for (Annotation methodAnnotation : method.getAnnotations()) {
-                for (Class<? extends Annotation> annotationClass : targetAnnotations) {
-                    Annotation annotation = AnnotationUtils.findAnnotation(methodAnnotation.annotationType(), annotationClass);
-                    if (annotation != null) {
-                        try {
-                            Method labelMethod = annotation.annotationType().getMethod("spanLabel");
-                            Object value = labelMethod.invoke(methodAnnotation);
-                            if (value instanceof String label && !label.isEmpty()) {
-                                registry.register(method, label);
-                                break spanLabelFinder;
-                            }
-                        } catch (Exception e) {
-                            throw new IllegalStateException("Failed to extract spanLabel from annotation", e);
-                        }
+        for (Method method : targetClass.getDeclaredMethods()){
+            registerSpanLabelIfPresent(method);
+        }
+        return bean;
+    }
+
+    /**
+     * 지정된 메서드에 구조화된 로깅 어노테이션이 존재할 경우,
+     * 해당 어노테이션의 {@code spanLabel()} 값을 추출하여 {@link SpanLabelRegistry}에 등록합니다.
+     *
+     * <p>이 메서드는 {@code targetAnnotations}에 명시된 정확한 어노테이션 타입만 허용하며,</p>
+     * <p>메타 어노테이션(하위 어노테이션)을 통한 간접 선언은 인식되지 않습니다.</p>
+     *
+     * <p>{@code spanLabel} 속성은 필수이며, 비어 있을 경우 등록되지 않습니다.</p>
+     *
+     * <p>한 메서드에 여러 어노테이션이 있을 경우 첫 번째 유효한 {@code spanLabel}만 등록됩니다.</p>
+     *
+     * @param method 검사 대상 메서드
+     * @throws IllegalStateException spanLabel 추출 중 리플렉션 오류 발생 시
+     */
+    private void registerSpanLabelIfPresent(Method method) {
+        for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
+            if (targetAnnotations.contains(methodAnnotation.annotationType())) {
+                try {
+                    Method labelMethod = methodAnnotation.annotationType().getMethod("spanLabel");
+                    Object value = labelMethod.invoke(methodAnnotation);
+                    if (value instanceof String label && !label.isEmpty()) {
+                        registry.register(method, label);
+                        break;
                     }
+                } catch (Exception e) {
+                    throw new IllegalStateException("Failed to extract spanLabel from annotation", e);
                 }
             }
         }
-        return bean;
     }
 
 }

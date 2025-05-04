@@ -104,6 +104,16 @@ public class WebConfig implements WebMvcConfigurer {
      * Spring MVC의 핸들러 체인에 자동으로 포함됩니다.
      * </p>
      *
+     * <p><b>우선순위:</b>
+     * {@code order(0)}으로 설정되어 있어 가장 먼저 실행됩니다.
+     * 이는 traceId, spanId, logtype 등 로깅 기반 MDC 값을 보장하기 위한 필수 설정입니다.
+     * </p>
+     *
+     * <p><b>주의:</b>
+     * 이후에 등록되는 커스텀 인터셉터가 MDC 값을 덮어쓰거나 제거하지 않도록 주의해야 합니다.
+     * 순서 보장을 위해 {@code order > 0}을 사용해야 하며, 이 설정은 변경하지 말아야 합니다.
+     * </p>
+     *
      * @param interceptor StructuredLogInterceptor 인스턴스
      * @return Spring MVC 인터셉터 등록용 {@link WebMvcConfigurer} 구현체
      */
@@ -112,7 +122,8 @@ public class WebConfig implements WebMvcConfigurer {
         return new WebMvcConfigurer() {
             @Override
             public void addInterceptors(InterceptorRegistry registry) {
-                registry.addInterceptor(interceptor);
+                // 최우선 등록
+                registry.addInterceptor(interceptor).order(0);
             }
         };
     }

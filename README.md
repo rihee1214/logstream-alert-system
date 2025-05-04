@@ -11,27 +11,28 @@
 로그 레벨에 따라 알림을 비동기로 전송하며,  
 장애 상황에 대한 복구 및 상태 모니터링까지 포함한 **확장 가능한 통합 알림 시스템**을 구축합니다.
 
-- 모든 서비스의 로그를 일관된 방식으로 수집  
+- 비지니스 서비스의 로그를 일관된 방식으로 수집 (Filebeat)  
 - 경고 이상 레벨 로그에 대한 비동기 알림 (SMS, Email) 전송  
 - 전송 실패에 대한 재시도 및 실패 이력 관리  
-- 로그 저장 및 분석 (Elasticsearch, Kibana, Grafana)  
-- 시스템 상태 감시 (Prometheus, Alertmanager)
+- 로그 저장 및 분석 (Elasticsearch, Filebeat, Kibana, Grafana, Zipkin)  
+- 전체 시스템 상태 감시 (Prometheus, Alertmanager)
 
 ---
 
 ## 🛠 기술 스택
 
-| 영역          | 사용 기술                               			                   | 기술 설명									                  						                                                                                   |
-|-------------|-----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| Language    | Java 21                              			                  | 최신 LTS 버전의 Java를 기반으로 클라우드 및 컨테이너 환경에 최적화된 JVM 사용 						                                                                 |
-| Framework   | Spring Boot 3.4.4                    			                  | REST API 제공, Kafka 통신, 설정 분리 등 서비스 전반을 구성하는 핵심 프레임워크						                                                               |
-| Messaging   | Apache Kafka                         			                  | 이벤트 기반 로그 처리 및 알림 트리거를 위한 메시지 브로커			          						                                                                     |
-| Database    | PostgreSQL<br> Redis                 			                  | 사원/부서 정보를 저장하는 영속 저장소<br>알림 대상 정보 캐싱을 통한 성능 개선 및 트래픽 분산		 		                                                             |
-| Log Storage | Elasticsearch                        			                  | 업무 및 시스템 로그 저장, kibana 연동을 통한 검색 및 조회 기능 제공							   	                                                                   |
-| Monitoring  | Prometheus<br>Alertmanager<br>Grafana<br>Kibana<br>Zipkin | 서비스 상태 수집을 위한 모니터링 시스템<br>이상 상태 감지 시 알림 전송(Slack, 메일 등 연동 가능)<br>그래프 기반 대시보드 시각화<br>상세 로그 검색 및 분석<br>서비스 호출 흐름 및 트레이스 추적 |
-| Build Tool  | Gradle (Groovy DSL)<br>Checkstyle                			      | 멀티 모듈 환경에서 효율적인 의존성 및 빌드 관리<br>Checkstyle을 통해 빌드 타임에 코드 스타일 검사 수행												                                            |
-| Deployment  | Docker Compose<br>Kubernetes         			                  | 로컬 테스트용 경량 환경 구성<br>운영 환경에서 안정적이고 확장 가능한 MSA 배포를 위한 클러스터 			                                                             |
-| CI/CD       | GitHub Actions (예정)                 			                   | 코드 변경 사항 자동 빌드 및 배포 자동화를 위한 워크플로											                                                                              |
+| 영역            | 사용 기술                               			                   | 기술 설명									                  						                                                                                                                     |
+|---------------|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Language      | Java 21                              			                  | 최신 LTS 버전의 Java를 기반으로 클라우드 및 컨테이너 환경에 최적화된 JVM 사용 						                                                                                                   |
+| Framework     | Spring Boot 3.4.4                    			                  | REST API 제공, Kafka 통신, 설정 분리 등 서비스 전반을 구성하는 핵심 프레임워크						                                                                                                 |
+| Messaging     | Apache Kafka                         			                  | 이벤트 기반 로그 처리 및 알림 트리거를 위한 메시지 브로커			          						                                                                                                       |
+| Database      | PostgreSQL<br> Redis                 			                  | 사원/부서 정보를 저장하는 영속 저장소<br>알림 대상 정보 캐싱을 통한 성능 개선 및 트래픽 분산		 		                                                                                               |
+| Log Forwarder | Filebeat                                                  | Mock 서비스에서 출력되는 stdout 로그를 수집하여 Kafka로 전달. 로그 포워딩을 위한 경량 수집기로, 설정이 간단하고 보안 관리가 용이함                                                                         |
+| Log Storage   | Elasticsearch                        			                  | 업무 및 시스템 로그 저장, kibana 연동을 통한 검색 및 조회 기능 제공							   	                                                                                                     |
+| Monitoring    | Prometheus<br>Alertmanager<br>Grafana<br>Kibana<br>Zipkin | 애플리케이션 상태(Memory, CPU, Health 등) 및 요청 지표 수집을 위한 모니터링 시스템<br>이상 상태 감지 시 알림 전송(Slack, 메일 등 연동 가능)<br>그래프 기반 대시보드 시각화<br>상세 로그 검색 및 분석<br>서비스 호출 흐름 및 트레이스 추적 |
+| Build Tool    | Gradle (Groovy DSL)<br>Checkstyle                			      | 멀티 모듈 환경에서 효율적인 의존성 및 빌드 관리<br>Checkstyle을 통해 빌드 타임에 코드 스타일 검사 수행												                                                                              |
+| Deployment    | Docker Compose<br>Kubernetes         			                  | 로컬 테스트용 경량 환경 구성<br>운영 환경에서 안정적이고 확장 가능한 MSA 배포를 위한 클러스터 			                                                                                               |
+| CI/CD         | GitHub Actions (예정)                 			                   | 코드 변경 사항 자동 빌드 및 배포 자동화를 위한 워크플로											                                                                                                                |
 
 ---
 
@@ -84,19 +85,21 @@
 ---
 
 ### 📦 EFK 구성 (System/Biz Log 공통 저장)
-- 로그 수집
-  - 모든 로그는 각 서비스의 Logger(KafkaAppender)가 Kafka로 로그 전송
+- 로그 수집 (비지니스 컴포넌트에 한함)
+  - 로그는 각 컨테이너의 Filebeat가 Kafka로 로그 전송
+  - Console, File 어느 방법이든 로그를 쌓기만 하면 Filebeat가 전송 가능
 - 로그 저장(Elasticsearch)
   - 인덱스 분리
     - biz-log-{YYYY.MM.DD} → 비즈니스 로그
     - sys-log-{YYYY.MM.DD} → 시스템 로그
+    - act-log-{YYYY.MM.DD} → 서비스 매트릭, health 상태 등 actuator 기반 로그 저장
 - 로그 조회
   - Kibana: 상세 검색
   - Grafana: 시스템 추이 시각화
   - Zipkin: 요청 추적
 
 ### 🧠 시스템 상태 감시 및 알림
-- Prometheus: 각 서비스의 상태를 Actuator endpoint 기반으로 수집
+- Prometheus: 모든 서비스의 상태를 Actuator endpoint 기반으로 수집 (PostgreSQL제외)
 - Alertmanager:
   - Slack 등으로 자동 알림 발송
   - 알림 조건 및 정책은 README.md에 명시됨
