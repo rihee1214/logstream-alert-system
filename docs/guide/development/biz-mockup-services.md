@@ -1,0 +1,18 @@
+# 📦 Biz 모듈 (Mockup Service) 개발 가이드
+
+## 📌 개요
+Biz 모듈은 독립적인 비즈니스 기능을 제공하며, 로그를 Kafka 기반 파이프라인으로 전송합니다.
+
+## 🔧 개발 시 유의사항
+- 로그는 반드시 `StructuredLoggerFactory`를 통해 생성된 로거를 사용해야 합니다.
+- MDC 설정을 보존하기 위해 사용자 정의 Interceptor는 `order > 0`으로 설정합니다.
+
+## ⚠️ 설계 주의사항
+- `StructuredLoggerFactory`로 생성한 로거는 **오직 비즈니스 서비스에서만 사용**해야 합니다.
+  - 공통 모듈(common), logging-service 등에서는 SLF4J 표준 Logger만 사용합니다.
+  - structured logging은 Biz 서비스에만 필요하며, 공통 로직이나 로그 수집기에는 사용하지 않습니다.
+- logback-spring.xml은 Biz 서비스들이 공유하지만, 로그 필드 해석과 저장은 logging-service가 담당합니다.
+  - 로그 타입에 따라 수집 후 필터링이 이루어지므로, Biz 서비스의 성능에 영향이 적습니다.
+
+## 🧪 테스트
+- 단위 테스트 외에, 구조화된 로그가 정확히 출력되는지 확인하십시오.

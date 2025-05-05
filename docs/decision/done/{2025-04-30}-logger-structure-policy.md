@@ -1,7 +1,7 @@
 ---
 title: logger-structure-policy
 date: 2025-04-30
-status: in-progress
+status: done
 ---
 
 # 📝 사고 및 결정 사항 기록
@@ -10,15 +10,15 @@ status: in-progress
 
 ## 0. 결정 여부
 
-- 🔁 적용 예정
+- ✅ 적용 완료
 	- 작업자 : 이리희
-    - 작업 완료 예정일 : ASAP
+    - 완료 일자 : 2025-05-05
     - 작성자 : 이리희
     - 참석자 : 이리희
     - 관련 문서
-		- **취소된 결정 :** [{2025-04-27}-structured-logger-policy.md](./canceled/{2025-04-27}-structured-logger-policy.md)
-		- **참고 결정1 :** [{2025-04-28}-add-parent-span-id.md](./done/{2025-04-28}-add-parent-span-id.md)
-		- **참고 결정2 :** [{2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md](./{2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md)
+		- **취소된 결정 :** [{2025-04-27}-structured-logger-policy.md]({2025-04-27}-structured-logger-policy.md)
+		- **참고 결정1 :** [{2025-04-28}-add-parent-span-id.md]({2025-04-28}-add-parent-span-id.md)
+		- **참고 결정2 :** [{2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md]({2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md)
 
 ---
 

@@ -23,3 +23,10 @@ dependencies {
 	// 테스트에서만 Spring Boot Web 서버 환경 사용
 	testImplementation 'org.springframework.boot:spring-boot-starter-web'
 }
+
+test {
+	useJUnitPlatform()
+	systemProperty "service.name", "common"
+	environment "HOST", "localhost"
+	environment "CONTAINER", "local-container"
+}

@@ -3,6 +3,7 @@ package com.rihee.alerting.common.log;
 import com.rihee.alerting.common.log.enums.LogType;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
+import org.springframework.lang.NonNull;
 
 import java.util.Map;
 import java.util.Objects;
@@ -164,7 +165,7 @@ public class StructuredLoggerImpl implements StructuredLogger{
      * @param logType {@link LogType} 참조
      * @param runnable 로그 실행 람다
      */
-    private void logWithMdc(LogType logType, Runnable runnable) {
+    private void logWithMdc(LogType logType, @NonNull Runnable runnable) {
         Map<String, String> contextSnapshot = MDC.getCopyOfContextMap();
         try {
             MDC.put(LOG_TYPE.getName(), Objects.requireNonNullElse(logType, LogType.SYS).getCode());

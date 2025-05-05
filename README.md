@@ -56,9 +56,15 @@
 ## 📦 주요 컴포넌트 설명
 
 ### 🔹 Mock Service
-- 실제 서비스처럼 로그 이벤트를 발생시키는 테스트용 서비스
-- 모든 로그를 Filebeat가 수집하여 Kafka로 전송
-  - all-log-topic
+- 실제 서비스처럼 로그 이벤트를 발생시키는 테스트용 서비스입니다.
+- 모든 로그는 Filebeat가 수집하여 Kafka의 all-log-topic으로 전송됩니다.
+- 로그는 단일 Appender(CONSOLE)를 통해 출력되며, 로그 타입 구분은 MDC의 logtype 필드를 기반으로 이뤄집니다.
+- 로그의 타입별 분기, 필드 필터링 및 저장은 logging-service가 담당합니다.
+- **⚠ 개발시 주의사항**
+  - [공통 컴포넌트 가이드 문서 참조](./docs/guide/development/common-component.md)
+  - [mockup 가이드 문서 참조](./docs/guide/development/biz-mockup-services.md)
+- **⚙ 기동시 주의사항**
+  - [비지니스 및 mockup 서비스 기동 가이드 문서 참조](./docs/guide/startup/start-biz-mockup-service.md.md)
 
 ### 🔹 Logging Service
 - Kafka에서 모든 로그를 수신하여 처리

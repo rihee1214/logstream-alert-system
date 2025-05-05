@@ -38,23 +38,14 @@ public class StructuredLogInterceptor implements HandlerInterceptor {
 
     // MDC에 기본 세팅될 서비스, 호스트, 컨테이너 정보
     private final String serviceName;
-    private final String hostName;
-    private final String containerName;
-
     /**
      * @param registry      요청 대상 메서드에 들어있는 spanLabel 매핑 정보가 담겨있는 레지스트리
      * @param serviceName   MDC에 기본 세팅될 서비스 정보
-     * @param hostName      MDC에 기본 세팅될 호스트 정보
-     * @param containerName MDC에 기본 세팅될 컨테이너 정보
      */
     public StructuredLogInterceptor(SpanLabelRegistry registry,
-                                    String serviceName,
-                                    String hostName,
-                                    String containerName) {
+                                    String serviceName) {
         this.registry = registry;
         this.serviceName = serviceName;
-        this.hostName = hostName;
-        this.containerName = containerName;
     }
 
     /**
@@ -75,8 +66,6 @@ public class StructuredLogInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // [1] MDC 기본 세팅
         MDC.put(SERVICE.getName(), serviceName);
-        MDC.put(HOST.getName(), hostName);
-        MDC.put(CONTAINER.getName(), containerName);
 
         // [2] 요청 헤더 기반 traceId, parentSpanId, spanId 세팅
         String traceId = request.getHeader(TRACE_ID.getName());

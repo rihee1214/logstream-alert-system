@@ -18,3 +18,16 @@ dependencies {
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
+bootRun {
+	systemProperty "service.name", "mockup"
+	environment "HOST", "localhost"
+	environment "CONTAINER", "local-container"
+}
+
+test {
+	useJUnitPlatform()
+	systemProperty "service.name", "mockup"
+	environment "HOST", "localhost"
+	environment "CONTAINER", "local-container"
+}

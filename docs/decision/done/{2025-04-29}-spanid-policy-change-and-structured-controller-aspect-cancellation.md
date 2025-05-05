@@ -1,7 +1,7 @@
 ---
 title: spanid-policy-change-and-structured-controller-aspect-cancellation
 date: 2025-04-29
-status: in-progress
+status: done
 ---
 
 # 📝 사고 및 결정 사항 기록
@@ -10,9 +10,9 @@ status: in-progress
 
 ## 0. 결정 여부
 
-- 🔁 적용 예정
+- ✅ 적용 완료
 	- 작업자 : 이리희
-    - 작업 완료 예정일 : ASAP
+    - 완료 일자 : 2025-05-05
     - 작성자 : 이리희
     - 참석자 : 이리희
     - 관련 문서 : n/a

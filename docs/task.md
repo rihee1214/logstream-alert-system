@@ -1,11 +1,15 @@
 # 작업 해야할 목록
 
-- [ ] spanId 변경 관련 AOP, Interceptor 구조 재검토
-	- [x] 인터셉터 관련 코드 작성
-	- [ ] 인터셉터 관련한 테스트 모듈 작성
-	- [ ] common영역의 AOP관련된 코드 세개 정리필요
 - [ ] git, github branch 전략 고민하기
 - [ ] checkstyle 제대로 동작 안하는 현상 고쳐야함
+- [ ] Mockup서비스 구축
+	- [ ] controller, service, dao 단계로 동작하도록 처리
+	- [ ] db연결은 굳이 필요없고, db에서 select한 것처럼 동작하게 만들기.
+	- [ ] 한 controller 여러개의 controller를 호출하게 만들고 추적이 되는지 확인 필요
+	- [ ] scheduler가 돌면서 계속 특정 controller를 call하여 로그가 계속 쌓이도록 만들기
+	- [ ] Actuator call 당하면 로그 남기도록 처리하기
+- [ ] actuator 코드 작성하기 (모든 시스템 전용)
+---
 # 이미 작업한 목록
 - [x] docs 템플릿 Obsidian화
 - [x] 사용하고 있는 tool에 대한 목록 README 정리
@@ -23,3 +27,7 @@
 	- [x] 내용 다시 읽어보고 다시 원래대로 구성하기
 - [x] bizlog-contract, syslog-contract 수정하고 actlog-contract작성
 - [x] SpanLabelBeanPostProcessor의 postProcessAfterInitialization메서드 리팩토링
+- [x] spanId 변경 관련 AOP, Interceptor 구조 재검토
+	- [x] 인터셉터 관련 코드 작성
+	- [x] 인터셉터 관련한 테스트 모듈 작성
+	- [x] common영역의 AOP관련된 코드 세개 정리필요

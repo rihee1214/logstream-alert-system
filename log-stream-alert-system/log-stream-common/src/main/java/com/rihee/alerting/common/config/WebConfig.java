@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -33,6 +34,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @NonNullApi
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class WebConfig implements WebMvcConfigurer {
+
+    /**
+     * serviceName 로그에 포함될 서비스 이름 (예: user-service)
+     */
+    private final String serviceName;
+
+    public WebConfig(@Value("${service.name:}") String serviceName) {
+        this.serviceName = StringUtils.hasText(serviceName) ? serviceName : "unknown-service";
+    }
 
     /**
      * {@link SpanLabelRegistry} 빈을 생성합니다.
@@ -82,17 +92,11 @@ public class WebConfig implements WebMvcConfigurer {
      * </p>
      *
      * @param registry {@link SpanLabelRegistry}로부터 spanLabel 정보를 주입받음
-     * @param serviceName 로그에 포함될 서비스 이름 (예: user-service)
-     * @param hostName 로그에 포함될 호스트 이름 (예: ip-172-31-25-101)
-     * @param containerName 로그에 포함될 컨테이너 이름 또는 인스턴스 ID
      * @return {@link StructuredLogInterceptor} 인스턴스
      */
     @Bean
-    public StructuredLogInterceptor structuredLogInterceptor(SpanLabelRegistry registry,
-                                                             @Value("${service.name:unknown-service}") String serviceName,
-                                                             @Value("${host.name:unknown-host}") String hostName,
-                                                             @Value("${container.name:unknown-container}") String containerName) {
-        return new StructuredLogInterceptor(registry, serviceName, hostName, containerName);
+    public StructuredLogInterceptor structuredLogInterceptor(SpanLabelRegistry registry) {
+        return new StructuredLogInterceptor(registry, this.serviceName);
     }
 
     /**

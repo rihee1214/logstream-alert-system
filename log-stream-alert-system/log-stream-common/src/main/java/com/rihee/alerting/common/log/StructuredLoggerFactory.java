@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>비즈니스(Biz) 및 시스템(Sys) 로그를 구분해서 기록할 수 있는
+ * <p>비즈니스(Biz) 및 시스템(Sys) 및 Actuator(act) 로그를 구분해서 기록할 수 있는
  * {@link StructuredLogger} 인스턴스를 생성하기 위한 팩토리 클래스입니다.</p>
  *
  * <p>
@@ -14,12 +14,14 @@ import org.slf4j.LoggerFactory;
  *
  * <h2>주요 목적</h2>
  * <ul>
- *     <li>Biz, Sys 로그를 구분하여 분리 수집 및 모니터링 가능</li>
+ *     <li>Biz, Sys. Actuator 로그를 구분하여 분리 수집 및 모니터링 가능</li>
  *     <li>MDC 자동 관리로 일관된 로그 필드 유지</li>
  *     <li>SLF4J Logger를 wrapping하여 Class 정보 보존</li>
  * </ul>
  *
  * <p>StructuredLogger 사용 방법은 {@link StructuredLogger} 문서를 참고하세요.</p>
+ * <p><b>주의:</b> 이 팩토리 및 생성된 Logger는 비즈니스 로직을 처리하는 서비스 계층에서만 사용해야 합니다.
+ * 공통 모듈이나 로그 수집 모듈 등에서는 사용을 지양하십시오.</p>
  *
  * @author 리희
  * @since 1.0
