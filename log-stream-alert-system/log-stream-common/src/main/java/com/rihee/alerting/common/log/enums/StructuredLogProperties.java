@@ -66,6 +66,11 @@ public enum StructuredLogProperties {
      * 추가 메타데이터를 담는 영역.<br>
      * 특정 API 호출이나 비즈니스 흐름에서 동적으로 추가할 수 있는 키-값 쌍.
      */
+    STACK_TRACE("stacktrace"),
+    /**
+     * 추가 메타데이터를 담는 영역.<br>
+     * 특정 API 호출이나 비즈니스 흐름에서 동적으로 추가할 수 있는 키-값 쌍.
+     */
     META("meta");
 
 

@@ -25,6 +25,9 @@
                     <fieldName>class</fieldName>
                 </loggerName>
                 <message/>
+                <stackTrace>
+                    <fieldName>stacktrace</fieldName>
+                </stackTrace>
             </providers>
         </encoder>
     </appender>

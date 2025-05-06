@@ -14,17 +14,22 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	// WebClient 전용 (Actuator 기반 health, metric 정보 수집용)
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// 개발 테스트 전용 환경, 자바 옵션 세팅
 bootRun {
 	systemProperty "service.name", "mockup"
 	environment "HOST", "localhost"
 	environment "CONTAINER", "local-container"
 }
 
+// test 코드 실행 전용 환경, 자바 옵션 세팅
 test {
 	useJUnitPlatform()
 	systemProperty "service.name", "mockup"

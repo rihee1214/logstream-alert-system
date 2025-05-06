@@ -1,0 +1,118 @@
+---
+title: "enhancing-observability-with-operation-id"
+date: "2025-05-06"
+status: "in-progress" # [in-progress|done|canceled]
+---
+
+# 📝 사고 및 결정 사항 기록
+
+---
+
+## 0. 결정 여부
+
+- 🔁 적용 예정
+    - 작업자 : 이리희
+    - 작업 완료 예정일 : ASAP 
+    - 작성자 : 이리희
+    - 참석자 : 이리희
+    - 관련 문서 : [bizlog 규약 문서](/contracts/bizlog-contract.md)
+
+
+---
+
+## 1. 주제(Title)
+
+operationId를 추가함으로써 기존의 로그 구조에서 더 강화된 추적성 부여
+
+---
+
+## 2. 문제 인식(Problem Recognition)
+
+_현재 로그 구조는 `traceId`, `spanId`, `parentSpanId`의 3단계 구조로 구성되어 있으며,  
+이 구조는 **서비스 간의 흐름 추적**과 **전체 호출 트리 구성**에는 효과적이다.
+
+하지만 **단일 서비스 내부의 비즈니스 흐름**은 하나의 `spanId` 안에 여러 로그가 포함되기 때문에,  
+**로직 흐름이나 중요 이벤트의 순서를 명확히 알기 어렵다.**
+
+이는 특히 컨테이너 환경처럼 **애플리케이션 생명주기가 짧고 디버깅 시간이 제한된 경우**,  
+로그만으로는 흐름을 파악하기 어렵게 만들며, 결국 코드를 열어서 추적해야 하는 부담을 초래할 수 있다.
+
+---
+
+## 3. 고려사항(Considerations)
+
+- **Option 1: `operationId` 및 `operationParentId` 도입**
+	- 장점:
+	    - 하나의 `spanId` 안에서도 **구조화된 호출 흐름 표현 가능**
+	    - 로직 단위별 의미 부여 및 계층 구조 표현으로 **시각화 및 디버깅 용이**
+	    - Zipkin, Elasticsearch 기반 시각화 시 내부 흐름 트리 재구성 가능
+	- 단점:
+	    - 로그 작성 및 MDC 전파 규칙이 복잡해짐
+	    - 개발자가 직접 `operationId` 할당 시 규칙 통일이 필요함
+	    - 로그 추적을 위한 추가 연산이 들어감.
+- **Option 2: 기존 구조(`traceId`, `spanId`) + `timestamp`로 정렬
+	- 장점:
+	    - 구현 부담 없음, 기존 로그 그대로 유지 가능
+	- 단점:
+	    - 비동기 호출 또는 분기 로직이 있는 경우, **정렬 순서만으로 의미 파악 불가능**
+	    - 순서 문제로 로그만으로 **실제 로직 흐름을 파악하는 데 실패할 수 있음**
+
+---
+
+## 4. 최종 결정(Final Decision)
+
+**Option 1을 선택하여 `operationId`, `operationParentId`를 Biz 로그에 한정하여 도입**한다. 
+(traceId, spanId, parentSpanId 또한 모두 biz 로그에 한정되어 있음)
+모든 로그에 강제하지 않으며, **Biz 로그에서 서비스 내부의 핵심 로직 단위별 호출 흐름을 추적할 수 있도록 한다.**
+`operationId`는 **해당 로직 단위의 고유 식별자**이며, `operationParentId`는 상위 로직을 참조한다.
+(해당 사유는 spanId와 parentSpanId의 사례와 같다.)
+
+---
+
+## 5. 기대효과(Expected Benefits)
+
+- **단일 서비스 내부의 로직 흐름까지도 추적 가능**하여, 문제 발생 시 신속한 원인 분석이 가능해짐
+- 복잡한 비즈니스 조건, 재시도, 비동기 호출 등의 순서를 명확하게 표현 가능
+- 로그만으로도 **Zipkin과 유사한 시각적 구조 분석**이 가능해져, 코드 디버깅 없이 로그 기반의 분석 신뢰성 향상
+- 장애 발생 시 **운영 효율성 및 대응 속도 향상**
+
+---
+
+## 6. 계속 고민할 사항(Still Open Issues)
+
+- `operationId` 명명 규칙: 자동 UUID 기반으로 할지, 의미 기반 규칙을 부여할지 여부
+- 비동기 컨텍스트 전파 시 `operationId` 연속성 유지 방안
+- `operationId` 부여 로직 알고리즘: 어떤 방식으로 operationId를 부여, 제거를 자동화 할지 정리하지 못함
+
+---
+
+# ✨ 추가 확장 항목 (Optional)
+
+## 관련 코드(Linked Code)
+
+| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함) | 비고  |
+| ---------- | ------------------ | ----------------- | --- |
+|            |                    |                   |     |
+**아직 어떤 방식으로 그것을 해결할지 정의하지 못함.**
+
+## 대안 방안(Alternative Options)
+
+기존 구조(`traceId`, `spanId`) + `timestamp`로 정렬
+
+## 리스크 및 대응(Risks & Mitigation)
+
+n/a
+
+## 추후 개정 방향(Future Improvements)
+
+n/a
+
+---
+
+# 📚 작성 규칙
+
+- 문장은 간결하고 명확하게.
+- 하나의 문장에는 하나의 의미만.
+- 실제 생각의 흐름에 가깝게 기술할 것.
+
+---

@@ -28,6 +28,7 @@
 | `traceId`      | string | 하나의 요청 전체 흐름을 식별하는 ID (분산 시스템 전반에 걸쳐 동일한 값 사용)              |
 | `spanId`       | string | 요청 흐름 내 개별 작업 단위를 식별하는 ID (각 서비스 또는 메서드 수준에서 고유함)           |
 | `parentSpanId` | string | 호출 관계 추적 및 트리 구조 복원을 위한 상위 작업의 spanId                       |
+| `stacktrace`   | string | 예외 발생 시 출력되는 전체 호출 스택. 시스템 오류 분석 및 디버깅에 활용됩니다.              |
 | `meta`         | object | 서비스별 부가 정보 (key-value)                                      |
 
 

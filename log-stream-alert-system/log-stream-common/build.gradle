@@ -20,10 +20,13 @@ dependencies {
 	implementation 'org.springframework:spring-webmvc'
 	// http servlet용
 	implementation  "jakarta.servlet:jakarta.servlet-api:${jakartaServletApiVersion}"
+	// WebClient 전용 (Actuator 기반 health, metric 정보 수집용)
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	// 테스트에서만 Spring Boot Web 서버 환경 사용
 	testImplementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
+// 테스트 코드 전용 java 옵션, 환경변수 세팅
 test {
 	useJUnitPlatform()
 	systemProperty "service.name", "common"
