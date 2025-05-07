@@ -20,17 +20,20 @@
                         <fieldName>meta</fieldName>
                     </fieldNames>
                 </mdc>
-                <provider class="com.rihee.alerting.common.log.provider.CompositeStaticContextProvider" />
+                <provider class="com.rihee.alerting.common.log.provider.CompositeStaticContextProvider"/>
                 <loggerName>
                     <fieldName>class</fieldName>
                 </loggerName>
                 <message/>
+                <stackTrace>
+                    <fieldName>stacktrace</fieldName>
+                </stackTrace>
             </providers>
         </encoder>
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="CONSOLE"/>
     </root>
 
 </configuration>

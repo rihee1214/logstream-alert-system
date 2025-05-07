@@ -1,17 +1,17 @@
 plugins {
-	id 'java'
-	id 'eclipse'
-	id 'org.springframework.boot' version '3.4.4' apply false
-	id 'io.spring.dependency-management' version '1.1.7'
-	// 컴파일시 규칙 위반을 잡기 위한 도구
-	id 'checkstyle'
+    id 'java'
+    id 'eclipse'
+    id 'org.springframework.boot' version '3.4.4' apply false
+    id 'io.spring.dependency-management' version '1.1.7'
+    // 컴파일시 규칙 위반을 잡기 위한 도구
+    id 'checkstyle'
 }
 
 // 하위 모든 모듈에서 사용할 spring-boot에 의존성이 없는 dependency에 대한 버전 관리용
 ext {
-	set('logstashEncoderVersion', '7.4')
-	set('jakartaServletApiVersion', '6.0.0')
-	set('checkStyleVersion', '10.3.1')
+    set('logstashEncoderVersion', '7.4')
+    set('jakartaServletApiVersion', '6.0.0')
+    set('checkStyleVersion', '10.3.1')
 }
 
 group = 'com.rihee.alerting'
@@ -22,71 +22,71 @@ A centralized Spring Boot multi-module project designed to simulate log collecti
 '''
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 tasks.named('check').configure {
-	dependsOn 'checkstyleMain'
-	dependsOn 'checkstyleTest'
+    dependsOn 'checkstyleMain'
+    dependsOn 'checkstyleTest'
 }
 
 subprojects {
-	apply plugin: 'java'
-	apply plugin: 'eclipse'
-	apply plugin: 'io.spring.dependency-management'
-	apply plugin: 'checkstyle'
-	
-	if (project.name != 'common') {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'checkstyle'
+
+    if (project.name != 'common') {
         apply plugin: 'org.springframework.boot'
     }
-	
-	dependencyManagement {
-	    imports {
-	        mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.4"
-	    }
-	}
-	
-	java{
-		toolchain {
-			languageVersion = JavaLanguageVersion.of(21)
-		}
-	}
-	
-	tasks.withType(JavaCompile).configureEach {
-	    options.encoding = 'UTF-8'
-	}
-	
-	repositories {
-		mavenCentral()
-	}
 
-	dependencies {
-		implementation 'org.springframework.boot:spring-boot-starter'
-		
-		testImplementation 'org.springframework.boot:spring-boot-starter-test'
-		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	}
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.4"
+        }
+    }
 
-	checkstyle {
-		toolVersion = "${checkStyleVersion}"
-		configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-		configProperties = [
-				"suppressionsFile": file("${rootDir}/config/checkstyle/suppressions.xml").absolutePath
-		]
-		ignoreFailures = false   // 위반 시 빌드 실패
-		showViolations = true    // 콘솔에 위반 사항 출력
-	}
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
 
-	afterEvaluate {
-		checkstyle.sourceSets = [sourceSets.main, sourceSets.test]
-	}
-	
-	tasks.named('test', Test).configure {
-		test.useJUnitPlatform()
-		jvmArgs += "-XX:+EnableDynamicAgentLoading"
-	}
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
 
-	tasks.named('check').configure {
-		dependsOn 'checkstyleMain', 'checkstyleTest'
-	}
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    checkstyle {
+        toolVersion = "${checkStyleVersion}"
+        configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+        configProperties = [
+                "suppressionsFile": file("${rootDir}/config/checkstyle/suppressions.xml").absolutePath
+        ]
+        ignoreFailures = false   // 위반 시 빌드 실패
+        showViolations = true    // 콘솔에 위반 사항 출력
+    }
+
+    afterEvaluate {
+        checkstyle.sourceSets = [sourceSets.main, sourceSets.test]
+    }
+
+    tasks.named('test', Test).configure {
+        test.useJUnitPlatform()
+        jvmArgs += "-XX:+EnableDynamicAgentLoading"
+    }
+
+    tasks.named('check').configure {
+        dependsOn 'checkstyleMain', 'checkstyleTest'
+    }
 }

@@ -9,6 +9,7 @@
 	- [ ] scheduler가 돌면서 계속 특정 controller를 call하여 로그가 계속 쌓이도록 만들기
 	- [ ] Actuator call 로그 남기게 만들기
 - [ ] Actuator 설정 관련 문서 남기기 (application.properties에 들어갈 항목 넣어주어야 함)
+- [ ] google java 스타일의 checkstyle 적용으로 인해 .editorconfig 설정 바꿔서 에디터 설정 바꿔주기
 ---
 # 이미 작업한 목록
 - [x] docs 템플릿 Obsidian화

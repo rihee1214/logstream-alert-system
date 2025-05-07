@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StructuredHttpWebMockup {
 
-    private static final StructuredLogger logger = StructuredLoggerFactory.getLogger(StructuredHttpWebMockup.class);
+  private static final StructuredLogger logger = StructuredLoggerFactory.getLogger(StructuredHttpWebMockup.class);
 
-    @StructuredGetMapping(spanLabel = "getMappingTest", value = "getMappingTestMockup")
-    public String mockResponse() {
-        logger.info(LogType.BIZ, "mockup service called");
-        return "mock response";
-    }
+  @StructuredGetMapping(spanLabel = "getMappingTest", value = "getMappingTestMockup")
+  public String mockResponse() {
+    logger.info(LogType.BIZ, "mockup service called");
+    return "mock response";
+  }
 }

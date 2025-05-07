@@ -24,7 +24,7 @@ public class LoggerConfigurationTests {
      * 테스트 중 발생하는 모든 로그를 수집한다.
      */
     public LoggerConfigurationTests() {
-        Logger rootLogger =(Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
         memoryAppender = new MemoryAppender();
         memoryAppender.setContext(rootLogger.getLoggerContext());
@@ -47,13 +47,13 @@ public class LoggerConfigurationTests {
         log.info(LogType.SYS, "sys-test-message");
 
         Assertions.assertAll(
-            () -> memoryAppender.getLoggedEvents().forEach(event ->{
-                String formattedMessage = event.getFormattedMessage();
+                () -> memoryAppender.getLoggedEvents().forEach(event -> {
+                    String formattedMessage = event.getFormattedMessage();
 
-                Assertions.assertDoesNotThrow(() -> new JSONObject(formattedMessage));
-                Assertions.assertTrue(formattedMessage.contains("\"logtype\""), "logtype이 누락되었습니다.");
-                Assertions.assertTrue(formattedMessage.contains("\"level\":\"INFO\""), "level이 INFO가 아닙니다.");
-            })
+                    Assertions.assertDoesNotThrow(() -> new JSONObject(formattedMessage));
+                    Assertions.assertTrue(formattedMessage.contains("\"logtype\""), "logtype이 누락되었습니다.");
+                    Assertions.assertTrue(formattedMessage.contains("\"level\":\"INFO\""), "level이 INFO가 아닙니다.");
+                })
         );
 
     }

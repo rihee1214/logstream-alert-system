@@ -12,18 +12,18 @@ import java.util.List;
  */
 public class MemoryAppender extends AppenderBase<ILoggingEvent> {
 
-    private final List<ILoggingEvent> events = new ArrayList<>();
+  private final List<ILoggingEvent> events = new ArrayList<>();
 
-    @Override
-    protected void append(ILoggingEvent eventObject) {
-        events.add(eventObject);
-    }
+  @Override
+  protected void append(ILoggingEvent eventObject) {
+    events.add(eventObject);
+  }
 
-    public List<ILoggingEvent> getLoggedEvents() {
-        return events;
-    }
+  public List<ILoggingEvent> getLoggedEvents() {
+    return events;
+  }
 
-    public void clear() {
-        events.clear();
-    }
+  public void clear() {
+    events.clear();
+  }
 }

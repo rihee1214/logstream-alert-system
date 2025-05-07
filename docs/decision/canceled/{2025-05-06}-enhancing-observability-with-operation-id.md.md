@@ -1,7 +1,7 @@
 ---
 title: "enhancing-observability-with-operation-id"
 date: "2025-05-06"
-status: "in-progress" # [in-progress|done|canceled]
+status: canceled
 ---
 
 # 📝 사고 및 결정 사항 기록
@@ -10,9 +10,11 @@ status: "in-progress" # [in-progress|done|canceled]
 
 ## 0. 결정 여부
 
-- 🔁 적용 예정
-    - 작업자 : 이리희
-    - 작업 완료 예정일 : ASAP 
+- ❌ 결정 취소
+	- 취소 일자 : 2025-05-07
+	- 취소 사유:
+	    - operationId는 로그 표준 필드로 강제하기에는 유연성과 유지보수 측면에서 실효성이 부족
+		- 추적성 강화보다는 오히려 오용 위험과 구조 복잡성을 증가시킬 수 있어 취소함
     - 작성자 : 이리희
     - 참석자 : 이리희
     - 관련 문서 : [bizlog 규약 문서](/contracts/bizlog-contract.md)
@@ -61,28 +63,39 @@ _현재 로그 구조는 `traceId`, `spanId`, `parentSpanId`의 3단계 구조�
 
 ## 4. 최종 결정(Final Decision)
 
-**Option 1을 선택하여 `operationId`, `operationParentId`를 Biz 로그에 한정하여 도입**한다. 
-(traceId, spanId, parentSpanId 또한 모두 biz 로그에 한정되어 있음)
-모든 로그에 강제하지 않으며, **Biz 로그에서 서비스 내부의 핵심 로직 단위별 호출 흐름을 추적할 수 있도록 한다.**
-`operationId`는 **해당 로직 단위의 고유 식별자**이며, `operationParentId`는 상위 로직을 참조한다.
-(해당 사유는 spanId와 parentSpanId의 사례와 같다.)
+~~**Option 1을 선택하여 `operationId`, `operationParentId`를 Biz 로그에 한정하여 도입**한다.~~ 
+~~(traceId, spanId, parentSpanId 또한 모두 biz 로그에 한정되어 있음)~~
+~~모든 로그에 강제하지 않으며, **Biz 로그에서 서비스 내부의 핵심 로직 단위별 호출 흐름을 추적할 수 있도록 한다.**~~
+~~`operationId`는 **해당 로직 단위의 고유 식별자**이며, `operationParentId`는 상위 로직을 참조한다.~~
+~~(해당 사유는 spanId와 parentSpanId의 사례와 같다.)~~
+
+1. **operationId에 의미를 부여하거나 강제 규칙을 적용할 경우**
+	- 복잡성과 오용 가능성이 급격히 증가함
+ 2. **내부 흐름 구조화를 시도할 경우 오히려 실용성이 저하**
+	- 대부분의 마이크로서비스에서는 단일 서비스 내 복잡한 흐름보다는 여러 서비스를 연결하여 전체 흐름을 만드는 구조가 일반적
+	- 이를 지나치게 내부 구조화 하면 유지보수 부담만 증가
+> ⮕ **세부 문제점**
+> - SpanId, TraceId와의 경계가 모호해지고, 실용적인 추적에 도움이 되지 않는 경우 다수
+> - 동시성/비동기 구조에서는 MDC 전파가 불완전하여 오히려 로그 순서가 불안정해짐
+3. **결론** 
+- operationId는 **공식 표준 필드로 강제하지 않으며, 선택적 확장 필드로 둔다**
 
 ---
 
 ## 5. 기대효과(Expected Benefits)
 
-- **단일 서비스 내부의 로직 흐름까지도 추적 가능**하여, 문제 발생 시 신속한 원인 분석이 가능해짐
-- 복잡한 비즈니스 조건, 재시도, 비동기 호출 등의 순서를 명확하게 표현 가능
-- 로그만으로도 **Zipkin과 유사한 시각적 구조 분석**이 가능해져, 코드 디버깅 없이 로그 기반의 분석 신뢰성 향상
-- 장애 발생 시 **운영 효율성 및 대응 속도 향상**
+- ~~**단일 서비스 내부의 로직 흐름까지도 추적 가능**하여, 문제 발생 시 신속한 원인 분석이 가능해짐~~
+- ~~복잡한 비즈니스 조건, 재시도, 비동기 호출 등의 순서를 명확하게 표현 가능~~
+- ~~로그만으로도 **Zipkin과 유사한 시각적 구조 분석**이 가능해져, 코드 디버깅 없이 로그 기반의 분석 신뢰성 향상~~
+- ~~장애 발생 시 **운영 효율성 및 대응 속도 향상**~~
 
 ---
 
 ## 6. 계속 고민할 사항(Still Open Issues)
 
-- `operationId` 명명 규칙: 자동 UUID 기반으로 할지, 의미 기반 규칙을 부여할지 여부
-- 비동기 컨텍스트 전파 시 `operationId` 연속성 유지 방안
-- `operationId` 부여 로직 알고리즘: 어떤 방식으로 operationId를 부여, 제거를 자동화 할지 정리하지 못함
+- ~~`operationId` 명명 규칙: 자동 UUID 기반으로 할지, 의미 기반 규칙을 부여할지 여부~~
+- ~~비동기 컨텍스트 전파 시 `operationId` 연속성 유지 방안~~
+- ~~`operationId` 부여 로직 알고리즘: 어떤 방식으로 operationId를 부여, 제거를 자동화 할지 정리하지 못함~~
 
 ---
 
