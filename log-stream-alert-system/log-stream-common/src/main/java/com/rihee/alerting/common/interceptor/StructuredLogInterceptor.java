@@ -1,13 +1,13 @@
 package com.rihee.alerting.common.interceptor;
 
-import static com.rihee.alerting.common.log.enums.StructuredLogProperties.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.log.enums.StructuredLogProperties.SERVICE;
-import static com.rihee.alerting.common.log.enums.StructuredLogProperties.SPAN_ID;
-import static com.rihee.alerting.common.log.enums.StructuredLogProperties.TRACE_ID;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SERVICE;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
 
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.log.enums.LogType;
+import com.rihee.alerting.common.log.constant.LogType;
 import io.micrometer.common.lang.NonNullApi;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,8 +1,8 @@
 package com.rihee.alerting.common.log;
 
-import static com.rihee.alerting.common.log.enums.StructuredLogProperties.LOG_TYPE;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.LOG_TYPE;
 
-import com.rihee.alerting.common.log.enums.LogType;
+import com.rihee.alerting.common.log.constant.LogType;
 import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;

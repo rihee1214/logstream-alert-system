@@ -18,19 +18,19 @@ public class CompositeStaticContextProvider extends AbstractJsonProvider<ILoggin
   /**
    * 로그에 포함될 서비스 이름(예: user-service).
    */
-  private static final String serviceName = System.getProperty("service.name", "unknown-service");
+  private static final String serviceName = System.getProperty("service.name");
   /**
    * 로그에 포함될 호스트 이름(예: mockup-host).
    */
-  private static final String hostName = resolveEnv("HOST", "unknown-host");
+  private static final String hostName = resolveEnv("HOST");
   /**
    * 로그에 포함될 컨테이너 이름 (예: mockup-container-1)
    */
-  private static final String containerName = resolveEnv("CONTAINER", "unknown-container");
+  private static final String containerName = resolveEnv("CONTAINER");
 
-  private static String resolveEnv(String key, String defaultValue) {
+  private static String resolveEnv(String key) {
     String value = System.getenv(key);
-    return StringUtils.hasText(value) ? value : defaultValue;
+    return StringUtils.hasText(value) ? value : "__UNDEFINED__";
   }
 
   @Override

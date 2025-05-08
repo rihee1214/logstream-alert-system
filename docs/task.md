@@ -7,9 +7,18 @@
 	- [ ] db연결은 굳이 필요없고, db에서 select한 것처럼 동작하게 만들기.
 	- [ ] 한 controller 여러개의 controller를 호출하게 만들고 추적이 되는지 확인 필요
 	- [ ] scheduler가 돌면서 계속 특정 controller를 call하여 로그가 계속 쌓이도록 만들기
-	- [ ] Actuator call 로그 남기게 만들기
-- [ ] Actuator 설정 관련 문서 남기기 (application.properties에 들어갈 항목 넣어주어야 함)
+	- [x] Actuator call 로그 남기게 만들기
 - [ ] google java 스타일의 checkstyle 적용으로 인해 .editorconfig 설정 바꿔서 에디터 설정 바꿔주기
+	- [x] 기본 구성 완료
+	- [ ] 더 확장해서 자세한 설정 추가 작성하기
+- [ ] 모든 환경 변수, property 세팅의 default값은 `__UNDEFINED__`임을 기록하고, 그것을 따로 뺄 궁리하기
+
+- [ ] 문서 작성 필요 요소
+	- [ ] Actuator 설정 관련 문서 남기기 (application.properties에 들어갈 항목 넣어주어야 함)
+	- [ ] Actuator를 Call하는 prometheus 인증 헤더 토큰(monitoring.token)
+	       (HTTP header = X-Monitoring-Token)을 환경 변수로 넣어야 한다는 내용 문서화 필요.
+	- [ ] Actuator Filter관련된 설명을 추가하고, Https만 사용할 것을 강조하기
+	- [ ] application.properties에 monitoring.scheduler.interval.ms를 넣어주어야. actuator call 간격 설정 가능함을 알려야함
 ---
 # 이미 작업한 목록
 - [x] docs 템플릿 Obsidian화
@@ -34,3 +43,4 @@
 	- [x] common영역의 AOP관련된 코드 세개 정리필요
 - [x] actuator 코드 작성하기 (모든 시스템 전용)
       (property 세팅만 잘 되어있으면  됨)
+- [x] Actuator는 localhost에서만 call할 수 있다던가 하는 설정 추가할 수 있게 만들기

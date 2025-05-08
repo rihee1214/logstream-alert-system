@@ -45,7 +45,7 @@ public class WebConfig implements WebMvcConfigurer {
    * @param serviceName spanId 생성 규칙에 들어갈 서비스 명.
    */
   public WebConfig(@Value("${service.name:}") String serviceName) {
-    this.serviceName = StringUtils.hasText(serviceName) ? serviceName : "unknown-service";
+    this.serviceName = StringUtils.hasText(serviceName) ? serviceName : "__UNDEFINED__";
   }
 
   /**

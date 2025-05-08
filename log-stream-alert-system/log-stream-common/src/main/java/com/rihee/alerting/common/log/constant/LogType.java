@@ -1,4 +1,4 @@
-package com.rihee.alerting.common.log.enums;
+package com.rihee.alerting.common.log.constant;
 
 /**
  * {@code LogType}은 로그의 유형을 구분하기 위한 열거형입니다.

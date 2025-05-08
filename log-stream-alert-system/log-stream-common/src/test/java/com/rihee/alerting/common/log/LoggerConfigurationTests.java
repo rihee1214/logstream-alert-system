@@ -2,7 +2,7 @@ package com.rihee.alerting.common.log;
 
 import ch.qos.logback.classic.Logger;
 import com.rihee.alerting.common.log.appender.MemoryAppender;
-import com.rihee.alerting.common.log.enums.LogType;
+import com.rihee.alerting.common.log.constant.LogType;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

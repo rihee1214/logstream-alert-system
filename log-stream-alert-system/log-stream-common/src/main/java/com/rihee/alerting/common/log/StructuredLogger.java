@@ -1,6 +1,6 @@
 package com.rihee.alerting.common.log;
 
-import com.rihee.alerting.common.log.enums.LogType;
+import com.rihee.alerting.common.log.constant.LogType;
 import java.util.Map;
 
 /**

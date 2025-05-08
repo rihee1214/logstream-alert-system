@@ -1,4 +1,4 @@
-package com.rihee.alerting.common.log.enums;
+package com.rihee.alerting.common.log.constant;
 
 /**
  * 구조화(Structured) 로깅 시 사용되는 표준 필드 정의 Enum.<br>
