@@ -1,4 +1,4 @@
-package com.rihee.alerting.mockService;
+package com.rihee.alerting.mockservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

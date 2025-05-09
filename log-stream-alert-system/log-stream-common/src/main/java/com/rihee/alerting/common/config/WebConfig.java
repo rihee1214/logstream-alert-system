@@ -1,5 +1,7 @@
 package com.rihee.alerting.common.config;
 
+import static com.rihee.alerting.common.constant.DefaultValues.LOGGING_DEFAULT_VALUE;
+
 import com.rihee.alerting.common.interceptor.SpanLabelBeanPostProcessor;
 import com.rihee.alerting.common.interceptor.SpanLabelRegistry;
 import com.rihee.alerting.common.interceptor.StructuredLogInterceptor;
@@ -45,7 +47,8 @@ public class WebConfig implements WebMvcConfigurer {
    * @param serviceName spanId 생성 규칙에 들어갈 서비스 명.
    */
   public WebConfig(@Value("${service.name:}") String serviceName) {
-    this.serviceName = StringUtils.hasText(serviceName) ? serviceName : "__UNDEFINED__";
+    this.serviceName = StringUtils.hasText(serviceName) ? serviceName
+                                                      : LOGGING_DEFAULT_VALUE.getValue();
   }
 
   /**

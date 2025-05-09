@@ -1,5 +1,7 @@
 package com.rihee.alerting.common.config;
 
+import static com.rihee.alerting.common.constant.DefaultValues.PROMETHEUS_TOKEN_DEFAULT;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -27,6 +29,8 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 @Configuration
 public class ActuatorSecurityConfig {
 
+  private static final String MONITORING_TOKEN_HEADER = "X-Monitoring-Token";
+
   private final String prometheusToken;
 
   /**
@@ -35,12 +39,12 @@ public class ActuatorSecurityConfig {
    * <p>이 토큰은 {@code /actuator/prometheus} 경로로 접근할 때,
    * 요청 헤더 {@code X-Monitoring-Token}과 비교하여 접근 여부를 판별하는 데 사용됩니다.</p>
    *
-   * <p>환경변수 {@code monitoring.token}이 존재하지 않을 경우 기본값으로 {@code "__UNDEFINED__"}를 사용합니다.</p>
+   * <p>환경변수 {@code monitoring.token}이 존재하지 않을 경우 기본값으로 {@code LOGGING_DEFAULT_VALUE}를 사용합니다.</p>
    *
    * @param env Spring {@link Environment} 객체를 통해 외부 설정 값을 주입받습니다.
    */
   public ActuatorSecurityConfig(Environment env) {
-    this.prometheusToken = env.getProperty("monitoring.token", "__UNDEFINED__");
+    this.prometheusToken = env.getProperty("monitoring.token", PROMETHEUS_TOKEN_DEFAULT.getValue());
   }
 
   /**
@@ -62,7 +66,7 @@ public class ActuatorSecurityConfig {
                     // prometheus 수집용 요청만 허용 (토큰 헤더 확인)
                     .requestMatchers("/actuator/prometheus")
                     .access((authSupplier, context) -> {
-                      String token = context.getRequest().getHeader("X-Monitoring-Token");
+                      String token = context.getRequest().getHeader(MONITORING_TOKEN_HEADER);
                       return new AuthorizationDecision(prometheusToken.equals(token));
                     })
                     // 나머지 actuator 요청은 localhost 에서만 허용

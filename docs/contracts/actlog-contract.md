@@ -1,15 +1,17 @@
 # 📄 ActLog Contract
 
 > 모든 서비스에서 발생하는 Actuator 로그에 대한 형식, 필드 구성, 처리 흐름을 정의합니다.  
-> 해당 규약은 Kafka를 통한 전송 및 Elasticsearch 저장까지 전체 흐름에 영향을 줍니다.
+> 이 규약은 Kafka를 통한 전송과 Elasticsearch 저장까지의 전체 로그 흐름에 영향을 미칩니다.  
+> Prometheus의 외부 호출과는 무관하며, 내부 스케줄러가 주기적으로 actuator를 호출하여 로그를 생성하고,
+> 해당 로그는 Elasticsearch에 저장되는 것을 목적으로 합니다.
 
 ---
 
 ## ✅ 로그 목적
 
-- 모든 서비스 내에서 발생하는 **시스템 메트릭 & Health 관련 이벤트 기록**
-- WARN / ERROR 레벨의 로그는 **Prometheus가 Alertmanager로 보내 즉시 알림**
-- 해당 로그는 Notification Service에게 알림이 가지 않고, Elasticsearch에 지속적으로 저장됨
+- 각 비지니스 서비스에서 발생하는 **시스템 메트릭 및 Health 상태 로그를 기록**합니다.
+- WARN / ERROR 레벨의 로그는 **Prometheus가 수집 후 Alertmanager로 전송되어 즉시 알림**이 발생합니다.
+- 해당 로그는 Notification Service에게 알림이 가지 않고, **Elasticsearch에만 지속적으로 저장**됩니다.
 
 ---
 
@@ -26,15 +28,19 @@
 | `host`       | string | 컨테이너 또는 노드명<br>※ 컨테이너의 hostname (environment 주입)            |
 | `container`  | string | 컨테이너 이름 또는 ID<br>※ 컨테이너 id(environment 주입)                  |
 | `stacktrace` | string | 예외 발생 시 출력되는 전체 호출 스택. 시스템 오류 분석 및 디버깅에 활용됩니다.              |
-| `meta`       | object | 서비스별 부가 정보 (key-value)<br>※ Actuator기반 로그의 경우 아래 규약을 따름     |
+| `meta`       | object | 서비스별 부가 정보 (key-value)<br>※ Actuator 기반 로그의 경우 아래 규약을 따름    |
 
 ### ✅ meta 필드 규약 (Actuator 기반 로그)
-| 필드명        | 타입     | 설명                    |
-|------------|--------|-----------------------|
-| `path`     | string | 호출된 actuator endpoint |
-| `status`   | number | HTTP 응답 코드            |
-| `duration` | number | 요청 처리 시간 (ms)         |
-> 이외에 필요한 필드 추가 가능
+| 필드명             | 타입     | 설명                     |
+|-----------------|--------|------------------------|
+| `method`        | string | Actuator 호출 방식 (GET 등) |
+| `uri`           | string | 호출된 actuator endpoint  |
+| `statusCode`    | number | HTTP 응답 코드             |
+| `statusMessage` | string | HTTP 응답 메시지            |
+| `elapsedMs`     | number | 요청 처리 시간 (ms 단위)       |
+> 참고: meta 필드는 actuator 로그 호출 시 기본 제공되는 부가 정보입니다.  
+> 필수 필드는 아니며, **모니터링 기준은 URI** 중심으로 설정됩니다.
+> 필요 시 추가 필드를 자유롭게 확장할 수 있습니다.
 
 예시 JSON (일반 시스템 로그):
 ```json
@@ -46,13 +52,14 @@
   "class": "com.example.MockHandler",
   "host": "mock-service-01",
   "container": "mock-service",
-  "message": "Init Complete",
+  "message": {
+    { ... }
+  },
   "meta": {
-    "matric":{
-	    ...
-    },
-    "health":{
-	    ...
-    }
+    "method": "GET",
+    "uri": "/actuator/metric",
+    "statusCode": 200,
+    "statusMessage": "OK",
+    "elapsedMs": 39
   }
 }

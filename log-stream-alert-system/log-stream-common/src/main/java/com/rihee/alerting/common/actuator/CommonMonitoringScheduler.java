@@ -1,8 +1,14 @@
 package com.rihee.alerting.common.actuator;
 
+import static com.rihee.alerting.common.constant.DefaultValues.LOGGING_DEFAULT_VALUE;
 import static com.rihee.alerting.common.log.constant.LogType.ACT;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.META;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SERVICE;
+import static com.rihee.alerting.common.log.constant.biz.MetaProperties.ELAPSED_MS;
+import static com.rihee.alerting.common.log.constant.biz.MetaProperties.METHOD;
+import static com.rihee.alerting.common.log.constant.biz.MetaProperties.STATUS_CODE;
+import static com.rihee.alerting.common.log.constant.biz.MetaProperties.STATUS_MESSAGE;
+import static com.rihee.alerting.common.log.constant.biz.MetaProperties.URI;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,7 +52,8 @@ import reactor.netty.http.client.HttpClient;
  * @since 1.0
  */
 @Component
-@ConditionalOnProperty(name = "monitoring.scheduler.enable", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "monitoring.scheduler.enable", havingValue = "true",
+                                                                matchIfMissing = false)
 public class CommonMonitoringScheduler {
 
   private static final ObjectMapper jsonMapper = new ObjectMapper();
@@ -71,13 +78,14 @@ public class CommonMonitoringScheduler {
    *
    * <p>주어진 {@code Environment}에서 포트 정보를 가져와
    * actuator endpoint를 호출할 수 있는 WebClient를 구성하며,
-   * {@code service.name} 값이 없는 경우 {@code "__UNDEFINED__"}로 대체합니다.
+   * {@code service.name} 값이 없는 경우 {@code "LOGGING_DEFAULT_VALUE"}로 대체합니다.
    *
    * @param env Spring {@link Environment} 객체로부터 포트 정보와 설정 값을 주입받습니다.
    * @param serviceName 서비스 이름 (로그 필드에 사용됨)
    */
   public CommonMonitoringScheduler(Environment env, @Value("${service.name:}") String serviceName) {
-    this.serviceName = StringUtils.hasText(serviceName) ? serviceName : "__UNDEFINED__";
+    this.serviceName = StringUtils.hasText(serviceName) ? serviceName
+                                                        : LOGGING_DEFAULT_VALUE.getValue();
     String port = env.getProperty("server.port", env.getProperty("local.server.port", "8080"));
 
     // TIME OUT 세팅용
@@ -150,11 +158,11 @@ public class CommonMonitoringScheduler {
 
     // 로깅 전 메타 정보 세팅
     Map<String, Object> rawMeta = Map.of(
-        "method", response.request().getMethod().name(),
-        "uri", uri,
-        "statusCode", statusCode,
-        "statusMessage", statusMessage,
-        "elapsedMs", stopWatch.getTotalTimeMillis()
+        METHOD.getKey(), response.request().getMethod().name(),
+        URI.getKey(), uri,
+        STATUS_CODE.getKey(), statusCode,
+        STATUS_MESSAGE.getKey(), statusMessage,
+        ELAPSED_MS.getKey(), stopWatch.getTotalTimeMillis()
     );
     putRawMetaToMdc(rawMeta);
 
@@ -183,9 +191,9 @@ public class CommonMonitoringScheduler {
     // 로깅 전 메타 정보 세팅
     stopWatch.stop();
     Map<String, Object> rawMeta = Map.of(
-        "method", HttpMethod.GET.name(),
-        "uri", uri,
-        "elapsedMs", stopWatch.getTotalTimeMillis()
+        METHOD.getKey(), HttpMethod.GET.name(),
+        URI.getKey(), uri,
+        ELAPSED_MS.getKey(), stopWatch.getTotalTimeMillis()
     );
     putRawMetaToMdc(rawMeta);
     // 실질 로깅작업
