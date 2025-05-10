@@ -8,8 +8,12 @@
 	- [ ] db연결은 굳이 필요없고, db에서 select한 것처럼 동작하게 만들기.
 	- [ ] 한 controller 여러개의 controller를 호출하게 만들고 추적이 되는지 확인 필요
 	- [ ] scheduler가 돌면서 계속 특정 controller를 call하여 로그가 계속 쌓이도록 만들기
+- [ ] 비지니스 서비스 호출에 대한 B3Header에 관련된 내용 추가하기.
+- [ ] bizlog-contract문서에 meta영역에  B3Header관련 내용 추가하기
+	- [ ] Meta영역에 sampled와 flags 요소가 들어가게됨
 - [ ] 문서 작성 필요 요소
 	- [ ] Actuator Filter관련된 설명을 추가하고, Https만 사용할 것을 강조하기
+- [ ] scheduleing관련된 코드 및 기존 테스트 코드 다듬기
 - [ ] application.properties 문서에 주석 다듬기
 	- [ ] Common 영역
 		- [ ] service명(service.name) 넣어주어야 함
@@ -20,6 +24,10 @@
 		- [ ] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
 		- [ ] Actuator를 Call하는 prometheus 인증 헤더 토큰(환경변수 key값: monitoring.token)
 	       (HTTP header = X-Monitoring-Token)을 환경 변수로 넣어야 한다는 내용 문서화 필요.
+- [ ] Actuator call(metric call) 하는 scheduler에 대한 로직 수정 필요.
+	- [ ] configMap으로 마운트된 파일에서 가져와서 지정된 요소들을 loop로 돌면서 처리하도록.
+		- [ ] configMap이름은 여러개여도 내부에서 사용하는 파일 이름은 단 하나여야 한다.
+	- [ ] 테스트 로직 구현 완성도 필요
 ---
 # 이미 작업한 목록
 #done

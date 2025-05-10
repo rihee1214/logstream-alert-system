@@ -1,10 +1,14 @@
 package com.rihee.alerting.common.log.provider;
 
 import static com.rihee.alerting.common.constant.DefaultValues.LOGGING_DEFAULT_VALUE;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.CONTAINER;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.HOST;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SERVICE;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
+import java.util.Map;
 import net.logstash.logback.composite.AbstractJsonProvider;
 import org.springframework.util.StringUtils;
 
@@ -39,8 +43,30 @@ public class CompositeStaticContextProvider extends AbstractJsonProvider<ILoggin
 
   @Override
   public void writeTo(JsonGenerator generator, ILoggingEvent event) throws IOException {
-    generator.writeStringField("service", serviceName);
-    generator.writeStringField("host", hostName);
-    generator.writeStringField("container", containerName);
+    Map<String, String> mdc = event.getMDCPropertyMap();
+    writeIfAbsentInMdc(mdc, generator, SERVICE.name(), serviceName);
+    writeIfAbsentInMdc(mdc, generator, HOST.name(), hostName);
+    writeIfAbsentInMdc(mdc, generator, CONTAINER.name(), containerName);
+  }
+
+  /**
+   * MDC에 동일한 키가 존재하지 않는 경우에만 JSON 로그에 필드를 추가합니다.
+   *
+   * <p>중복된 로그 필드를 방지하기 위한 보호 로직으로, StructuredLogger 또는 MDC 설정에서
+   * 이미 삽입된 값과 충돌하지 않도록 하기 위해 사용됩니다.</p>
+   *
+   * @param mdc 현재 로그 이벤트의 MDC 맵
+   * @param generator JSON 로그 출력용 생성기
+   * @param key 출력할 필드의 키
+   * @param value 출력할 필드의 값
+   * @throws IOException JSON 작성 중 I/O 오류가 발생한 경우
+   */
+  private void writeIfAbsentInMdc(Map<String, String> mdc,
+                                  JsonGenerator generator,
+                                  String key,
+                                  String value) throws IOException {
+    if (!mdc.containsKey(key)) {
+      generator.writeStringField(key, value);
+    }
   }
 }

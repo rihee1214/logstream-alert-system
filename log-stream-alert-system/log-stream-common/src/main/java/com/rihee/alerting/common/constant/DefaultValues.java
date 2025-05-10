@@ -29,7 +29,14 @@ public enum DefaultValues {
    * <p>기본값은 {@code "__UNDEFINED__"}로 지정되며, 이는 명시적 설정 누락 시 로그 또는 시스템 내에서
    * "정의되지 않은 상태"를 나타내는 표준 문자열로 사용됩니다.</p>
    */
-  PROMETHEUS_TOKEN_DEFAULT("__UNDEFINED__");
+  PROMETHEUS_TOKEN_DEFAULT("__UNDEFINED__"),
+  /**
+   * B3 헤더의 {@code X-B3-Sampled} 필드가 누락된 경우 사용되는 기본값입니다.
+   *
+   * <p>기본값은 {@code "0"}이며, 추적 비활성화를 의미합니다.
+   * 자세한 내용은 {@link com.rihee.alerting.common.constant.B3Header}를 참고하세요.</p>
+   */
+  B3HEADER_SAMPLED_DEFAULT("0");
 
   private final String value;
 

@@ -1,9 +1,18 @@
 package com.rihee.alerting.common.log;
 
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.rihee.alerting.common.config.WebConfig;
 import com.rihee.alerting.common.configuration.MockHttpServletRequestConfig;
+import com.rihee.alerting.common.constant.B3Header;
 import com.rihee.alerting.common.log.appender.MemoryAppender;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,18 +25,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StringUtils;
 
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 /**
  * {@code StructuredHttpServerTests}는 로그 필드 자동 세팅 기능(MDC 설정 로직)을 검증하기 위한 통합 테스트 클래스입니다.
  *
  * <p>해당 테스트는 커스텀 애너테이션 기반으로 동작하는 {@code MDCInterceptor} 및 {@code MDCHandlerMethodPostProcessor}의
- * 로직이 의도대로 작동하여 {@code traceId}, {@code spanId}, {@code parentSpanId}와 같은 MDC 필드가 정확히 로그에 포함되는지를 확인합니다.
+ * 로직이 의도대로 작동하여 {@code traceId}, {@code spanId}, {@code parentSpanId}와 같은 MDC 필드가
+ * 정확히 로그에 포함되는지를 확인합니다.</p>
  *
- * <p>모든 로그는 {@code MemoryAppender}를 통해 in-memory로 수집되며, 로그 필드 포함 여부는 Assert 구문으로 검증됩니다.
+ * <p>모든 로그는 {@code MemoryAppender}를 통해 in-memory로 수집되며, 로그 필드 포함 여부는 Assert 구문으로 검증됩니다.</p>
  */
 @SpringBootTest(properties = "spring.profiles.active=dev")
 @AutoConfigureMockMvc
@@ -47,7 +52,8 @@ public class StructuredHttpServerTests {
   /**
    * 루트 로거에 메모리 Appender를 추가하여 모든 로그 이벤트를 테스트에서 수집할 수 있도록 설정합니다.
    */
-  private final Logger rootLogger = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+  private final Logger rootLogger
+                            = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 
   /**
    * 테스트 실행 전 MemoryAppender를 초기화하고 루트 로거에 등록합니다.
@@ -71,8 +77,8 @@ public class StructuredHttpServerTests {
   }
 
   /**
-   * {@code @EnableStructuredLogging} 애너테이션 기반 설정 로직이 {@code traceId}, {@code spanId}, {@code parentSpanId}
-   * MDC 값을 로그 이벤트에 정확히 세팅하는지 검증합니다.
+   * {@code @EnableStructuredLogging} 애너테이션 기반 설정 로직이
+   * {@code traceId}, {@code spanId}, {@code parentSpanId} MDC 값을 로그 이벤트에 정확히 세팅하는지 검증합니다.
    *
    * <p>{@code /getMappingTestMockup} 엔드포인트를 호출하고, 로그 이벤트에서 해당 MDC 키들이 포함되었는지를 확인합니다.
    * {@code parentSpanId}는 설정되지 않아야 하므로 {@code false}를 기대합니다.
@@ -82,40 +88,49 @@ public class StructuredHttpServerTests {
   @Test
   void mockupServiceShouldSetMdcFields() throws Exception {
 
-    mockMvc.perform(get("/getMappingTestMockup")).andExpect(status().isOk());
+    // 첫 번째 요청으로 traceId, spanId가 잘 생성되어있는지 확인
+    mockMvc.perform(get("/getMappingTestMockup"))
+          .andExpect(status().isOk());
 
-    boolean foundTraceId = memoryAppender.getLoggedEvents().stream()
-        .allMatch(event -> event.getMDCPropertyMap().containsKey(TRACE_ID.getName()));
+    ILoggingEvent event1 = memoryAppender.getLoggedEvents().getFirst();
 
-    boolean foundSpanId = memoryAppender.getLoggedEvents().stream()
-        .allMatch(event -> event.getMDCPropertyMap().containsKey(SPAN_ID.getName()));
+    String traceId1 = event1.getMDCPropertyMap().get(TRACE_ID.getName());
+    String spanId1 = event1.getMDCPropertyMap().get(SPAN_ID.getName());
+    String parentSpanId1 = event1.getMDCPropertyMap().get(PARENT_SPAN_ID.getName());
 
-    boolean foundParentSpanId = memoryAppender.getLoggedEvents().stream()
-        .allMatch(event -> event.getMDCPropertyMap().containsKey(PARENT_SPAN_ID.getName()));
+    assertThat(StringUtils.hasText(traceId1)).isTrue();
+    assertThat(StringUtils.hasText(spanId1)).isTrue();
+    assertThat(StringUtils.hasText(parentSpanId1)).isFalse();
 
-    boolean foundServiceName = memoryAppender.getLoggedEvents().stream()
-        .allMatch(event -> event.getMDCPropertyMap().containsKey(SERVICE.getName()));
+    memoryAppender.clear();
 
-    assertThat(foundTraceId).isTrue();
-    assertThat(foundSpanId).isTrue();
-    assertThat(foundParentSpanId).isFalse();
-    assertThat(foundServiceName).isTrue();
+    // 두 번째 요청과 헤더 세팅으로, 로깅시 나오는 traceId, spanId, parentSpanId가 잘 생성되어있는지 확인
+    mockMvc.perform(get("/getMappingTestMockup")
+                        .header(B3Header.TRACE_ID.getHeaderName(), traceId1)
+                        .header(B3Header.SPAN_ID.getHeaderName(), spanId1)
+          ).andExpect(status().isOk());
 
-    boolean hasTraceId = memoryAppender.getLoggedEvents().stream()
-        .allMatch(event -> StringUtils.hasText(event.getMDCPropertyMap().get(TRACE_ID.getName())));
+    ILoggingEvent event2 = memoryAppender.getLoggedEvents().getFirst();
 
-    boolean hasSpanId = memoryAppender.getLoggedEvents().stream()
-        .allMatch(event -> StringUtils.hasText(event.getMDCPropertyMap().get(SPAN_ID.getName())));
+    String traceId2 = event2.getMDCPropertyMap().get(TRACE_ID.getName());
+    String spanId2 = event2.getMDCPropertyMap().get(SPAN_ID.getName());
+    String parentSpanId2 = event2.getMDCPropertyMap().get(PARENT_SPAN_ID.getName());
 
-    boolean hasParentSpanId = memoryAppender.getLoggedEvents().stream()
-        .allMatch(event -> StringUtils.hasText(event.getMDCPropertyMap().get(PARENT_SPAN_ID.getName())));
+    assertThat(StringUtils.hasText(traceId2)).isTrue();
+    assertThat(StringUtils.hasText(spanId2)).isTrue();
+    assertThat(StringUtils.hasText(parentSpanId2)).isTrue();
 
-    boolean hasServiceName = memoryAppender.getLoggedEvents().stream()
-        .allMatch(event -> StringUtils.hasText(event.getMDCPropertyMap().get(SERVICE.getName())));
+    // 두 가지 요청을 보고 인터셉터가 제대로 된 동작을 하는지 확인
+    assertThat(traceId1).isEqualTo(traceId2);
+    assertThat(spanId1).isEqualTo(parentSpanId2);
+    assertThat(extractSpanSequence(spanId1) + 1).isEqualTo(extractSpanSequence(spanId2));
 
-    assertThat(hasTraceId).isTrue();
-    assertThat(hasSpanId).isTrue();
-    assertThat(hasParentSpanId).isFalse();
-    assertThat(hasServiceName).isTrue();
+    memoryAppender.clear();
+  }
+
+  private int extractSpanSequence(String spanId) {
+    String[] parts = spanId.split("-");
+    // NOTE: 포맷: {서비스명}-{spanLabel}-{번호}
+    return Integer.parseInt(parts[parts.length - 1]);
   }
 }

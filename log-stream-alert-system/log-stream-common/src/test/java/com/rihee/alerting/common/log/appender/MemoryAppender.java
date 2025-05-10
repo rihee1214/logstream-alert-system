@@ -2,7 +2,6 @@ package com.rihee.alerting.common.log.appender;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +22,9 @@ public class MemoryAppender extends AppenderBase<ILoggingEvent> {
     return events;
   }
 
+  /**
+   * 등록된 모든 로그 이벤트를 정리하는 메서드.
+   */
   public void clear() {
     events.clear();
   }

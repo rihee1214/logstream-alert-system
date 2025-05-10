@@ -15,7 +15,8 @@
 - **상세 내용:**
   - Mockito가 inline-mock-maker를 활성화하기 위해 self-attach를 시도함
   - 이 방식은 JDK 미래 버전(23 이상)에서 기본적으로 차단될 예정
-  - 현재 테스트에는 영향 없으며, JVM 옵션 `-XX:+EnableDynamicAgentLoading`으로 임시 대응 중
+  - 현재 테스트에는 영향 없음. JVM 옵션 `-XX:+EnableDynamicAgentLoading`을 통해 임시 대응 중
+  - 추후 spring-boot 업그레이드 하면 mockito-core의 버전이 올라 저절로 해결 될 것으로 보임
 - **현재 상태:**
   - 무시 가능 (운영 영향 없음)
   - 단, 추후 JDK 업그레이드 시 agent 설정 필요

@@ -113,6 +113,8 @@ public class CommonMonitoringScheduler {
   @Scheduled(fixedDelayString = "${monitoring.scheduler.interval.ms:10000}")
   public void scheduleActuatorLogs() {
     logActuatorEndpoint("/actuator/health");
+    // TODO metrics를 call하면 단순 metric으로 얻을 수 있는 항목 명들만 나오지, 그것으로 할 수 있는 일이 없음.
+    // TODO 병렬로 call하고 취합해서 얻어내는 작업이 필요하다.
     logActuatorEndpoint("/actuator/metrics");
   }
 

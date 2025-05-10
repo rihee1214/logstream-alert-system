@@ -34,4 +34,6 @@ test {
     systemProperty "service.name", "common"
     environment "HOST", "localhost"
     environment "CONTAINER", "local-container"
+    environment "monitoring.token", "test-token"
+    jvmArgs += ["-XX:+EnableDynamicAgentLoading"]
 }
