@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.rihee.alerting.common.config.WebConfig;
+import com.rihee.alerting.common.config.CommonInterceptorConfiguration;
 import com.rihee.alerting.common.configuration.MockHttpServletRequestConfig;
 import com.rihee.alerting.common.constant.B3Header;
 import com.rihee.alerting.common.log.appender.MemoryAppender;
@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  */
 @SpringBootTest(properties = "spring.profiles.active=dev")
 @AutoConfigureMockMvc
-@Import({MockHttpServletRequestConfig.class, WebConfig.class})
+@Import({MockHttpServletRequestConfig.class, CommonInterceptorConfiguration.class})
 public class StructuredHttpServerTests {
 
   /**

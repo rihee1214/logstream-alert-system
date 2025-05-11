@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p><b>스레드 안전</b>: 내부적으로 {@link ConcurrentHashMap}을 사용하여 동시 접근에 안전합니다.</p>
  *
  * @see com.rihee.alerting.common.interceptor.SpanLabelBeanPostProcessor
- * @see com.rihee.alerting.common.interceptor.StructuredLogInterceptor
+ * @see DefaultStructuredLogInterceptor
  */
 public class SpanLabelRegistry {
 

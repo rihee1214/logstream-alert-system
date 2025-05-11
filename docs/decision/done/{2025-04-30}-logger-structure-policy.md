@@ -83,8 +83,8 @@ ___
 | common     | src/main/java      | com.rihee.alerting.common.log.aspect.StructuredMdcAspect         | 삭제    |
 | common     | src/main/java      | com.rihee.alerting.common.interceptor.SpanLabelRegistry          | 신규 구현 |
 | common     | src/main/java      | com.rihee.alerting.common.interceptor.SpanLabelBeanPostProcessor | 신규 구현 |
-| common     | src/main/java      | com.rihee.alerting.common.interceptor.StructuredLogInterceptor   | 신규 구현 |
-| common     | src/main/java      | com.rihee.alerting.common.config.WebConfig                       | 신규 구현 |
+| common     | src/main/java      | com.rihee.alerting.common.interceptor.DefaultStructuredLogInterceptor   | 신규 구현 |
+| common     | src/main/java      | com.rihee.alerting.common.config.CommonInterceptorConfiguration                       | 신규 구현 |
 
 ## 대안 방안(Alternative Options)
 

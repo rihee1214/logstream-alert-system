@@ -8,17 +8,8 @@
 	- [ ] db연결은 굳이 필요없고, db에서 select한 것처럼 동작하게 만들기.
 	- [ ] 한 controller 여러개의 controller를 호출하게 만들고 추적이 되는지 확인 필요
 	- [ ] scheduler가 돌면서 계속 특정 controller를 call하여 로그가 계속 쌓이도록 만들기
-- [ ] 비지니스 서비스 호출에 대한 B3Header에 관련된 내용 추가하기.
-- [ ] bizlog-contract문서에 meta영역에  B3Header관련 내용 추가하기
-	- [ ] Meta영역에 sampled와 flags 요소가 들어가게됨
 - [ ] 문서 작성 필요 요소
 	- [ ] Actuator Filter관련된 설명을 추가하고, Https만 사용할 것을 강조하기
-- [ ] scheduleing관련된 코드 및 기존 테스트 코드 다듬기
-- [ ] application.properties 문서에 주석 다듬기
-	- [ ] Common 영역
-		- [ ] service명(service.name) 넣어주어야 함
-		- [ ] application.properties에 monitoring.scheduler.interval.ms를 넣어주어야. actuator call 간격 설정 가능함을 알려야함
-		- [ ] Actuator 설정 관련 문서 남기기 (application.properties에 들어갈 항목 넣어주어야 함)
 - [ ] docker, docker-compose.yml, kubernetes.yml 파일에 주석과 환경 변수 넣을 요소
 	- [ ] Common 영역
 		- [ ] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
@@ -59,3 +50,12 @@
 	- [x] 기본 구성 완료
 	- [x] 더 확장해서 자세한 설정 추가 작성하기
 - [x] Actuator call 로그 남기게 만들기
+- [x] 비지니스 서비스 호출에 대한 B3Header에 관련된 내용 추가하기.
+- [x] bizlog-contract문서에 meta영역에  B3Header관련 내용 추가하기
+	- [x] Meta영역에 sampled와 flags 요소가 들어가게됨
+- [x] application.properties 문서에 주석 다듬기
+	- [x] Common 영역
+		- [x] service명(service.name) 넣어주어야 함
+		- [x] application.properties에 monitoring.scheduler.interval.ms를 넣어주어야. actuator call 간격 설정 가능함을 알려야함
+		- [x] Actuator 설정 관련 문서 남기기 (application.properties에 들어갈 항목 넣어주어야 함)
+- [x] scheduleing관련된 코드 및 기존 테스트 코드 다듬기

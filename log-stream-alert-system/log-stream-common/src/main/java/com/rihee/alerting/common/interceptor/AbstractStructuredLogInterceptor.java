@@ -16,7 +16,6 @@ import io.micrometer.common.lang.NonNullApi;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.UUID;
 import org.slf4j.MDC;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -34,13 +33,13 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * <p><b>사용 예시</b>: API 요청 로깅을 위한 선행 인터셉터로 활용</p>
  */
 @NonNullApi
-public class StructuredLogInterceptor implements HandlerInterceptor {
+public abstract class AbstractStructuredLogInterceptor implements HandlerInterceptor {
 
-  // Json 생성을 위한 ObjectNode를 생성하기 위한 요소.
-  private static final ObjectMapper mapper = new ObjectMapper();
   // 모든 섹터에서 잡히지 않은 Exception을 afterCompletion 에서 로그로 찍어내기 위한 용도
   private static final StructuredLogger logger
-                            = StructuredLoggerFactory.getLogger(StructuredLogInterceptor.class);
+      = StructuredLoggerFactory.getLogger(AbstractStructuredLogInterceptor.class);
+  // Json 생성을 위한 ObjectNode를 생성하기 위한 요소.
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   // 요청 대상 메서드에 들어있는 spanLabel 매핑 정보가 담겨있는 레지스트리
   private final SpanLabelRegistry registry;
@@ -54,7 +53,7 @@ public class StructuredLogInterceptor implements HandlerInterceptor {
    * @param registry 요청 대상 메서드에 들어있는 spanLabel 매핑 정보가 담겨있는 레지스트리.
    * @param serviceName MDC에 기본 세팅될 서비스 정보.
    */
-  public StructuredLogInterceptor(SpanLabelRegistry registry,
+  public AbstractStructuredLogInterceptor(SpanLabelRegistry registry,
                                     String serviceName) {
     this.registry = registry;
     this.serviceName = serviceName;
@@ -78,18 +77,23 @@ public class StructuredLogInterceptor implements HandlerInterceptor {
    * @return 항상 {@code true} 반환하여 DispatcherServlet의 이후 체인을 계속 진행
    */
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+  public final boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                                                                         Object handler) {
     // 요청 헤더 기반 traceId, parentSpanId, spanId 세팅
     String traceId = request.getHeader(B3Header.TRACE_ID.getHeaderName());
     String spanId = request.getHeader(B3Header.SPAN_ID.getHeaderName());
-    MDC.put(TRACE_ID.getName(), generateTraceId(traceId));
-    if (StringUtils.hasText(spanId)) {
-      MDC.put(PARENT_SPAN_ID.getName(), spanId);
+
+    if (!StringUtils.hasText(traceId)) {
+      traceId = generateTraceId(traceId);
     }
+    MDC.put(TRACE_ID.getName(), traceId);
     if (handler instanceof HandlerMethod handlerMethod) {
       registry.findLabel(handlerMethod.getMethod())
               .ifPresent(label -> MDC.put(SPAN_ID.getName(), generateSpanId(spanId, label)));
+    }
+    String parentSpanId = generateParentSpanId(spanId);
+    if (StringUtils.hasText(parentSpanId)) {
+      MDC.put(PARENT_SPAN_ID.getName(), parentSpanId);
     }
 
     // Meta에 로그 추적기를 위한 선택 헤더 추가.
@@ -129,47 +133,62 @@ public class StructuredLogInterceptor implements HandlerInterceptor {
   }
 
   // === 헬퍼 메서드 ===
-
-  // traceId 설정 구역
-
   /**
-   * traceId가 존재하면 그대로 사용하고, 없으면 새로운 UUID를 생성한다.
+   * 현재 요청과 매핑된 {@link SpanLabelRegistry}를 반환합니다.
    *
-   * @param traceId 요청 헤더에서 읽은 traceId
-   * @return 유효한 traceId
+   * <p>서브 클래스 또는 하위 구현체에서 메서드에 연결된 spanLabel 정보를 조회할 때 사용됩니다.</p>
+   *
+   * @return {@link SpanLabelRegistry} 인스턴스
    */
-  private String generateTraceId(String traceId) {
-    if (StringUtils.hasText(traceId)) {
-      return traceId;
-    }
-    return UUID.randomUUID().toString();
+  protected SpanLabelRegistry getRegistry() {
+    return this.registry;
   }
 
-  // spanId 설정 구역
+  /**
+   * 현재 서비스의 이름을 반환합니다.
+   *
+   * <p>SpanId 생성 및 로그 필드 구성 시 서비스 식별자로 사용됩니다.</p>
+   *
+   * @return 서비스 이름 문자열
+   */
+  protected String getServiceName() {
+    return this.serviceName;
+  }
 
   /**
-   * spanId가 존재하고 올바른 형식이면 서비스 이름과 함께 순번을 증가시킨 새 spanId를 생성하고,
-   * 그렇지 않으면 서비스 이름과 함께 1번부터 시작하는 spanId를 생성한다.
+   * 요청 헤더에서 전달된 traceId를 기반으로 최종 traceId 값을 생성합니다.
    *
-   * <p></p>NOTE: spanId는 "서비스명-spanLabel-번호" 형식임.
-   * 해당 포맷이 바뀌면 테스트 코드{@code StructuredHttpServerTests}도 함께 수정할 것</p>
+   * <p>일반적으로 traceId가 비어있거나 유효하지 않은 경우 새 traceId를 생성합니다.
+   * 서브 클래스는 traceId 생성 정책 또는 포맷을 자유롭게 정의할 수 있습니다.</p>
    *
-   * @param spanId 요청 헤더에서 읽은 spanId
-   * @return 새로 생성된 spanId
+   * @param traceId 요청 헤더로 전달된 traceId
+   * @return 최종적으로 사용될 traceId 문자열
    */
-  private String generateSpanId(String spanId, String spanLabel) {
-    if (StringUtils.hasText(spanId)) {
-      String[] parts = spanId.split("-");
-      try {
-        if (parts.length > 2) {
-          // 예: service-spanlabel-3 같은 형식일 때만 처리
-          int oldSeq = Integer.parseInt(parts[parts.length - 1]);
-          return serviceName + "-" + spanLabel + "-" + (oldSeq + 1);
-        }
-      } catch (NumberFormatException ignore) {
-        // spanId 형식이 올바르지 않아 새로운 spanId를 작성.
-      }
-    }
-    return serviceName + "-" + spanLabel + "-1";
-  }
+  protected abstract String generateTraceId(String traceId);
+
+  /**
+   * 요청 헤더의 기존 spanId와 메서드의 spanLabel을 기반으로 새로운 spanId를 생성합니다.
+   *
+   * <p>서브 클래스는 spanId의 구조(예: 서비스명-업무명-순번) 또는 연결 방식을 정의할 수 있습니다.
+   * trace 트리의 계층 구조를 명확히 하기 위해 parentSpanId를 고려한 형식을 사용하는 것이 일반적입니다.</p>
+   *
+   * @param spanId    요청 헤더에서 전달된 부모 spanId
+   * @param spanLabel {@link SpanLabelRegistry}에서 조회된 메서드 고유 라벨
+   * @return 최종적으로 로깅에 사용될 spanId
+   */
+  protected abstract String generateSpanId(String spanId, String spanLabel);
+
+  /**
+   * 요청 헤더에서 전달된 {@code spanId}를 기반으로 {@code parentSpanId}를 생성할지 여부를 결정합니다.
+   *
+   * <p>이 메서드는 MDC에 저장할 {@code parentSpanId} 값을 정의하며,
+   * 오버라이딩을 통해 비즈니스 요구에 따라 포함 여부와 값을 제어할 수 있습니다.</p>
+   *
+   * <p>반환값이 {@code null} 또는 빈 문자열인 경우, {@code parentSpanId}는 MDC에 포함되지 않습니다.
+   * 반대로 유효한 문자열을 반환하면 해당 값이 MDC에 등록됩니다.</p>
+   *
+   * @param spanId 요청 헤더에서 전달된 spanId
+   * @return MDC에 등록할 parentSpanId, 등록을 생략하려면 {@code null} 또는 빈 문자열
+   */
+  protected abstract String generateParentSpanId(String spanId);
 }
