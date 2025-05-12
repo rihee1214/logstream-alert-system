@@ -16,8 +16,17 @@
 		- [ ] Actuator를 Call하는 prometheus 인증 헤더 토큰(환경변수 key값: monitoring.token)
 	       (HTTP header = X-Monitoring-Token)을 환경 변수로 넣어야 한다는 내용 문서화 필요.
 - [ ] Actuator call(metric call) 하는 scheduler에 대한 로직 수정 필요.
-	- [ ] configMap으로 마운트된 파일에서 가져와서 지정된 요소들을 loop로 돌면서 처리하도록.
-		- [ ] configMap이름은 여러개여도 내부에서 사용하는 파일 이름은 단 하나여야 한다.
+	- [ ] configMap -> 파일 마운트 방식 (properties)
+		- [ ] 가장 기본적인 항목들 (common에 구현된 사항)은 문서화 해야함
+	- [ ] properties는 여러 이유로 polling 방식을 사용하도록 결정
+		- [ ] 문서화 필요(WatchService 포기)
+			- [ ] 가상 컨테이너 환경에서 적절하게 동작하지 않을 가능성 높음
+			- [ ] 파일이 크지 않기 때문에 그리 부담되는 작업이 아님
+	- [ ] 모든 생성된 코드에 javadoc 작성하기
+	- [ ] 문서화 필요
+		- [ ] 새로운 handler만들고, 적용 방식은 알아서 하도록 지시하기 (만드는 방법, 주의사항)
+		- [ ] 처리 로직에 대한 설명 추가
+	- [ ] 구현 마무리하기
 	- [ ] 테스트 로직 구현 완성도 필요
 ---
 # 이미 작업한 목록

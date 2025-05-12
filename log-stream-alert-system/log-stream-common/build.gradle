@@ -37,3 +37,38 @@ test {
     environment "monitoring.token", "test-token"
     jvmArgs += ["-XX:+EnableDynamicAgentLoading"]
 }
+
+// IDE에서 테스트 실행 시 Actuator 설정 파일(metric-config.properties)을 자동 생성하여
+// 실제 운영 환경과 유사한 메트릭 구성이 적용되도록 함 (test classpath에 포함되도록 처리)
+
+// metric-config.properties 생성 경로 설정
+def generatedMetricConfigPath = layout.buildDirectory.file("generated-config/metric-config.properties")
+// 설정 파일 생성 task
+tasks.register("generateMetricConfig") {
+    doLast {
+        def file = file(generatedMetricConfigPath)
+        file.parentFile.mkdirs()
+        file.text = """
+            metrics.failure.threshold=0.3
+            metrics.target.jvm.memory.used=true
+            metrics.target.jvm.memory.max=true
+            metrics.target.system.cpu.usage=true
+            metrics.target.process.uptime=true
+            metrics.target.http.server.requests=true
+            metrics.target.jvm.gc.pause=true
+        """.stripIndent()
+    }
+}
+// 생성된 설정 파일을 테스트 리소스 경로로 복사 (IDE 테스트 실행 시 classpath에 포함되도록 처리)
+tasks.register("copyMetricConfig", Copy) {
+    from(layout.buildDirectory.dir("generated-config"))
+    into(layout.buildDirectory.dir("resources/test")) // IDE 실행 시 classpath에 포함됨
+}
+// 테스트 실행 시 설정 파일이 항상 준비되도록 의존성 연결
+tasks.named("test") {
+    dependsOn("generateMetricConfig", "copyMetricConfig")
+}
+// processTestResources 실행 시에도 파일 복사가 선행되도록 설정 (classpath 포함 목적)
+tasks.named("processTestResources") {
+    dependsOn("copyMetricConfig")
+}
