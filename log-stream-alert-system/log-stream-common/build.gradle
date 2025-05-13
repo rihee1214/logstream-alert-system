@@ -32,6 +32,7 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty "service.name", "common"
+    systemProperty "metric.config.path", layout.buildDirectory.file("generated-config/metric-config.properties").get().asFile.absolutePath
     environment "HOST", "localhost"
     environment "CONTAINER", "local-container"
     environment "monitoring.token", "test-token"

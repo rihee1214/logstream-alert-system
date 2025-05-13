@@ -12,7 +12,7 @@ const status = await tp.system.suggester(
 
 const title = await tp.system.prompt("주제를 입력하세요 (예: add-parent-span-id)");
 const date = tp.date.now("YYYY-MM-DD");
-const fileName = `{${date}}-${title}.md`;
+const fileName = `{${date}}-${title}`;
 await tp.file.move(`decision/${fileName}`);
 
 const label = statusLabels[status];

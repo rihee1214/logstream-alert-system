@@ -13,6 +13,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
 import com.rihee.alerting.common.util.SimpleJsonUtils;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import org.slf4j.MDC;
@@ -25,8 +27,26 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * {@code SimpleActuatorCallLoggingHandler}는 단일 actuator endpoint에 대해
+ * GET 요청을 전송하고, 응답 결과를 구조화된 로그로 기록하는 기본 핸들러입니다.
+ *
+ * <p>이 핸들러는 {@link ActuatorCallLoggingHandler} 인터페이스의 구현체로서,
+ * {@code /actuator/health}와 같은 단일 endpoint 호출에 최적화되어 있습니다.</p>
+ *
+ * <p>요청은 WebClient를 통해 비동기적으로 전송되며, 내부적으로 소요 시간 측정 및
+ * MDC 기반 메타 정보 설정을 수행합니다. 성공 여부 및 상태 코드에 따라
+ * 적절한 로그 레벨(info/warn)로 메시지를 출력합니다.</p>
+ *
+ * <p>{@code monitoring.scheduler.enable=true} 조건 하에서
+ * {@link com.rihee.alerting.common.actuator.CommonMonitoringScheduler}에 의해 주기적으로 실행됩니다.
+ *
+ * @author 리희
+ * @since 1.0
+ */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SimpleActuatorCallLoggingHandler implements ActuatorCallLoggingHandler {
@@ -34,19 +54,57 @@ public class SimpleActuatorCallLoggingHandler implements ActuatorCallLoggingHand
   private static final StructuredLogger logger
                       = StructuredLoggerFactory.getLogger(SimpleActuatorCallLoggingHandler.class);
 
+  /**
+   * actuator endpoint를 호출하고, 응답 결과를 구조화된 로그로 기록합니다.
+   *
+   * <p>설정 파일에서 대상 URI 목록을 조회한 후, 각 URI에 대해 비동기 요청을 수행하고,
+   * 응답 메타데이터(MDC), 상태 코드, 메시지 등을 포함한 structured log를 출력합니다.
+   *
+   * <p>요청은 {@link WebClient}를 통해 비동기 전송되며,
+   * 응답은 {@code .block()} 호출을 통해 동기적으로 대기하여 처리됩니다.
+   *
+   * @param client       actuator 호출에 사용할 WebClient 인스턴스
+   * @param properties   설정 파일에서 로드된 프로퍼티 (URI 정보 등 포함)
+   * @param serviceName  로그에 포함될 서비스 식별자
+   */
   @Override
   public void execute(WebClient client, Properties properties, String serviceName) {
+    // TODO URL 찾아서 seperator 로 분리 시키는 작업이 필요.
+    // TODO 모든 작업이 빠르게 끝날 수 있도록, 모든 작업을 비동기 방식으로 처리하게 만들 필요가 있음.
+    String[] uris = properties.getProperty("").split(",");
+
+    Flux.merge(
+            Arrays.stream(uris)
+                .map(uri -> callActuatorEndpoint(client, uri, serviceName))
+                .toList()
+        )
+        .then()
+        .block();
+  }
+
+  /**
+   * 지정된 actuator URI에 대해 WebClient를 사용해 GET 요청을 보내고,
+   * 응답을 처리하여 구조화 로그를 남깁니다.
+   *
+   * <p>요청 소요 시간은 {@link StopWatch}로 측정되며, 로그 메타 정보는 MDC에 설정됩니다.
+   * 요청은 비동기 처리되며, 응답은 {@code handleActuatorResponse}, 예외는 {@code handleActuatorError}에서 처리됩니다.
+   *
+   * @param client      actuator 호출용 WebClient
+   * @param uri         호출할 actuator endpoint URI
+   * @param serviceName 로그에 포함될 서비스 이름
+   * @return 요청 완료를 나타내는 Mono 흐름
+   */
+  private Mono<Void> callActuatorEndpoint(WebClient client, String uri, String serviceName) {
     MDC.put(SERVICE.getName(), serviceName);
-    String uri = properties.getProperty("");
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
 
-    client.get()
+    return client.get()
         .uri(uri)
         .exchangeToMono(response -> handleActuatorResponse(response, stopWatch, uri))
         .doOnError(ex -> handleActuatorError(ex, stopWatch, uri))
-        .block();
-    MDC.clear();
+        .doFinally(signalType -> MDC.clear())
+        .then();
   }
 
   /**

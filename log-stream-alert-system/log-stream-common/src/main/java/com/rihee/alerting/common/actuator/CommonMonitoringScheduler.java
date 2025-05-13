@@ -7,6 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rihee.alerting.common.actuator.handler.ActuatorCallLoggingHandler;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
+import com.rihee.alerting.common.log.constant.LogType;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
@@ -18,21 +23,26 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 /**
- * {@code /actuator/health}, {@code /actuator/metrics} 정보를 주기적으로 조회하여
+ * {@code CommonMonitoringScheduler}는 actuator endpoint 정보를 주기적으로 조회하여
  * 구조화된 로그로 기록하는 공통 모니터링 스케줄러입니다.
  *
- * <p>이 클래스는 Prometheus 또는 Filebeat와 같은 로그 수집 도구가
- * actuator 상태를 수집할 수 있도록, 내부적으로 WebClient를 통해
- * actuator endpoint를 직접 호출하고, 결과를 로그로 남기는 역할을 합니다.</p>
+ * <p>이 클래스는 Prometheus, Filebeat 등의 로그 수집 도구가 actuator 상태를 간접 수집할 수 있도록,
+ * WebClient를 통해 애플리케이션 내부의 {@code /actuator/health}, {@code /actuator/metrics} 등의 endpoint를
+ * 호출하고, 결과를 structured log 형식으로 남깁니다.
  *
- * <p>로그에는 호출 URI, HTTP 상태 코드, 응답 메시지, 소요 시간 등의 메타 정보를 함께 포함하여,
- * 문제 발생 시 서비스 상태 진단 및 추적이 가능하도록 설계되어 있습니다.</p>
+ * <p>호출된 actuator 응답에는 URI, HTTP 상태, 메시지, 응답 시간 등의 메타 정보가 포함되며,
+ * 로그는 추후 장애 분석이나 운영 진단에 활용될 수 있습니다.
  *
- * <p>이 스케줄러는 {@code monitoring.scheduler.enable=true}가 설정되어있는 경우에만 동작하며,
- * 컨테이너 내에서 로컬 actuator 호출만을 허용하는 환경을 전제로 합니다.</p>
+ * <p>이 스케줄러는 {@code monitoring.scheduler.enable=true}로 설정된 경우에만 활성화되며,
+ * 컨테이너 내부에서 로컬 actuator endpoint 호출을 전제로 합니다.
+ *
+ * <p>또한, 런타임 중 설정 파일 및 system property를 기반으로 스케줄러의 동작 여부를
+ * 유동적으로 제어할 수 있도록 설계되어 있습니다.
  *
  * @author 리희
  * @since 1.0
@@ -60,7 +70,17 @@ public class CommonMonitoringScheduler {
             = StructuredLoggerFactory.getLogger(CommonMonitoringScheduler.class);
   private final WebClient httpClient;
 
-
+  /**
+   * {@code CommonMonitoringScheduler}의 인스턴스를 생성합니다.
+   *
+   * <p>이 생성자는 스케줄러가 사용할 actuator 핸들러 목록과 서비스 이름, 환경 정보를 주입받아
+   * 내부에서 공용 WebClient를 구성하고, 로그 식별을 위한 serviceName 값을 설정합니다.
+   * WebClient는 로컬 서버 포트를 기준으로 actuator endpoint에 접근하기 위해 동적으로 base URL을 구성합니다.</p>
+   *
+   * @param handlers      actuator 호출을 수행할 핸들러 리스트
+   * @param env           Spring Environment 객체 (서버 포트 조회에 사용)
+   * @param serviceName   로그에 포함될 서비스 이름. 값이 비어있을 경우 기본값이 사용됨
+   */
   public CommonMonitoringScheduler(List<ActuatorCallLoggingHandler> handlers,
                                    Environment env,
                                    @Value("${service.name:}") String serviceName) {
@@ -80,11 +100,46 @@ public class CommonMonitoringScheduler {
                                 .build();
   }
 
+  /**
+   * actuator 관련 핸들러들을 주기적으로 실행하여 로그를 수집합니다.
+   *
+   * <p>이 메서드는 {@code @Scheduled} 어노테이션에 의해 일정 주기로 자동 호출되며,
+   * {@code System.getProperty("monitoring.scheduler.enable")} 값에 따라 실행 여부를 동적으로 제어합니다.
+   * 설정 경로는 {@code System.getProperty("metric.config.path")}를 통해 주입되며,
+   * 해당 설정 파일은 각 handler의 실행 조건 및 메트릭 필터링 기준으로 활용됩니다.
+   *
+   * <p>실행 시 모든 {@link ActuatorCallLoggingHandler}를 병렬로 호출하여 비동기 방식으로 처리되며,
+   * Netty 기반의 WebClient를 통해 actuator endpoint로 요청을 전송합니다.
+   *
+   * <p>모든 작업 완료 후에는 {@code .block()}을 통해 전체 흐름을 기다립니다.
+   * 설정 파일이 존재하지 않거나 손상된 경우에는 {@link RuntimeException}을 발생시켜 스케줄링을 중단합니다.
+   */
   @Scheduled(fixedDelayString = "${monitoring.scheduler.interval.ms:10000}")
   public void scheduleActuatorLogs() {
-    // TODO Properties는 가져올 수 있도록 코딩해야함
-    // TODO 해당 작업들은 모두 서로에 영향이 없기 때문에 동시에 작동하도록 하는게 좋아보임
-    handlers.forEach(handler -> handler.execute(this.httpClient, new Properties(), serviceName));
-  }
+    // 시스템 과부하시, 동적으로 스케쥴러를 종료시킬 수 있도록 하는 스위치
+    if (!Boolean.parseBoolean(System.getProperty("monitoring.scheduler.enable", "false"))) {
+      logger.info(LogType.SYS, "스케줄러가 비활성화되어 있어 실행을 건너뜁니다.");
+      return;
+    }
 
+    // Properties Init
+    String propertiesPath = System.getProperty("metric.config.path");
+    Properties configs = new Properties();
+    try (InputStream in = Files.newInputStream(Paths.get(propertiesPath))) {
+      configs.load(in);
+    } catch (IOException e) {
+      logger.error(LogType.SYS, "Actuator Call Scheduler 호출 시 설정 문제가 발생하였습니다.", e);
+      throw new RuntimeException(e);
+    }
+
+    // 모든 handler 처리를 비동기적으로 처리하여 처리 속도를 증가시키고, 자원을 효율적으로 사용.
+    Flux.merge(
+            handlers.stream()
+                .map(handler -> Mono.fromRunnable(() ->
+                    handler.execute(httpClient, configs, serviceName)
+                ))
+                .toList()
+        ).doOnError(e -> logger.error(LogType.SYS, "Actuator 핸들러 실행 중 오류 발생", e))
+        .then().block(); // 전체 완료까지 대기
+  }
 }
