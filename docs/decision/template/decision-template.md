@@ -3,7 +3,8 @@ const statusOptions = ["in-progress", "done", "canceled"];
 const statusLabels = {
   "in-progress": "🔁 적용 예정",
   "done": "✅ 적용 완료",
-  "canceled": "❌ 결정 취소"
+  "canceled": "❌ 결정 취소",
+  "deferred": "⏸️ 보류 중"
 };
 const status = await tp.system.suggester(
   Object.values(statusLabels),
@@ -44,6 +45,11 @@ if (status === "canceled") {
 } else if (status === "done") {
   result += `    - 작업자 : 이름 \n`;
   result += `    - 완료 일자 : YYYY-MM-DD \n`;
+} else if (status === "deffered") {
+  result += `    - 작업자 : 이름 \n`;
+  result += `    - 정지 사유\n`;
+  result += `        - 정지 사유 1: \n`;
+  result += `        - 정지 사유 2: \n`;
 }
 result += `    - 작성자 : 이름\n`;
 result += `    - 참석자 : 이름1, 이름2\n`;

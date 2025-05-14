@@ -21,7 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class ActuatorSchedulerTests {
 
   @Autowired
-  private CommonMonitoringScheduler scheduler;
+  private ActuatorHealthMonitoringScheduler scheduler;
 
   /**
    * 로그 출력을 메모리에 저장하여 테스트 중 로그 이벤트를 직접 검증할 수 있도록 지원하는 커스텀 Appender입니다.

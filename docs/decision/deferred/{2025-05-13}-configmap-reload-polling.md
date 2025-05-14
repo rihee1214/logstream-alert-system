@@ -1,7 +1,7 @@
 ---
-title: "configmap-reload-polling"
-date: "2025-05-13"
-status: "done" # [in-progress|done|canceled]
+title: configmap-reload-polling
+date: 2025-05-13
+status: deferred
 ---
 
 # 📝 사고 및 결정 사항 기록
@@ -10,12 +10,14 @@ status: "done" # [in-progress|done|canceled]
 
 ## 0. 결정 여부
 
-- ✅ 적용 완료
+- ⏸️ 보류중
     - 작업자 : 이리희
-    - 완료 일자 : 2025-05-13 
+    - 정지 사유
+	    - Actuator 로깅 구조를 단순화 함에 따라 적용시키지 않음
+	    - 파일 기반 설정 감시 전략에 대한 기술 검토는 유효
     - 작성자 : 이리희
     - 참석자 : 이리희
-    - 관련 문서 : n/a
+    - 관련 문서 : [Actuator 로깅 결정 문서](../done/{2025-05-14}-actuator-logging-strategy.md)
 
 ---
 
@@ -55,11 +57,20 @@ Actuator에서 어떤 메트릭 정보를 수집/로깅할지 지정하는 설�
 
 ## 4. 최종 결정(Final Decision)
 
-_**Options 2: Polling 방식을 사용하기로 결정함.**
+~~_**Options 2: Polling 방식을 사용하기로 결정함.**~~
 
-가장 핵심적인 이유는 WatchEvent가 **컨테이너 환경(Kubernetes 등)의 파일 시스템 특성상 신뢰할 수 없는 동작을 보일 가능성이 크다는 점**이다. 예를 들어, ConfigMap은 종종 심볼릭 링크나 임시 파일 시스템으로 마운트되며, 이로 인해 WatchService가 변경을 감지하지 못하는 사례가 있다. 실제로 현업 사례에서도 이로 인해 이벤트가 발생하지 않아 설정 변경이 반영되지 않는 문제가 발생했다는 의견을 접했다.
+~~가장 핵심적인 이유는 WatchEvent가 **컨테이너 환경(Kubernetes 등)의 파일 시스템 특성상 신뢰할 수 없는 동작을 보일 가능성이 크다는 점**이다. 예를 들어, ConfigMap은 종종 심볼릭 링크나 임시 파일 시스템으로 마운트되며, 이로 인해 WatchService가 변경을 감지하지 못하는 사례가 있다. 실제로 현업 사례에서도 이로 인해 이벤트가 발생하지 않아 설정 변경이 반영되지 않는 문제가 발생했다는 의견을 접했다.~~
 
-파일 크기가 작고 접근 주기가 짧기 때문에 Polling 방식의 리소스 부담은 거의 없으며, 신뢰성과 구현의 단순함 측면에서도 적합한 선택이라 판단하였다.
+~~파일 크기가 작고 접근 주기가 짧기 때문에 Polling 방식의 리소스 부담은 거의 없으며, 신뢰성과 구현의 단순함 측면에서도 적합한 선택이라 판단하였다.~~
+
+❌ 본 결정은 이후 actuator 로깅 전략 단순화로 인해 **전체 구조가 폐기됨**에 따라 취소(canceled)되었습니다.
+
+- 공통 모듈에서는 `/actuator/health`만을 로깅 대상으로 유지하기로 하였고,
+- 확장 로깅 구조 및 동적 메트릭 설정 파일 기반 구조는 제거되었습니다.
+- Prometheus 및 Exporter 기반 수집 방식으로 전략이 변경됨에 따라 해당 파일 감시 방식을 도입할 필요가 없어졌습니다.
+
+➡️ 다만, **ConfigMap 기반의 설정 리로드 전략을 고민할 때 고려되었던 WatchEvent vs Polling 구조 논의는 여전히 유의미**하며,  
+향후 파일 기반 설정을 사용할 때 재검토될 수 있습니다.
 
 ---
 
@@ -83,7 +94,7 @@ _**Options 2: Polling 방식을 사용하기로 결정함.**
 
 | 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                            | 비고  |
 | ---------- | ------------------ | ------------------------------------------------------------ | --- |
-| Common     | src/main/java      | com.rihee.alerting.common.actuator.CommonMonitoringScheduler | 수정  |
+| Common     | src/main/java      | com.rihee.alerting.common.actuator.ActuatorHealthMonitoringScheduler | 수정  |
 
 ## 대안 방안(Alternative Options)
 

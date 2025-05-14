@@ -3,6 +3,7 @@
 const status = (p) => {
   if (p.path.includes("/done/")) return "✅ done";
   if (p.path.includes("/canceled/")) return "❌ canceled";
+  if (p.path.includes("/deferred/")) return "⏸️ deffered";
   return "🔁 in-progress";
 };
 
@@ -22,6 +23,7 @@ dv.table(
 - `my-topic/` 이하 전체 폴더 스캔
 - `/done/` 포함된 파일은 `done`
 - `/canceled/` 포함된 파일은 `canceled`
+- `/deferred/` 포함된 파일은 보류 파일 `deffered`
 - 나머지는 `in-progress`
 - `index.md` 파일은 제외
 - 제목, 상태, 경로 컬럼 출력

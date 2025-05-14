@@ -16,9 +16,9 @@ status: done
     - 작성자 : 이리희
     - 참석자 : 이리희
     - 관련 문서
-		- **취소된 결정 :** [{2025-04-27}-structured-logger-policy.md](/decision/canceled/{2025-04-27}-structured-logger-policy.md)
-		- **참고 결정1 :** [{2025-04-28}-add-parent-span-id.md](/decision/done/{2025-04-28}-add-parent-span-id.md)
-		- **참고 결정2 :** [{2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md](/decision/done/{2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md)
+		- **취소된 결정 :** [{2025-04-27}-structured-logger-policy.md](../canceled/{2025-04-27}-structured-logger-policy.md)
+		- **참고 결정1 :** [{2025-04-28}-add-parent-span-id.md](./{2025-04-28}-add-parent-span-id.md)
+		- **참고 결정2 :** [{2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md](./{2025-04-29}-spanid-policy-change-and-structured-controller-aspect-cancellation.md)
 
 ---
 

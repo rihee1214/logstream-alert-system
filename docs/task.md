@@ -10,28 +10,25 @@
 	- [ ] scheduler가 돌면서 계속 특정 controller를 call하여 로그가 계속 쌓이도록 만들기
 - [ ] 문서 작성 필요 요소
 	- [ ] Actuator Filter관련된 설명을 추가하고, Https만 사용할 것을 강조하기
+	- [ ] Scheduler에서 동작하는 handler로직에 대한 문서작업
+		- [ ] 새로운 handler만들고, 적용 방식은 알아서 하도록 지시하기 (만드는 방법, 주의사항)
+		- [ ] 처리 로직에 대한 설명 추가
+	- [ ] scheduler에 사용되는 파일(configMap)에 대한 요소과 그것에 대한 설명 필요
 - [ ] docker, docker-compose.yml, kubernetes.yml 파일에 주석과 환경 변수 넣을 요소
 	- [ ] Common 영역
 		- [ ] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
 		- [ ] Actuator를 Call하는 prometheus 인증 헤더 토큰(환경변수 key값: monitoring.token)
 	       (HTTP header = X-Monitoring-Token)을 환경 변수로 넣어야 한다는 내용 문서화 필요.
-- [ ] Actuator call(metric call) 하는 scheduler에 대한 로직 수정 필요.
-	- [ ] configMap -> 파일 마운트 방식 (properties)
-		- [ ] 가장 기본적인 항목들 (common에 구현된 사항)은 문서화 해야함
-	- [ ] properties는 여러 이유로 polling 방식을 사용하도록 결정
-		- [ ] 문서화 필요(WatchService 포기)
-			- [ ] 가상 컨테이너 환경에서 적절하게 동작하지 않을 가능성 높음
-			- [ ] 파일이 크지 않기 때문에 그리 부담되는 작업이 아님
-	- [ ] 모든 생성된 코드에 javadoc 작성하기
-	- [ ] 문서화 필요
-		- [ ] 새로운 handler만들고, 적용 방식은 알아서 하도록 지시하기 (만드는 방법, 주의사항)
-		- [ ] 처리 로직에 대한 설명 추가
-	- [ ] 구현 마무리하기
-	- [ ] 모든 작업은 비동기로 처리가 되어야 한다.
-	- [ ] build.gralde 에 제대로 된 설정 만들어 넣기
-	- [ ] 테스트 로직 구현 완성도 필요
-- [ ] 필요한 properties가 많아지고 있음. java option으로 넣어주는 properties를 모든 컨텍스트가 초기화 되기 전에 검증할 수 있도록 해야함.
+- [ ] java option으로 넣어주는 properties를 Spring 기동시 검증할 수 있도록 해야함.
 	- [ ] 다만 문제는 모든 모듈에서 각자가 가지고 있는 properties만 검증하게 하려면 main에서 호출하게 만드는 것은 문제가 있음 (의존 대상자의 validate는 되지 않기 때문)
+- [ ] Actuator Scheduler는 common영역에서 오로지 health만 call하도록 결정함
+	- [ ] 해당 결정 문서 완성
+	- [ ] 기존 결정문서 {05-13} 수정필요
+	- [ ] 전체 문서보고 수정
+	- [ ] 아키텍처 문서 수정해서 prometheus와 prometheus exporter를 이용하여 elastic search와 연결시키기
+	- [ ] 테스트 작성 완료하기
+	- [ ] ActuatorSecurity관련 고려 필요.
+		- [ ] common영역에서 정의한 것을 다른 모듈에서 재정의 할 수 있는지 알아봐야함
 ---
 # 이미 작업한 목록
 #done
@@ -72,3 +69,7 @@
 		- [x] application.properties에 monitoring.scheduler.interval.ms를 넣어주어야. actuator call 간격 설정 가능함을 알려야함
 		- [x] Actuator 설정 관련 문서 남기기 (application.properties에 들어갈 항목 넣어주어야 함)
 - [x] scheduleing관련된 코드 및 기존 테스트 코드 다듬기
+- [x] properties는 여러 이유로 polling 방식을 사용하도록 결정
+	- [x] 문서화 필요(WatchService 포기)
+		- [x] 가상 컨테이너 환경에서 적절하게 동작하지 않을 가능성 높음
+		- [x] 파일이 크지 않기 때문에 그리 부담되는 작업이 아님
