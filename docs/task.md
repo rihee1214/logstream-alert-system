@@ -22,13 +22,20 @@
 - [ ] java option으로 넣어주는 properties를 Spring 기동시 검증할 수 있도록 해야함.
 	- [ ] 다만 문제는 모든 모듈에서 각자가 가지고 있는 properties만 검증하게 하려면 main에서 호출하게 만드는 것은 문제가 있음 (의존 대상자의 validate는 되지 않기 때문)
 - [ ] Actuator Scheduler는 common영역에서 오로지 health만 call하도록 결정함
-	- [ ] 해당 결정 문서 완성
-	- [ ] 기존 결정문서 {05-13} 수정필요
+	- [x] 해당 결정 문서 완성
+	- [x] 기존 결정문서 {05-13} 수정필요
 	- [ ] 전체 문서보고 수정
 	- [ ] 아키텍처 문서 수정해서 prometheus와 prometheus exporter를 이용하여 elastic search와 연결시키기
 	- [ ] 테스트 작성 완료하기
 	- [ ] ActuatorSecurity관련 고려 필요.
-		- [ ] common영역에서 정의한 것을 다른 모듈에서 재정의 할 수 있는지 알아봐야함
+		- [ ] common영역에서 정의한 것을 다른 모듈에서 재정의 할 수 있는지 알아봐야함(whitelist에 대한 관리 필요함)
+- [ ] Logging service 로직에 대한 고려
+	- [ ] 어떻게 해야 warn레벨의 요소를 적절하게 notification에 보낼 수 있을지.
+	- [ ] error는 바로 보내야겠지만, warn은 애매한 경우가 많을 수 있음
+- [ ] Elasticsearch에 저장된 데이터 백업 및 압축 저장 관련된 정책 고려
+- [ ] prometheus wrapping service 만들기로 한 것에 대한 결정 문서 만들기
+	- [ ] 2, 3, 4, 5번 결정 문서 저장하기
+- [ ] 중복 키를 적용하여 alermanager에 적용하는 방법과, kafka에 적용하는 방법 둘다 알아보기
 ---
 # 이미 작업한 목록
 #done

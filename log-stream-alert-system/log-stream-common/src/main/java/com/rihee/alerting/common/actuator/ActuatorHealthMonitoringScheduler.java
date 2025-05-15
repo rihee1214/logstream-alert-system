@@ -37,13 +37,22 @@ import reactor.netty.http.client.HttpClient;
 
 /**
  * {@code ActuatorHealthMonitoringScheduler}는 Spring Boot 애플리케이션의 {@code /actuator/health} endpoint를
- * 주기적으로 호출하여 구조화된 로그로 상태를 기록하는 전용 스케줄러입니다.
+ * 주기적으로 호출하여 구조화된 로그로 상태를 기록하는 전용 self-monitoring 스케줄러입니다.
  *
- * <p>이 스케줄러는 WebClient를 통해 애플리케이션 내의 health endpoint를 호출하고,
- * 응답 결과 및 상태 코드를 기반으로 structured log를 출력합니다.
+ * <p>이 스케줄러는 WebClient를 통해 애플리케이션 내부의 health endpoint를 호출하고,
+ * 응답 결과 및 상태 코드를 기반으로 structured log를 출력합니다. 로그에는 HTTP 상태, 응답 본문,
+ * 요청 URI, 요청 소요 시간 등의 메타데이터가 포함되며, MDC를 이용해 JSON 기반 로그로 기록됩니다.
  *
- * <p>응답에는 HTTP 상태, 응답 본문, 요청 URI, 요청 소요 시간 등의 메타 데이터가 함께 포함되며,
- * MDC를 활용하여 JSON 기반 로그로 출력됩니다.
+ * <p><strong>이 구성은 외부 모니터링 시스템(Prometheus + AlertManager)과는 별도로 동작하며,</strong>
+ * 외부 모니터링이 실패하거나 지연되는 상황에서도 애플리케이션 내부에서 상태 변화를 기록할 수 있는
+ * 보조적인 관찰 수단(self-observation)으로 설계되었습니다.
+ *
+ * <p>예를 들어, Prometheus가 scrape에 실패하거나 exporter가 일시적으로 중단된 경우에도,
+ * 이 스케줄러는 서비스의 응답 지연, health 상태 변화, 장애 직전의 응답 추이 등을 기록함으로써
+ * 사후 분석(post-mortem)과 원인 추적(root cause analysis)에 유용한 단서를 제공합니다.
+ *
+ * <p>서비스가 완전히 종료되면 해당 로그도 남기지 못하므로, 장애 탐지의 "주체"가 되기보다는,
+ * "장애 전후 맥락을 남기는 기록자"로의 역할을 수행합니다.
  *
  * @author 리희
  * @since 1.0
