@@ -11,10 +11,10 @@ status: done
 ## 0. 결정 여부
 
 - ✅ 적용 완료
-  - 작업자 : 리희
+  - 작업자 : 이리희
   - 완료 일자 : 2025-05-15
-  - 작성자 : 리희
-  - 참석자 : 리희
+  - 작성자 : 이리희
+  - 참석자 : 이리희
   - 관련 문서 : [architecture.md](../../architecture/architecture.md)
 
 ---
@@ -66,9 +66,9 @@ Wrapping Service를 도입하여 Prometheus 외부에서 수집된 메트릭을 
 
 ## 6. 계속 고민할 사항(Still Open Issues)
 
-- Wrapping의 AlertManager 전송 정책을 어떻게 deduplication 할 것인지 (→ DR 003)
-- 저장 중복에 대한 일관성 확보 방식 (→ DR 002)
-- Notification fallback 경로와 Alert 중복 제어 방식 (→ DR 004)
+- Wrapping의 AlertManager 전송 정책을 어떻게 deduplication 할 것인지
+- 저장 중복에 대한 일관성 확보 방식
+- Notification fallback 경로와 Alert 중복 제어 방식
 
 ---
 
