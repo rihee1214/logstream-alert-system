@@ -26,18 +26,21 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StringUtils;
 
 /**
- * {@code StructuredHttpServerTests}는 로그 필드 자동 세팅 기능(MDC 설정 로직)을 검증하기 위한 통합 테스트 클래스입니다.
+ * {@code StructuredLoggingInterceptorTests}는 로그 필드 자동 세팅 기능(MDC 설정 로직)을 검증하기 위한 통합 테스트 클래스입니다.
  *
  * <p>해당 테스트는 커스텀 애너테이션 기반으로 동작하는 {@code MDCInterceptor} 및 {@code MDCHandlerMethodPostProcessor}의
  * 로직이 의도대로 작동하여 {@code traceId}, {@code spanId}, {@code parentSpanId}와 같은 MDC 필드가
  * 정확히 로그에 포함되는지를 확인합니다.</p>
+ *
+ * <p>특히 {@code @StructuredPostMapping} 애너테이션을 통한 요청 흐름에서
+ * 인터셉터가 어떻게 MDC 필드를 구성하고, 로그 라우팅까지 반영되는지 통합적으로 확인합니다.
  *
  * <p>모든 로그는 {@code MemoryAppender}를 통해 in-memory로 수집되며, 로그 필드 포함 여부는 Assert 구문으로 검증됩니다.</p>
  */
 @SpringBootTest(properties = "spring.profiles.active=dev")
 @AutoConfigureMockMvc
 @Import({MockHttpServletRequestConfig.class, CommonInterceptorConfiguration.class})
-public class StructuredHttpServerTests {
+public class StructuredLoggingInterceptorTests {
 
   /**
    * Spring의 {@code MockMvc}를 주입 받아 실제 요청처럼 테스트 메서드를 수행하기 위한 목적으로 사용됩니다.

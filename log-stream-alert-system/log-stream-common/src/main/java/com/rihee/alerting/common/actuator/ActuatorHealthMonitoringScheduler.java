@@ -3,13 +3,13 @@ package com.rihee.alerting.common.actuator;
 import static com.rihee.alerting.common.constant.DefaultValues.LOGGING_DEFAULT_VALUE;
 import static com.rihee.alerting.common.log.constant.LogType.ACT;
 import static com.rihee.alerting.common.log.constant.LogType.SYS;
+import static com.rihee.alerting.common.log.constant.MetaProperties.ELAPSED_MS;
+import static com.rihee.alerting.common.log.constant.MetaProperties.METHOD;
+import static com.rihee.alerting.common.log.constant.MetaProperties.STATUS_CODE;
+import static com.rihee.alerting.common.log.constant.MetaProperties.STATUS_MESSAGE;
+import static com.rihee.alerting.common.log.constant.MetaProperties.URI;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.META;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SERVICE;
-import static com.rihee.alerting.common.log.constant.biz.MetaProperties.ELAPSED_MS;
-import static com.rihee.alerting.common.log.constant.biz.MetaProperties.METHOD;
-import static com.rihee.alerting.common.log.constant.biz.MetaProperties.STATUS_CODE;
-import static com.rihee.alerting.common.log.constant.biz.MetaProperties.STATUS_MESSAGE;
-import static com.rihee.alerting.common.log.constant.biz.MetaProperties.URI;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -119,7 +119,7 @@ public class ActuatorHealthMonitoringScheduler {
    */
   @Scheduled(fixedDelayString = "${monitoring.scheduler.interval.ms:10000}")
   public void scheduleActuatorLogs() {
-    String uri = "/health";
+    String uri = "/actuator/health";
     MDC.put(SERVICE.getName(), serviceName);
 
     StopWatch stopWatch = new StopWatch();
@@ -130,7 +130,8 @@ public class ActuatorHealthMonitoringScheduler {
         .exchangeToMono(response -> handleActuatorResponse(response, stopWatch, uri))
         .doOnError(ex -> handleActuatorError(ex, stopWatch, uri))
         .doFinally(signalType -> MDC.clear())
-        .then();
+        .then()
+        .block();
   }
 
   /**

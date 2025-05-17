@@ -4,10 +4,14 @@ import static com.rihee.alerting.common.constant.DefaultValues.PROMETHEUS_TOKEN_
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
@@ -27,6 +31,8 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
  * @since 1.0
  */
 @Configuration
+@Profile("actuator")
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ActuatorSecurityConfig {
 
   private static final String MONITORING_TOKEN_HEADER = "X-Monitoring-Token";
@@ -73,7 +79,8 @@ public class ActuatorSecurityConfig {
                     .anyRequest()
                     .access((authentication, context)
                         -> isLocalhostRequest(context)))
-        .httpBasic(Customizer.withDefaults());
+        .httpBasic(Customizer.withDefaults())
+        .csrf(CsrfConfigurer::disable);
 
     return http.build();
   }

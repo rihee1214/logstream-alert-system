@@ -62,7 +62,7 @@
 - 로그의 타입별 분기, 필드 필터링 및 저장은 logging-service가 담당합니다.
 - **⚠ 개발시 주의사항**
   - [공통 컴포넌트 가이드 문서 참조](./docs/guide/development/common-component.md)
-  - [mockup 가이드 문서 참조](./docs/guide/development/biz-mockup-services.md)
+  - [mockup 가이드 문서 참조](./docs/guide/development/biz-services.md)
 - **⚙ 기동시 주의사항**
   - [비지니스 및 mockup 서비스 기동 가이드 문서 참조](./docs/guide/startup/start-biz-mockup-service.md.md)
 

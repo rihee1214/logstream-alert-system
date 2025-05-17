@@ -1,4 +1,4 @@
-package com.rihee.alerting.common.log.constant.biz;
+package com.rihee.alerting.common.log.constant;
 
 /**
  * 구조화된 로그의 meta 영역에 포함되는 표준 필드 키를 정의한 열거형입니다.

@@ -14,6 +14,17 @@
 		- [ ] 새로운 handler만들고, 적용 방식은 알아서 하도록 지시하기 (만드는 방법, 주의사항)
 		- [ ] 처리 로직에 대한 설명 추가
 	- [ ] scheduler에 사용되는 파일(configMap)에 대한 요소과 그것에 대한 설명 필요
+	- [ ] 개발 가이드 문서 조금 더 확장 가능하고 많은 내용을 품도록 구조 및 내용 수정하기
+		- [ ] common영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
+			- [ ] 전체를 세가지 파트로 나누어 설명
+				- [ ] StructureLogger에 대한 설명과 logback-spring 형식으로 전체 로그 구조 설명
+				- [ ] 인터셉터에 관한 내용들과 그에 대한 주요 요소들 설명
+				- [ ] Actuator관련된 요소들과 그에 대한 주요 요소들 설명
+		- [ ] biz영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
+			- [ ] 아직 영역을 나눌게 없지만, common영역에 대한 내용 몇 가지 추가해야함
+				- [ ] StructureLogger와 log구조 설명 및 log-level-semantics에 대한 설명 추가
+				- [ ] 로그를 처리하기 위한 StructureLogger 사용과 설명, 그리고 인터셉터에 대한 설명 추가
+				- [ ] Actuator scheduler에 대한 설명 및 기존 scheduler 교체 방안 제공
 - [ ] docker, docker-compose.yml, kubernetes.yml 파일에 주석과 환경 변수 넣을 요소
 	- [ ] Common 영역
 		- [ ] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
@@ -21,20 +32,10 @@
 	       (HTTP header = X-Monitoring-Token)을 환경 변수로 넣어야 한다는 내용 문서화 필요.
 - [ ] java option으로 넣어주는 properties를 Spring 기동시 검증할 수 있도록 해야함.
 	- [ ] 다만 문제는 모든 모듈에서 각자가 가지고 있는 properties만 검증하게 하려면 main에서 호출하게 만드는 것은 문제가 있음 (의존 대상자의 validate는 되지 않기 때문)
-- [ ] Actuator Scheduler는 common영역에서 오로지 health만 call하도록 결정함
-	- [x] 해당 결정 문서 완성
-	- [x] 기존 결정문서 {05-13} 수정필요
-	- [ ] 전체 문서보고 수정
-	- [ ] 아키텍처 문서 수정해서 prometheus와 prometheus exporter를 이용하여 elastic search와 연결시키기
-	- [ ] 테스트 작성 완료하기
-	- [ ] ActuatorSecurity관련 고려 필요.
-		- [ ] common영역에서 정의한 것을 다른 모듈에서 재정의 할 수 있는지 알아봐야함(whitelist에 대한 관리 필요함)
 - [ ] Logging service 로직에 대한 고려
 	- [ ] 어떻게 해야 warn레벨의 요소를 적절하게 notification에 보낼 수 있을지.
 	- [ ] error는 바로 보내야겠지만, warn은 애매한 경우가 많을 수 있음
 - [ ] Elasticsearch에 저장된 데이터 백업 및 압축 저장 관련된 정책 고려
-- [ ] prometheus wrapping service 만들기로 한 것에 대한 결정 문서 만들기
-	- [ ] 2, 3, 4, 5번 결정 문서 저장하기
 - [ ] 중복 키를 적용하여 alermanager에 적용하는 방법과, kafka에 적용하는 방법 둘다 알아보기
 ---
 # 이미 작업한 목록
@@ -80,3 +81,12 @@
 	- [x] 문서화 필요(WatchService 포기)
 		- [x] 가상 컨테이너 환경에서 적절하게 동작하지 않을 가능성 높음
 		- [x] 파일이 크지 않기 때문에 그리 부담되는 작업이 아님
+- [x] prometheus wrapping service 만들기로 한 것에 대한 결정 문서 만들기
+- [x] Actuator Scheduler는 common영역에서 오로지 health만 call하도록 결정함
+	- [x] 해당 결정 문서 완성
+	- [x] 기존 결정문서 {05-13} 수정필요
+	- [x] 전체 문서보고 수정
+	- [x] 아키텍처 문서 수정해서 prometheus와 elastic search와 연결시키기
+	- [x] 테스트 작성 완료하기
+	- [x] ActuatorSecurity관련 고려 필요.
+		- [x] common영역에서 정의한 것을 다른 모듈에서 재정의 할 수 있는지 알아봐야함(whitelist에 대한 관리 필요함)

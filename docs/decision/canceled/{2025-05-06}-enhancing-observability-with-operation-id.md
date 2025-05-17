@@ -17,7 +17,7 @@ status: canceled
 		- 추적성 강화보다는 오히려 오용 위험과 구조 복잡성을 증가시킬 수 있어 취소함
     - 작성자 : 이리희
     - 참석자 : 이리희
-    - 관련 문서 : [bizlog 규약 문서](../../contracts/bizlog-contract.md)
+    - 관련 문서 : [bizlog 규약 문서](bizlog-contract.md)
 
 
 ---
