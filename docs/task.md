@@ -14,17 +14,17 @@
 		- [ ] 새로운 handler만들고, 적용 방식은 알아서 하도록 지시하기 (만드는 방법, 주의사항)
 		- [ ] 처리 로직에 대한 설명 추가
 	- [ ] scheduler에 사용되는 파일(configMap)에 대한 요소과 그것에 대한 설명 필요
-	- [ ] 개발 가이드 문서 조금 더 확장 가능하고 많은 내용을 품도록 구조 및 내용 수정하기
-		- [ ] common영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
-			- [ ] 전체를 세가지 파트로 나누어 설명
-				- [ ] StructureLogger에 대한 설명과 logback-spring 형식으로 전체 로그 구조 설명
-				- [ ] 인터셉터에 관한 내용들과 그에 대한 주요 요소들 설명
-				- [ ] Actuator관련된 요소들과 그에 대한 주요 요소들 설명
-		- [ ] biz영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
-			- [ ] 아직 영역을 나눌게 없지만, common영역에 대한 내용 몇 가지 추가해야함
-				- [ ] StructureLogger와 log구조 설명 및 log-level-semantics에 대한 설명 추가
-				- [ ] 로그를 처리하기 위한 StructureLogger 사용과 설명, 그리고 인터셉터에 대한 설명 추가
-				- [ ] Actuator scheduler에 대한 설명 및 기존 scheduler 교체 방안 제공
+	- [x] 개발 가이드 문서 조금 더 확장 가능하고 많은 내용을 품도록 구조 및 내용 수정하기
+		- [x] common영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
+			- [x] 전체를 세가지 파트로 나누어 설명
+				- [x] StructureLogger에 대한 설명과 logback-spring 형식으로 전체 로그 구조 설명
+				- [x] 인터셉터에 관한 내용들과 그에 대한 주요 요소들 설명
+				- [x] Actuator관련된 요소들과 그에 대한 주요 요소들 설명
+		- [x] biz영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
+			- [x] 아직 영역을 나눌게 없지만, common영역에 대한 내용 몇 가지 추가해야함
+				- [x] StructureLogger와 log구조 설명 및 log-level-semantics에 대한 설명 추가
+				- [x] 로그를 처리하기 위한 StructureLogger 사용과 설명, 그리고 인터셉터에 대한 설명 추가
+				- [x] Actuator scheduler에 대한 설명 및 기존 scheduler 교체 방안 제공
 - [ ] docker, docker-compose.yml, kubernetes.yml 파일에 주석과 환경 변수 넣을 요소
 	- [ ] Common 영역
 		- [ ] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
@@ -37,6 +37,7 @@
 	- [ ] error는 바로 보내야겠지만, warn은 애매한 경우가 많을 수 있음
 - [ ] Elasticsearch에 저장된 데이터 백업 및 압축 저장 관련된 정책 고려
 - [ ] 중복 키를 적용하여 alermanager에 적용하는 방법과, kafka에 적용하는 방법 둘다 알아보기
+- [ ] 테스트 코드를 한곳에서 만들어서 다른 곳에서도 사용할 수 있게 만들건지 고민하기
 ---
 # 이미 작업한 목록
 #done
