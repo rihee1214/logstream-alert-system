@@ -16,6 +16,8 @@ dependencies {
 
     // WebClient 전용 (자체 service call용)
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // 보안을 위한 dependency
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
@@ -29,5 +31,6 @@ test {
     environment "HOST", "localhost"
     environment "CONTAINER", "local-container"
     environment "monitoring.token", "test-token"
+    environment "mockup.token", "test-token"
     jvmArgs += ["-XX:+EnableDynamicAgentLoading"]
 }

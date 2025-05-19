@@ -31,6 +31,7 @@ dependencies {
 // 테스트 코드 전용 java 옵션, 환경변수 세팅
 test {
     useJUnitPlatform()
+    systemProperty "spring.profiles.active", "test"
     systemProperty "service.name", "common"
     environment "HOST", "localhost"
     environment "CONTAINER", "local-container"
