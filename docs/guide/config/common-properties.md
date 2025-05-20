@@ -18,7 +18,7 @@
 - **추천 위치:** `common`, `biz` 모듈
 - **활성화 시 효과:** 추적 로그(spanId) 생성시 사용됨 
 - 🔸**예시**: `common`
-### 🔧 `logging.interceptor.enable`
+### 🔧 `logging.interceptor.enabled`
 - **타입:** `boolean`
 - **기본값:** ```false``` 
 - **설명:** StructuredLogInterceptor 설정 활성화 여부
@@ -47,7 +47,9 @@
 - **기본값:** 없음
 - **설명:** health 상태의 세부 정보 노출 여부
 - **추천 위치:** `common`, `biz` 모듈
-- **활성화 시 효과:** health 상태 세부 정보 유출 방지
+- **활성화 시 효과**
+	- 비 활성화 시 : health 상태 세부 정보 유출 방지
+	- 활성화 시 : 모니터링 시스템이 정상 상태를 세부적으로 확인할 수 있게 한다
 - 🔸**예시**: `always`  /  `when-authorized`  등
 ### 🔧 `management.metrics.export.prometheus.enabled`
 - **타입:** `boolean`

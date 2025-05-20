@@ -35,3 +35,13 @@ env:
         fieldPath: metadata.name
 ```
 >❗ `CONTAINER` 값이 설정되지 않으면 로그 식별이 불가능해지므로 모든 환경에서 반드시 주입해야 합니다.
+
+## Required Runtime Properties
+
+- `mockup.token` (필수)
+    - mock-service에서 사용하는 헤더 기반 인증 토큰
+    - 반드시 실행 시 시스템 프로퍼티 또는 환경 변수로 지정해야 합니다.
+    - 예시:
+        - 시스템 프로퍼티: `-Dmockup.token=your-token`
+        - 환경 변수: `MOCKUP_TOKEN=your-token`
+    - application.properties에는 포함하지 않습니다.

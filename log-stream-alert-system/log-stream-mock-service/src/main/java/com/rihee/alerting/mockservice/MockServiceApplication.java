@@ -2,19 +2,22 @@ package com.rihee.alerting.mockservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 /**
- * {@code MockServiceApplication}은 Mock 서비스의 진입점(entry point) 역할을 하는 Spring Boot 애플리케이션 클래스입니다.
+ * {@code MockServiceApplication}은 mock-service의 애플리케이션 진입점 클래스입니다.
  *
- * <p>이 클래스는 {@link SpringBootApplication} 어노테이션을 통해 자동 설정, 컴포넌트 스캔, Bean 등록 등의
- * 기본 설정을 활성화하며, 애플리케이션 실행 시 Spring Boot 환경을 부트스트랩합니다.
+ * <p>{@link SpringBootApplication} 어노테이션을 통해 컴포넌트 스캔, 자동 설정, 설정 클래스 등록 등의
+ * Spring Boot 부트스트랩 기능이 활성화되며, 독립 실행형 mock 서비스로 동작합니다.
  *
- * <p>이 서비스는 테스트 및 연동 검증 목적의 mock endpoint를 제공하며, 독립적으로 실행 가능한 구조입니다.
+ * <p>본 mock 서비스는 로그 수집, 인터셉터 테스트, 모의 비즈니스 흐름 검증 등을 목적으로 구성되어 있으며,
+ * 연계 테스트와 로깅 트레이싱 구조 검증에 사용됩니다.
  *
  * @author 리희
  * @since 1.0
  */
 @SpringBootApplication
+@EnableWebSecurity
 public class MockServiceApplication {
 
   /**

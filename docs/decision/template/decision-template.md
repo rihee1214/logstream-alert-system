@@ -81,7 +81,7 @@ result += `|              |                        |                          | 
 
 result += `## 대안 방안(Alternative Options)\n\n_(버린 대안들과 버린 이유를 적는다)_\n\n`;
 result += `## 리스크 및 대응(Risks & Mitigation)\n\n_(이 결정으로 발생할 수 있는 문제와 그 대응 방안을 적는다)_\n\n`;
-result += `## 추후 개정 방향(Future Improvements)\n\n_(나중에 더 발전시킬 수 있는 부분이 있다면 적는다)_\n\n`;
+result += `## 추후 개선 방향(Future Improvements)\n\n_(나중에 더 발전시킬 수 있는 부분이 있다면 적는다)_\n\n`;
 result += `---\n\n`;
 result += `# 📚 작성 규칙\n\n`;
 result += `- 문장은 간결하고 명확하게.\n`;

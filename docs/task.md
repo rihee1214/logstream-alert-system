@@ -8,23 +8,6 @@
 	- [ ] db연결은 굳이 필요없고, db에서 select한 것처럼 동작하게 만들기.
 	- [ ] 한 controller 여러개의 controller를 호출하게 만들고 추적이 되는지 확인 필요
 	- [ ] scheduler가 돌면서 계속 특정 controller를 call하여 로그가 계속 쌓이도록 만들기
-- [ ] 문서 작성 필요 요소
-	- [ ] Actuator Filter관련된 설명을 추가하고, Https만 사용할 것을 강조하기
-	- [ ] Scheduler에서 동작하는 handler로직에 대한 문서작업
-		- [ ] 새로운 handler만들고, 적용 방식은 알아서 하도록 지시하기 (만드는 방법, 주의사항)
-		- [ ] 처리 로직에 대한 설명 추가
-	- [ ] scheduler에 사용되는 파일(configMap)에 대한 요소과 그것에 대한 설명 필요
-	- [x] 개발 가이드 문서 조금 더 확장 가능하고 많은 내용을 품도록 구조 및 내용 수정하기
-		- [x] common영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
-			- [x] 전체를 세가지 파트로 나누어 설명
-				- [x] StructureLogger에 대한 설명과 logback-spring 형식으로 전체 로그 구조 설명
-				- [x] 인터셉터에 관한 내용들과 그에 대한 주요 요소들 설명
-				- [x] Actuator관련된 요소들과 그에 대한 주요 요소들 설명
-		- [x] biz영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
-			- [x] 아직 영역을 나눌게 없지만, common영역에 대한 내용 몇 가지 추가해야함
-				- [x] StructureLogger와 log구조 설명 및 log-level-semantics에 대한 설명 추가
-				- [x] 로그를 처리하기 위한 StructureLogger 사용과 설명, 그리고 인터셉터에 대한 설명 추가
-				- [x] Actuator scheduler에 대한 설명 및 기존 scheduler 교체 방안 제공
 - [ ] docker, docker-compose.yml, kubernetes.yml 파일에 주석과 환경 변수 넣을 요소
 	- [ ] Common 영역
 		- [ ] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
@@ -37,15 +20,19 @@
 	- [ ] error는 바로 보내야겠지만, warn은 애매한 경우가 많을 수 있음
 - [ ] Elasticsearch에 저장된 데이터 백업 및 압축 저장 관련된 정책 고려
 - [ ] 중복 키를 적용하여 alermanager에 적용하는 방법과, kafka에 적용하는 방법 둘다 알아보기
-- [ ] Common영역 문서화 고려하기
+- [ ] Mockup영역 문서화 고려하기
 	- [ ] mock.token 관련해서 요청시 최소한의 조치로 X-Auth-Token을 헤더에 넣어서 보내도록함
 	- [ ] 보안을 위해 Security 관련 코드를 추가해야함.(Common세팅 영향으로 무조건 만들어 넣어야함)
-- [ ] Common 영역 작업 필요 사항
-	- [ ] Javadoc 모두 작성
+	- [ ] @EnableWebSecurity을 설정해서 기본 security 설정은 무시하고, 직접 설정한 security가 작용되도록 해야 함
+	- [ ] 추후 기동 가이드에 common, mockup 모두에 들어가는 환경 설정들을 기록해야하고, 설명해야하며, @EnableWebSecurity는 물론, 각각의 역할을 정하고, 이것은 그저 mockup이라는 것을, 결국 biz영역의 개발자가 추가로 정의한 내용은 각자가 관리해야함을 명시
+- [ ] Mockup 영역 작업 필요 사항
 	- [ ] 여러가지 복잡한 흐름 로직 작성
 	- [ ] 스케쥴러를 통해 일정 주기마다 요청하는 로직 작성
 	- [ ] 요청하여 실패, 성공을 트리거 하거나, 여러가지 명령을 줄 수 있는 로직 작성
 	- [ ] Exeption을 내놓도록 하여 오류시 stacktrace도 나오는지 확인
+- [ ] Common 영역 작업 필요 사항
+	- [ ] **property 검증을 위한 코드 작성하기 (@PostConstruct 통해 validate 코드 만들어서 검증, 없다면 실패로 만들어버리기)**
+	- [ ] property 검증에 대한 내용도 common 개발 가이드에 추가하고, biz문서에도 그것은 각자의 책임이라고 명시하기.
 ---
 # 이미 작업한 목록
 #done
@@ -99,3 +86,16 @@
 	- [x] 테스트 작성 완료하기
 	- [x] ActuatorSecurity관련 고려 필요.
 		- [x] common영역에서 정의한 것을 다른 모듈에서 재정의 할 수 있는지 알아봐야함(whitelist에 대한 관리 필요함)
+- [x] 문서 작성 필요 요소
+	- [x] Actuator Filter관련된 설명을 추가하기
+	- [x] 개발 가이드 문서 조금 더 확장 가능하고 많은 내용을 품도록 구조 및 내용 수정하기
+		- [x] common영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
+			- [x] 전체를 세가지 파트로 나누어 설명
+				- [x] StructureLogger에 대한 설명과 logback-spring 형식으로 전체 로그 구조 설명
+				- [x] 인터셉터에 관한 내용들과 그에 대한 주요 요소들 설명
+				- [x] Actuator관련된 요소들과 그에 대한 주요 요소들 설명
+		- [x] biz영역에 대한 문서 수정 내용(길어지면 링크로 참조. 서브 디렉토리에 넣기)
+			- [x] 아직 영역을 나눌게 없지만, common영역에 대한 내용 몇 가지 추가해야함
+				- [x] StructureLogger와 log구조 설명 및 log-level-semantics에 대한 설명 추가
+				- [x] 로그를 처리하기 위한 StructureLogger 사용과 설명, 그리고 인터셉터에 대한 설명 추가
+				- [x] Actuator scheduler에 대한 설명 및 기존 scheduler 교체 방안 제공

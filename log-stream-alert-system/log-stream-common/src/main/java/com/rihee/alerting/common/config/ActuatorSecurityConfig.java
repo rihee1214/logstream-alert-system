@@ -31,7 +31,6 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
  * @since 1.0
  */
 @Configuration
-@Profile("actuator")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ActuatorSecurityConfig {
 
