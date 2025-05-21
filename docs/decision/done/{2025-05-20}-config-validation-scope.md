@@ -1,7 +1,7 @@
 ---
-title: "config-validation-scope"
-date: "2025-05-20"
-status: "in-progress" # [in-progress|done|canceled]
+title: config-validation-scope
+date: 2025-05-20
+status: done
 ---
 
 # 📝 사고 및 결정 사항 기록
@@ -12,7 +12,7 @@ status: "in-progress" # [in-progress|done|canceled]
 
 - 🔁 적용 예정
 	- 작업자 : 리희
-	- 작업 완료 예정일 : 전체 설정 검증 로직 정리 이후 일괄 적용
+	- 작업 완료 예정일 : 2025-05-21
 	- 작성자 : 리희
 	- 참석자 : 리희
 	- 관련 문서 : [개발 가이드](../../guide/development/common-component.md)

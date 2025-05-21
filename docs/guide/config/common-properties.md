@@ -1,4 +1,4 @@
-# 📘 Application Properties 설명서
+# 📘 application.properties 설명서
 - [⚙️ Common Setting](#common-setting)
 - [📡 Actuator Setting](#actuator-setting)
 - [🕰 WebClient / Scheduler Setting](#webclient-scheduler-setting)
@@ -90,3 +90,5 @@
 - **활성화 시 효과:** 응답 대기 시간 초과 시 warn레벨의 로그 메시지 발행
 - 🔸**예시**: `3`
 ---
+
+

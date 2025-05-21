@@ -1,7 +1,5 @@
 package com.rihee.alerting.common.config;
 
-import static com.rihee.alerting.common.constant.DefaultValues.LOGGING_DEFAULT_VALUE;
-
 import com.rihee.alerting.common.interceptor.AbstractStructuredLogInterceptor;
 import com.rihee.alerting.common.interceptor.DefaultStructuredLogInterceptor;
 import com.rihee.alerting.common.interceptor.SpanLabelBeanPostProcessor;
@@ -52,9 +50,14 @@ public class CommonInterceptorConfiguration implements WebMvcConfigurer {
    *
    * @param serviceName spanId 생성 규칙에 들어갈 서비스 명.
    */
-  public CommonInterceptorConfiguration(@Value("${service.name:}") String serviceName) {
-    this.serviceName = StringUtils.hasText(serviceName) ? serviceName
-                                                      : LOGGING_DEFAULT_VALUE.getValue();
+  public CommonInterceptorConfiguration(@Value("${service.name}") String serviceName) {
+    if (!StringUtils.hasText(serviceName)) {
+      throw new IllegalStateException(
+          "Missing required configuration: 'service.name'. "
+              + "Please set it using -Dservice.name or environment variable."
+      );
+    }
+    this.serviceName = serviceName;
   }
 
   /**

@@ -1,10 +1,7 @@
 package com.rihee.alerting.common.config;
 
-import static com.rihee.alerting.common.constant.DefaultValues.PROMETHEUS_TOKEN_DEFAULT;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -14,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import org.springframework.util.StringUtils;
 
 /**
  * {@code /actuator} 엔드포인트에 대한 접근 보안 정책을 설정하는 구성 클래스입니다.
@@ -39,17 +37,26 @@ public class ActuatorSecurityConfig {
   private final String prometheusToken;
 
   /**
-   * 환경변수에서 Prometheus 접근 토큰을 불러와 내부 필드에 저장합니다.
+   * 환경 변수 또는 시스템 프로퍼티로부터 Prometheus 접근 토큰을 주입받아 초기화합니다.
    *
-   * <p>이 토큰은 {@code /actuator/prometheus} 경로로 접근할 때,
-   * 요청 헤더 {@code X-Monitoring-Token}과 비교하여 접근 여부를 판별하는 데 사용됩니다.</p>
+   * <p>이 토큰은 {@code /actuator/prometheus} 경로에 접근할 때,
+   * 요청 헤더의 {@code X-Monitoring-Token} 값과 비교하여 인증을 수행하는 데 사용됩니다.</p>
    *
-   * <p>환경변수 {@code monitoring.token}이 존재하지 않을 경우 기본값으로 {@code LOGGING_DEFAULT_VALUE}를 사용합니다.</p>
+   * <p>설정 값은 {@code monitoring.token} 키를 통해 주입되며,
+   * 값이 없거나 비어 있을 경우 애플리케이션 기동 시 예외가 발생합니다.</p>
    *
    * @param env Spring {@link Environment} 객체를 통해 외부 설정 값을 주입받습니다.
+   * @throws IllegalStateException {@code monitoring.token} 설정이 존재하지 않거나 공백일 경우
    */
   public ActuatorSecurityConfig(Environment env) {
-    this.prometheusToken = env.getProperty("monitoring.token", PROMETHEUS_TOKEN_DEFAULT.getValue());
+    this.prometheusToken = env.getProperty("monitoring.token");
+
+    if (!StringUtils.hasText(this.prometheusToken)) {
+      throw new IllegalStateException(
+          "Missing required configuration: 'monitoring.token'. "
+              + "Please set it using -Dmonitoring.token or environment variable."
+      );
+    }
   }
 
   /**

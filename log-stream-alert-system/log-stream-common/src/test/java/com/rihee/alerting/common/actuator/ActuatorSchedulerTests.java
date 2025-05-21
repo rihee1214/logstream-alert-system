@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rihee.alerting.common.CommonTestBootstrap;
 import com.rihee.alerting.common.log.appender.MemoryAppender;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -107,12 +109,13 @@ public class ActuatorSchedulerTests {
                       .isNotNull();
 
     // 3. JSON 파싱
-    JsonNode root = Assertions.assertDoesNotThrow(() -> new ObjectMapper().readTree(logJson),
-        "로그 메시지 JSON 파싱에 실패했습니다");
+    Map<String, String> mdcMap = log.map(ILoggingEvent::getMDCPropertyMap).orElse(new HashMap<>());
+    String rawMeta = mdcMap.get("meta");
+    assertThat(rawMeta).as("meta 필드는 비어있으면 안됩니다.").isNotNull();
 
-
-    JsonNode meta = root.get("meta");
-    assertThat(meta).as("meta 필드가 존재해야 합니다").isNotNull();
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode meta = Assertions.assertDoesNotThrow(() -> mapper.readTree(mdcMap.get("meta")),
+        "meta 필드를 Json으로 만들 수 없습니다. : " + rawMeta);
 
     int statusCode = meta.get("statusCode").asInt();
     assertThat(statusCode).as("HTTP 상태 코드는 200이어야 합니다.")

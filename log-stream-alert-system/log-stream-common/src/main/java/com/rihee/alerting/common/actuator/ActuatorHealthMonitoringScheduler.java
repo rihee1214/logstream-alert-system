@@ -1,6 +1,5 @@
 package com.rihee.alerting.common.actuator;
 
-import static com.rihee.alerting.common.constant.DefaultValues.LOGGING_DEFAULT_VALUE;
 import static com.rihee.alerting.common.log.constant.LogType.ACT;
 import static com.rihee.alerting.common.log.constant.LogType.SYS;
 import static com.rihee.alerting.common.log.constant.MetaProperties.ELAPSED_MS;
@@ -13,11 +12,11 @@ import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SER
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
 import com.rihee.alerting.common.util.SimpleJsonUtils;
 import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,13 +59,9 @@ import reactor.netty.http.client.HttpClient;
 @Component
 public class ActuatorHealthMonitoringScheduler {
 
-  private static final ObjectMapper jsonMapper = new ObjectMapper();
+  private final Duration connectTimeout;
 
-  @Value("${monitoring.timeout.connect:PT3S}")
-  private Duration connectTimeout = Duration.ofSeconds(3);
-
-  @Value("${monitoring.timeout.read:PT3S}")
-  private Duration readTimeout = Duration.ofSeconds(3);
+  private final Duration readTimeout;
 
   /**
    * serviceName 로그에 포함될 서비스 이름(예: user-service).
@@ -80,25 +75,65 @@ public class ActuatorHealthMonitoringScheduler {
   /**
    * {@code ActuatorHealthMonitoringScheduler}의 인스턴스를 초기화합니다.
    *
-   * <p>WebClient는 내부 서버의 포트를 기반으로 로컬 호출을 수행하도록 base URL을 설정하며,
-   * {@code service.name}은 structured log에 포함될 서비스 이름으로 사용됩니다.
+   * <p>이 스케줄러는 {@code /actuator/health} 엔드포인트를 주기적으로 호출하여
+   * 서비스의 내부 상태를 점검하고, 그 결과를 structured log로 기록합니다.
    *
-   * @param env Spring Environment 객체 (server 포트 조회에 사용)
-   * @param serviceName 로그에 포함될 서비스 식별자. 비어있으면 기본값 사용
+   * <p>{@code service.name}은 structured log에 포함될 서비스 식별자로,
+   * 설정되지 않은 경우 애플리케이션 기동이 실패합니다.
+   *
+   * <p>{@code monitoring.timeout.connect}, {@code monitoring.timeout.read} 값은 ISO-8601 형식으로 주입되며,
+   * {@code PT3S}가 기본값입니다. 잘못된 포맷일 경우 예외가 발생합니다.
+   *
+   * @param env Spring {@link Environment} 객체. {@code server.port} 확인에 사용됩니다.
+   * @param serviceName structured log에 삽입될 서비스 이름
+   * @param connectTimeout actuator call의 연결 타임아웃 (ISO-8601 형식, ex: PT3S)
+   * @param readTimeout actuator call의 응답 타임아웃 (ISO-8601 형식)
+   * @throws IllegalStateException 필수 설정 누락 또는 duration 포맷이 잘못된 경우
    */
   public ActuatorHealthMonitoringScheduler(Environment env,
-                                          @Value("${service.name:}") String serviceName) {
-    this.serviceName = StringUtils.hasText(serviceName) ? serviceName
-                                                        : LOGGING_DEFAULT_VALUE.getValue();
-    String port = env.getProperty("server.port", env.getProperty("local.server.port", "8080"));
+                                          @Value("${service.name}") String serviceName,
+      @Value("${monitoring.timeout.connect:PT3S}") String connectTimeout,
+      @Value("${monitoring.timeout.read:PT3S}") String readTimeout) {
+    if (!StringUtils.hasText(serviceName)) {
+      throw new IllegalStateException(
+          "Missing required configuration: 'service.name'. "
+              + "Please set it using -Dservice.name or environment variable."
+      );
+    }
+
+    this.serviceName = serviceName;
+    String actuatorPort = env.getProperty("server.port");
+
+    if (!StringUtils.hasText(actuatorPort)) {
+      logger.error(SYS, "[ActuatorSelfMonitor] Failed to resolve actuator port. "
+          + "Please set 'server.port'. Using default: 8080");
+      actuatorPort = "8080";
+    }
+
+    try {
+      this.readTimeout = Duration.parse(readTimeout);
+    } catch (DateTimeParseException e) {
+      throw new IllegalStateException(
+          "Invalid duration format for 'monitoring.timeout.read': " + readTimeout, e
+      );
+    }
+
+    try {
+      this.connectTimeout = Duration.parse(connectTimeout);
+    } catch (DateTimeParseException e) {
+      throw new IllegalStateException(
+          "Invalid duration format for 'monitoring.timeout.connect': " + connectTimeout, e
+      );
+    }
 
     // TIME OUT 세팅용
     HttpClient client = HttpClient.create()
                                 .responseTimeout(this.readTimeout)
-                                .option(CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis());
+                                .option(CONNECT_TIMEOUT_MILLIS,
+                                          (int) this.connectTimeout.toMillis());
 
     this.httpClient = WebClient.builder()
-                                .baseUrl("http://localhost:" + port)
+                                .baseUrl("http://localhost:" + actuatorPort)
                                 .clientConnector(new ReactorClientHttpConnector(client))
                                 .build();
   }

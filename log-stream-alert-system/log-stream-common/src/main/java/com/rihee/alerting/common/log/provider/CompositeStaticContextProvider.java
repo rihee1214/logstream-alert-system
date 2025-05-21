@@ -1,6 +1,5 @@
 package com.rihee.alerting.common.log.provider;
 
-import static com.rihee.alerting.common.constant.DefaultValues.LOGGING_DEFAULT_VALUE;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.CONTAINER;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.HOST;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SERVICE;
@@ -26,7 +25,7 @@ public class CompositeStaticContextProvider extends AbstractJsonProvider<ILoggin
   /**
    * 로그에 포함될 서비스 이름(예: user-service).
    */
-  private static final String serviceName = System.getProperty("service.name");
+  private static final String serviceName;
   /**
    * 로그에 포함될 호스트 이름(예: mockup-host).
    */
@@ -38,7 +37,30 @@ public class CompositeStaticContextProvider extends AbstractJsonProvider<ILoggin
 
   private static String resolveEnv(String key) {
     String value = System.getenv(key);
-    return StringUtils.hasText(value) ? value : LOGGING_DEFAULT_VALUE.getValue();
+
+    if (!StringUtils.hasText(value)) {
+      String message = switch (key) {
+        case "HOST" -> "Missing required environment variable: 'HOST'. "
+            + "Please set HOST to identify log origin.";
+        case "CONTAINER" -> "Missing required environment variable: 'CONTAINER'. "
+            + "Please set CONTAINER to distinguish container instance in logs.";
+        default -> "Missing required environment variable: '" + key + "'. "
+            + "Please ensure it is configured.";
+      };
+      throw new IllegalStateException(message);
+    }
+
+    return value;
+  }
+
+  static {
+    serviceName = System.getProperty("service.name");
+    if (!StringUtils.hasText(serviceName)) {
+      throw new IllegalStateException(
+          "Missing required configuration: 'service.name'. "
+              + "Please set it using -Dservice.name or in application.properties."
+      );
+    }
   }
 
   @Override
