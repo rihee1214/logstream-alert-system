@@ -89,7 +89,7 @@ Spring Boot 기반 서비스의 설정 값들을 실제 주입 위치에 따라 
 - **설명:** actuator base 경로를 지정합니다. 기본 경로는 `/actuator`입니다. 변경 시 프록시 라우팅/방화벽 설정 등에 주의가 필요합니다.
 - 🔸**예시**: `/actuator`, `/infra`
 
-#### 🔧 `management.endpoints.health.show-details`
+#### 🔧 `management.endpoint.health.show-details`
 - **타입:** `String`
 - **기본값:** `never`
 - **필수 여부:** ⚠️ 운영환경에 따라 선택

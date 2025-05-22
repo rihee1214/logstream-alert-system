@@ -20,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -53,16 +54,28 @@ import reactor.netty.http.client.HttpClient;
  * <p>서비스가 완전히 종료되면 해당 로그도 남기지 못하므로, 장애 탐지의 "주체"가 되기보다는,
  * "장애 전후 맥락을 남기는 기록자"로의 역할을 수행합니다.
  *
+ * <p><strong>이 컴포넌트는 {@code monitoring.scheduler.enabled=true}일 경우에만 활성화되며,</strong>
+ * 운영 환경에서는 기본적으로 활성화되지만, 개발 환경에서는 해당 설정을 비활성화함으로써
+ * 불필요한 구조화 로그 생성을 피할 수 있도록 설계되어 있습니다.
+ * 설정을 생략한 경우에도 기본값은 {@code true}로 간주되며, 명시적으로 꺼야 비활성화됩니다.
+ *
  * @author 리희
  * @since 1.0
  */
 @Component
+@ConditionalOnProperty(
+    prefix = "monitoring.scheduler",
+    name = "enabled",
+    havingValue = "true",
+    matchIfMissing = true
+)
 public class ActuatorHealthMonitoringScheduler {
 
   private final Duration connectTimeout;
 
   private final Duration readTimeout;
 
+  private final String actuatorBaseUrl;
   /**
    * serviceName 로그에 포함될 서비스 이름(예: user-service).
    */
@@ -105,7 +118,7 @@ public class ActuatorHealthMonitoringScheduler {
     String actuatorPort = env.getProperty("server.port");
 
     if (!StringUtils.hasText(actuatorPort)) {
-      logger.error(SYS, "[ActuatorSelfMonitor] Failed to resolve actuator port. "
+      logger.warn(SYS, "[ActuatorSelfMonitor] Failed to resolve actuator port. "
           + "Please set 'server.port'. Using default: 8080");
       actuatorPort = "8080";
     }
@@ -125,6 +138,14 @@ public class ActuatorHealthMonitoringScheduler {
           "Invalid duration format for 'monitoring.timeout.connect': " + connectTimeout, e
       );
     }
+
+    String actuatorBaseUrl = env.getProperty("management.endpoints.web.base-path");
+    if (!StringUtils.hasText(actuatorBaseUrl)) {
+      logger.warn(SYS, "[ActuatorSelfMonitor] Failed to resolve actuator Base Url. "
+          + "Please set 'management.endpoints.web.base-path'. Using default: '/actuator'");
+      actuatorBaseUrl = "/actuator";
+    }
+    this.actuatorBaseUrl = actuatorBaseUrl;
 
     // TIME OUT 세팅용
     HttpClient client = HttpClient.create()
@@ -154,7 +175,7 @@ public class ActuatorHealthMonitoringScheduler {
    */
   @Scheduled(fixedDelayString = "${monitoring.scheduler.interval.ms:10000}")
   public void scheduleActuatorLogs() {
-    String uri = "/actuator/health";
+    String uri = this.actuatorBaseUrl + "/health";
     MDC.put(SERVICE.getName(), serviceName);
 
     StopWatch stopWatch = new StopWatch();

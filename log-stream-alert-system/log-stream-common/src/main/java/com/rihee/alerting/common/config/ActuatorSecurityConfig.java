@@ -36,6 +36,8 @@ public class ActuatorSecurityConfig {
 
   private final String prometheusToken;
 
+  private final String actuatorBaseUrl;
+
   /**
    * 환경 변수 또는 시스템 프로퍼티로부터 Prometheus 접근 토큰을 주입받아 초기화합니다.
    *
@@ -57,6 +59,12 @@ public class ActuatorSecurityConfig {
               + "Please set it using -Dmonitoring.token or environment variable."
       );
     }
+
+    String actuatorBaseUrl = env.getProperty("management.endpoints.web.base-path");
+    if (!StringUtils.hasText(actuatorBaseUrl)) {
+      actuatorBaseUrl = "/actuator";
+    }
+    this.actuatorBaseUrl = actuatorBaseUrl;
   }
 
   /**
@@ -72,11 +80,11 @@ public class ActuatorSecurityConfig {
    */
   @Bean
   public SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
-    http.securityMatcher("/actuator/**")
+    http.securityMatcher(actuatorBaseUrl + "/**")
         .authorizeHttpRequests(auth
             -> auth
                     // prometheus 수집용 요청만 허용 (토큰 헤더 확인)
-                    .requestMatchers("/actuator/prometheus")
+                    .requestMatchers(actuatorBaseUrl + "/prometheus")
                     .access((authSupplier, context) -> {
                       String token = context.getRequest().getHeader(MONITORING_TOKEN_HEADER);
                       return new AuthorizationDecision(prometheusToken.equals(token));

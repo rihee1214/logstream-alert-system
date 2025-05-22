@@ -30,9 +30,6 @@
 	- [ ] 스케쥴러를 통해 일정 주기마다 요청하는 로직 작성
 	- [ ] 요청하여 실패, 성공을 트리거 하거나, 여러가지 명령을 줄 수 있는 로직 작성
 	- [ ] Exeption을 내놓도록 하여 오류시 stacktrace도 나오는지 확인
-- [ ] Common 영역 작업 필요 사항
-	- [ ] **property 검증을 위한 코드 작성하기 (@PostConstruct 통해 validate 코드 만들어서 검증, 없다면 실패로 만들어버리기)**
-	- [ ] property 검증에 대한 내용도 common 개발 가이드에 추가하고, biz문서에도 그것은 각자의 책임이라고 명시하기.
 ---
 # 이미 작업한 목록
 #done
@@ -99,3 +96,6 @@
 				- [x] StructureLogger와 log구조 설명 및 log-level-semantics에 대한 설명 추가
 				- [x] 로그를 처리하기 위한 StructureLogger 사용과 설명, 그리고 인터셉터에 대한 설명 추가
 				- [x] Actuator scheduler에 대한 설명 및 기존 scheduler 교체 방안 제공
+- [x] Common 영역 작업 필요 사항
+	- [x] **property 검증을 위한 코드 작성하기 (@PostConstruct 통해 validate 코드 만들어서 검증, 없다면 실패로 만들어버리기)**
+	- [x] property 검증에 대한 내용도 common 개발 가이드에 추가하고, biz문서에도 그것은 각자의 책임이라고 명시하기.

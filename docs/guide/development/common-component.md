@@ -48,3 +48,4 @@ Common 모듈은 모든 Biz 서비스에서 공통적으로 사용하는 다음�
 - [🗂 structured-logging.md](structured-logging.md)  
 - [🧩 logging-interceptor.md](./common/logging-interceptor.md)  
 - [🩺 actuator-logging.md](./common/actuator-logging.md)  
+- [⚙️ common-config-reference.md](../config/common-config.md)
