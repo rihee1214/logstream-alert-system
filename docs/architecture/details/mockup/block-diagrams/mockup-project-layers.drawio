@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Whale/4.31.304.16 Safari/537.36" version="27.0.5">
+  <diagram name="페이지-1" id="ybZw9UFzO9yS4ZAhqaHd">
+    <mxGraphModel dx="1426" dy="766" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-8" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#000000);fillColor=light-dark(#FFFFFF,#FAFAFA);" vertex="1" parent="1">
+          <mxGeometry x="250" y="90" width="320" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-1" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Fira+sans&quot; face=&quot;Fira sans&quot;&gt;&lt;b&gt;Controller&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=light-dark(#FFFFFF,#00ACC1);strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="326" y="110" width="176" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-2" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Fira+sans&quot; face=&quot;Fira sans&quot;&gt;&lt;b style=&quot;&quot;&gt;Service&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=light-dark(#FFFFFF,#2196F3);strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="289" y="220" width="250" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-3" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(13, 71, 161));&quot; face=&quot;Fira sans&quot;&gt;&lt;i style=&quot;&quot;&gt;Service&lt;br&gt;Interface&lt;/i&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E3F2FD);strokeColor=light-dark(#000000,#90CAF9);" vertex="1" parent="1">
+          <mxGeometry x="361" y="145" width="106" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-4" value="&lt;font face=&quot;Fira sans&quot;&gt;&lt;i&gt;&lt;b&gt;Infra&lt;br&gt;(External Call Adaptor)&lt;/b&gt;&lt;/i&gt;&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=light-dark(#FFFFFF,#FF9800);strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="436" y="328" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-5" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(230, 81, 0));&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Fira+sans&quot; face=&quot;Fira sans&quot;&gt;&lt;i style=&quot;&quot;&gt;Infra Interface&lt;br&gt;(External Call Port)&lt;/i&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#FFE0B2);strokeColor=light-dark(#000000,#FFCC80);" vertex="1" parent="1">
+          <mxGeometry x="436" y="253" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-6" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot; face=&quot;Fira sans&quot;&gt;&lt;i&gt;&lt;b&gt;DAO&lt;br&gt;(DB Adaptor)&lt;/b&gt;&lt;/i&gt;&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=light-dark(#FFFFFF,#7E57C2);strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="271" y="329" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-7" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(74, 20, 140));&quot; face=&quot;Fira sans&quot;&gt;&lt;i style=&quot;&quot;&gt;DAO Interface&lt;br&gt;(DB Port)&lt;/i&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#CE93D8);fillColor=light-dark(#FFFFFF,#F3E5F5);" vertex="1" parent="1">
+          <mxGeometry x="269" y="253" width="124" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-10" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=none;fillColor=light-dark(#FFFFFF,#1A237E);" edge="1" parent="1" source="4tF_sJSTUdcCcXalgn7a-3" target="4tF_sJSTUdcCcXalgn7a-2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="414" y="280" as="sourcePoint" />
+            <mxPoint x="414" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-13" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=none;fillColor=light-dark(#FFFFFF,#1A237E);" edge="1" parent="1" source="4tF_sJSTUdcCcXalgn7a-5" target="4tF_sJSTUdcCcXalgn7a-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="426" y="358" as="sourcePoint" />
+            <mxPoint x="574" y="428" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4tF_sJSTUdcCcXalgn7a-14" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=none;fillColor=light-dark(#FFFFFF,#1A237E);" edge="1" parent="1" source="4tF_sJSTUdcCcXalgn7a-7" target="4tF_sJSTUdcCcXalgn7a-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="604" y="488" as="sourcePoint" />
+            <mxPoint x="604" y="538" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
