@@ -3,6 +3,7 @@ package com.rihee.alerting.mockservice.simpleCall;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
+import static com.rihee.alerting.mockservice.constants.MockupHeaders.MOCK_AUTH_TOKEN_HEADER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,18 +47,13 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import({MockHttpServletRequestConfig.class, CommonInterceptorConfiguration.class})
-public class SimpleMockServiceTests {
-
-  /**
-   * 테스트용 인증 헤더 이름 상수입니다.
-   */
-  private static final String MOCK_AUTH_TOKEN_HEADER = "X-Auth-Token";
+public class SimpleMockServiceCallTests {
 
   /**
    * 테스트 로그 출력을 위한 StructuredLogger 인스턴스입니다.
    */
   private static final StructuredLogger log
-      = StructuredLoggerFactory.getLogger(SimpleMockServiceTests.class);
+      = StructuredLoggerFactory.getLogger(SimpleMockServiceCallTests.class);
 
   /**
    * {@code MockMvc}를 통해 HTTP 요청을 시뮬레이션합니다.
@@ -104,7 +100,7 @@ public class SimpleMockServiceTests {
   @Test
   public void simpleMockupCallTest() throws Exception {
     // 첫 번째 요청으로 traceId, spanId가 잘 생성되어있는지 확인
-    mockMvc.perform(get("/simpleBiz").header(MOCK_AUTH_TOKEN_HEADER, "test-token"))
+    mockMvc.perform(get("/simpleBiz").header(MOCK_AUTH_TOKEN_HEADER.getHeaderName(), "test-token"))
         .andExpect(status().isOk());
 
     List<ILoggingEvent> events = memoryAppender.getLoggedEvents();

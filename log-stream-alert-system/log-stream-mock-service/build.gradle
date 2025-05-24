@@ -30,9 +30,11 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty "service.name", "mockup"
+    systemProperty "server.port", "8080"
     environment "HOST", "localhost"
     environment "CONTAINER", "local-container"
     environment "monitoring.token", "test-token"
     environment "mockup.token", "test-token"
+    environment "mockup.external.base-url", "http://localhost:"
     jvmArgs += ["-XX:+EnableDynamicAgentLoading"]
 }

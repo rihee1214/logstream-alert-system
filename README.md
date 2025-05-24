@@ -64,7 +64,7 @@
   - [공통 컴포넌트 가이드 문서 참조](./docs/guide/development/common-component.md)
   - [mockup 가이드 문서 참조](./docs/guide/development/biz-services.md)
 - **⚙ 기동시 주의사항**
-  - [비지니스 및 mockup 서비스 기동 가이드 문서 참조](./docs/guide/startup/start-biz-mockup-service.md.md)
+  - [비지니스 및 mockup 서비스 기동 가이드 문서 참조](./docs/guide/startup/start-mockup-service-guide.md)
 
 ### 🔹 Logging Service
 - Kafka에서 모든 로그를 수신하여 처리

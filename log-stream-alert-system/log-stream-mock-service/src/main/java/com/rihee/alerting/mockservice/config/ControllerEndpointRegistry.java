@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -49,7 +50,8 @@ public final class ControllerEndpointRegistry {
    *                       현재 애플리케이션에 등록된 컨트롤러 경로 정보를 제공받기 위해 사용됩니다.`
    */
   @Autowired
-  public ControllerEndpointRegistry(RequestMappingHandlerMapping handlerMapping) {
+  public ControllerEndpointRegistry(
+      @Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping) {
     this.handlerMapping = handlerMapping;
   }
 

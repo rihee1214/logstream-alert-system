@@ -2,10 +2,12 @@ package com.rihee.alerting.common.log.provider;
 
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.CONTAINER;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.HOST;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.LOG_TYPE;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SERVICE;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.rihee.alerting.common.log.constant.LogType;
 import java.io.IOException;
 import java.util.Map;
 import net.logstash.logback.composite.AbstractJsonProvider;
@@ -66,9 +68,10 @@ public class CompositeStaticContextProvider extends AbstractJsonProvider<ILoggin
   @Override
   public void writeTo(JsonGenerator generator, ILoggingEvent event) throws IOException {
     Map<String, String> mdc = event.getMDCPropertyMap();
-    writeIfAbsentInMdc(mdc, generator, SERVICE.name(), serviceName);
-    writeIfAbsentInMdc(mdc, generator, HOST.name(), hostName);
-    writeIfAbsentInMdc(mdc, generator, CONTAINER.name(), containerName);
+    writeIfAbsentInMdc(mdc, generator, SERVICE.getName(), serviceName);
+    writeIfAbsentInMdc(mdc, generator, HOST.getName(), hostName);
+    writeIfAbsentInMdc(mdc, generator, CONTAINER.getName(), containerName);
+    writeIfAbsentInMdc(mdc, generator, LOG_TYPE.getName(), LogType.SYS.getCode());
   }
 
   /**

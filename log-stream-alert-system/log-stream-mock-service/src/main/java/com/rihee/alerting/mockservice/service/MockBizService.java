@@ -16,12 +16,46 @@ package com.rihee.alerting.mockservice.service;
 public interface MockBizService {
 
   /**
-   * 단순 비즈니스 로직을 수행하는 메서드입니다.
+   * "Simple Call" 시나리오에서 단순 비즈니스 로직을 수행하는 메서드입니다.
    *
-   * <p>구현체에서는 로그 출력 또는 mock 데이터 생성 등의 처리를 수행할 수 있으며,
-   * 호출 시 structured logging 체계가 정상적으로 작동하는지 검증하는 목적으로도 활용됩니다.
+   * <p>로그 출력 또는 mock 데이터 반환 등, 최소한의 비즈니스 처리를 테스트할 수 있으며,
+   * structured logging 체계가 정상적으로 작동하는지 검증하는 목적으로도 사용됩니다.
+   * </p>
    *
    * @return 처리 결과 문자열
    */
-  String doSomething();
+  String doSimpleSomething();
+
+  /**
+   * "Middle Layer Call" 또는 "Branch Call" 시나리오에서 중간 mock 서비스를 구성하는 메서드입니다.
+   *
+   * <p>외부 mock 호출 또는 DB 조회 시뮬레이션을 포함한 중간 단계 로직을 구성하며,
+   * 다단계 mock 흐름에서 흐름의 연속성과 응답 구성을 검증하는 데 사용됩니다.
+   * </p>
+   *
+   * @return 처리 결과 문자열
+   */
+  String doMiddleSomething();
+
+  /**
+   * "Branch Call" 시나리오의 시작점에서 호출되는 메서드입니다.
+   *
+   * <p>여러 mock 서비스를 병렬 호출하거나 흐름을 분기시키는 테스트 구성을 할 수 있으며,
+   * 각 분기 이후 응답 조합 흐름 검증 목적에 활용됩니다.
+   * </p>
+   *
+   * @return 처리 결과 문자열
+   */
+  String doBranchSomething();
+
+  /**
+   * "Multi Layer Call" 시나리오의 시작점에서 호출되는 메서드입니다.
+   *
+   * <p>하나의 요청이 연속된 mock 서비스들을 계층적으로 호출하는 구조를 통해,
+   * 전체 흐름의 연쇄성과 단계별 로깅 흐름이 일관되게 유지되는지 검증할 수 있습니다.
+   * </p>
+   *
+   * @return 처리 결과 문자열
+   */
+  String doMultiLayerSomething();
 }
