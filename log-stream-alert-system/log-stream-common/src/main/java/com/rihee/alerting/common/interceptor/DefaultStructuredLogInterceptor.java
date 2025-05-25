@@ -23,7 +23,7 @@ public class DefaultStructuredLogInterceptor extends AbstractStructuredLogInterc
 
   // 모든 섹터에서 잡히지 않은 Exception을 afterCompletion 에서 로그로 찍어내기 위한 용도
   private static final StructuredLogger logger
-                        = StructuredLoggerFactory.getLogger(DefaultStructuredLogInterceptor.class);
+      = StructuredLoggerFactory.getLogger(DefaultStructuredLogInterceptor.class);
 
   /**
    * MDC 자동 생성 작업을 하는 로깅 인터셉터를 위한 기본 생성자입니다.

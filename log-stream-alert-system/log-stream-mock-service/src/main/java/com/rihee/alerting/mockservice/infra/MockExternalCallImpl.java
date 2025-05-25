@@ -8,11 +8,14 @@ import com.rihee.alerting.common.constant.B3Header;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
 import com.rihee.alerting.common.log.constant.LogType;
+import io.micrometer.observation.ObservationRegistry;
+import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -65,7 +68,8 @@ public class MockExternalCallImpl implements MockExternalCall {
    * @param env Spring Environment 객체로부터 설정값을 주입 받음
    * @throws IllegalStateException {@code mockup.external.base-url}이 비어 있거나 존재하지 않으면 예외 발생
    */
-  public MockExternalCallImpl(Environment env) {
+  public MockExternalCallImpl(Environment env,
+                              ObservationRegistry registry) {
     String port = env.getProperty("server.port");
     if (!StringUtils.hasText(port)) {
       logger.warn(LogType.SYS, "server.port를 지정하지 않았습니다.");
@@ -81,7 +85,34 @@ public class MockExternalCallImpl implements MockExternalCall {
     }
 
     this.webClient = WebClient.builder()
-        .baseUrl(baseUrl + port) // 실제 테스트용 mock 서버 baseUrl
+        .observationRegistry(registry)
+        .baseUrl(baseUrl + port)// 실제 테스트용 mock 서버 baseUrl
+        .filter(((request, next) -> {
+          Map<String, String> mdcMap = MDC.getCopyOfContextMap();
+          if (mdcMap == null) {
+            throw new IllegalStateException(
+                "MDC context is missing. "
+                    + "This WebClient must be invoked within a structured logging context "
+                    + "(e.g., via controller or scheduled task)."
+            );
+          }
+          String traceId = mdcMap.get(TRACE_ID.getName());
+          String spanId = mdcMap.get(SPAN_ID.getName());
+          String parentSpanId = mdcMap.get(PARENT_SPAN_ID.getName());
+          ClientRequest newReq
+              = ClientRequest.from(request)
+                          .headers(httpHeaders -> {
+                            httpHeaders.set(B3Header.TRACE_ID.getHeaderName(), traceId);
+                            httpHeaders.set(B3Header.SPAN_ID.getHeaderName(), spanId);
+                            httpHeaders.set(B3Header.PARENT_SPAN_ID.getHeaderName(), parentSpanId);
+                            httpHeaders.set(MOCK_AUTH_TOKEN_HEADER, "test-token");
+                          })
+                          .build();
+
+          return next.exchange(newReq)
+              .contextWrite(ctx -> ctx.put("mdc", mdcMap))
+              .doFinally(sigType -> MDC.clear());
+        }))
         .build();
   }
 
@@ -128,36 +159,29 @@ public class MockExternalCallImpl implements MockExternalCall {
   }
 
   private Mono<String> invokeExternalCallWithMdc(String method, String uri, String body) {
-    return Mono.defer(() -> {
-      String traceId = MDC.get(TRACE_ID.getName());
-      String spanId = MDC.get(SPAN_ID.getName());
-      String parentSpanId = MDC.get(PARENT_SPAN_ID.getName());
+    WebClient.RequestHeadersSpec<?> request
+        = webClient.method(HttpMethod.valueOf(method.toUpperCase()))
+                  .uri(uri);
 
-      // TODO Webclient에서 내부적으로 Mono가 깨지기 때문에 MDC 전파가 안되는 요소가 있음. 해결해야함
-      WebClient.RequestHeadersSpec<?> request
-          = webClient.method(HttpMethod.valueOf(method.toUpperCase()))
-                    .uri(uri)
-                    .headers(headers -> {
-                      headers.set(B3Header.TRACE_ID.getHeaderName(), traceId);
-                      headers.set(B3Header.SPAN_ID.getHeaderName(), spanId);
-                      headers.set(B3Header.PARENT_SPAN_ID.getHeaderName(), parentSpanId);
-                      headers.set(MOCK_AUTH_TOKEN_HEADER, "test-token");
-                    });
+    if (HttpMethod.POST.name().equals(method.toUpperCase())) {
+      request = ((WebClient.RequestBodySpec) request).bodyValue(body);
+    }
 
-      if (HttpMethod.POST.name().equals(method.toUpperCase())) {
-        request = ((WebClient.RequestBodySpec) request).bodyValue(body);
-      }
+    Map<String, String> mdcMap = MDC.getCopyOfContextMap();
 
-      return request.retrieve()
-          .bodyToMono(String.class)
-          .doOnNext(resp -> logger.info(LogType.BIZ, "External response for {}: {}", uri, resp))
-          .onErrorResume(WebClientResponseException.class, e -> {
-            logger.warn(LogType.BIZ, "External call {} failed with status {}",
-                        uri, e.getStatusCode());
-            return Mono.just("ERROR: " + e.getStatusCode());
-          })
-          .doFinally(sig -> MDC.clear());
-    });
+    return request.retrieve()
+        .bodyToMono(String.class)
+        .doOnNext(resp -> {
+          MDC.setContextMap(mdcMap);
+          logger.info(LogType.BIZ, "External response for {}: {}", uri, resp);
+        })
+        .onErrorResume(WebClientResponseException.class, e -> {
+          MDC.setContextMap(mdcMap);
+          logger.warn(LogType.BIZ, "External call {} failed with status {}",
+                      uri, e.getStatusCode());
+          return Mono.just("ERROR: " + e.getStatusCode());
+        })
+        .doFinally(signalType -> MDC.clear());
   }
 
 }

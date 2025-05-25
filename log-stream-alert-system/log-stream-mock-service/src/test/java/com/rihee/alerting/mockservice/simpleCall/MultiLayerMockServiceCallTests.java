@@ -131,10 +131,6 @@ public class MultiLayerMockServiceCallTests {
     Map<String, String> middleResp = events.get(12).getMDCPropertyMap();
     Map<String, String> lastResp = events.get(15).getMDCPropertyMap();
 
-
-    for (ILoggingEvent event : events) {
-      System.out.println(event.getMDCPropertyMap());
-    }
     assertThat(firstResp.get(TRACE_ID.getName())).isEqualTo(middleResp.get(TRACE_ID.getName()));
     assertThat(firstResp.get(TRACE_ID.getName())).isEqualTo(lastResp.get(TRACE_ID.getName()));
 

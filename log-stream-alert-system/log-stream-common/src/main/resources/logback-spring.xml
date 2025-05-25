@@ -11,15 +11,7 @@
                 <logLevel>
                     <fieldName>level</fieldName>
                 </logLevel>
-                <mdc>
-                    <fieldNames>
-                        <fieldName>logtype</fieldName>
-                        <fieldName>traceId</fieldName>
-                        <fieldName>spanId</fieldName>
-                        <fieldName>parentSpanId</fieldName>
-                        <fieldName>meta</fieldName>
-                    </fieldNames>
-                </mdc>
+                <mdc/>
                 <provider class="com.rihee.alerting.common.log.provider.CompositeStaticContextProvider"/>
                 <loggerName>
                     <fieldName>class</fieldName>

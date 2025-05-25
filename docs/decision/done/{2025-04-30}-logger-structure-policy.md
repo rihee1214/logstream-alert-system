@@ -78,13 +78,13 @@ ___
 
 ## 관련 코드(Linked Code)
 
-| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                                | 비고    |
-| ---------- | ------------------ |------------------------------------------------------------------| ----- |
-| common     | src/main/java      | com.rihee.alerting.common.log.aspect.StructuredMdcAspect         | 삭제    |
-| common     | src/main/java      | com.rihee.alerting.common.interceptor.SpanLabelRegistry          | 신규 구현 |
-| common     | src/main/java      | com.rihee.alerting.common.interceptor.SpanLabelBeanPostProcessor | 신규 구현 |
-| common     | src/main/java      | com.rihee.alerting.common.interceptor.DefaultStructuredLogInterceptor   | 신규 구현 |
-| common     | src/main/java      | com.rihee.alerting.common.config.CommonInterceptorConfiguration                       | 신규 구현 |
+| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                                     | 비고    |
+|------------|--------------------|-----------------------------------------------------------------------|-------|
+| common     | src/main/java      | com.rihee.alerting.common.log.aspect.StructuredMdcAspect              | 삭제    |
+| common     | src/main/java      | com.rihee.alerting.common.interceptor.SpanLabelRegistry               | 신규 구현 |
+| common     | src/main/java      | com.rihee.alerting.common.interceptor.SpanLabelBeanPostProcessor      | 신규 구현 |
+| common     | src/main/java      | com.rihee.alerting.common.interceptor.DefaultStructuredLogInterceptor | 신규 구현 |
+| common     | src/main/java      | com.rihee.alerting.common.config.CommonInterceptorConfiguration       | 신규 구현 |
 
 ## 대안 방안(Alternative Options)
 

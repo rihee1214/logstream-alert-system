@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StringUtils;
 
@@ -40,6 +41,7 @@ import org.springframework.util.StringUtils;
 @SpringBootTest(properties = "spring.profiles.active=dev")
 @AutoConfigureMockMvc
 @Import({MockHttpServletRequestConfig.class, CommonInterceptorConfiguration.class})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class StructuredLoggingInterceptorTests {
 
   /**
@@ -90,10 +92,9 @@ public class StructuredLoggingInterceptorTests {
    */
   @Test
   void mockupServiceShouldSetMdcFields() throws Exception {
-
     // 첫 번째 요청으로 traceId, spanId가 잘 생성되어있는지 확인
     mockMvc.perform(get("/getMappingTestMockup"))
-          .andExpect(status().isOk());
+        .andExpect(status().isOk());
 
     ILoggingEvent event1 = memoryAppender.getLoggedEvents().getFirst();
 
@@ -109,9 +110,9 @@ public class StructuredLoggingInterceptorTests {
 
     // 두 번째 요청과 헤더 세팅으로, 로깅시 나오는 traceId, spanId, parentSpanId가 잘 생성되어있는지 확인
     mockMvc.perform(get("/getMappingTestMockup")
-                        .header(B3Header.TRACE_ID.getHeaderName(), traceId1)
-                        .header(B3Header.SPAN_ID.getHeaderName(), spanId1)
-          ).andExpect(status().isOk());
+        .header(B3Header.TRACE_ID.getHeaderName(), traceId1)
+        .header(B3Header.SPAN_ID.getHeaderName(), spanId1)
+    ).andExpect(status().isOk());
 
     ILoggingEvent event2 = memoryAppender.getLoggedEvents().getFirst();
 

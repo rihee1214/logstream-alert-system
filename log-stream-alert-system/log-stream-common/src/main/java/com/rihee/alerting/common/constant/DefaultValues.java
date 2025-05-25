@@ -16,7 +16,11 @@ public enum DefaultValues {
    * <p>기본값은 {@code "0"}이며, 추적 비활성화를 의미합니다.
    * 자세한 내용은 {@link com.rihee.alerting.common.constant.B3Header}를 참고하세요.</p>
    */
-  B3HEADER_SAMPLED_DEFAULT("0");
+  B3HEADER_SAMPLED_DEFAULT("0"),
+  /**
+   * 서비스와 같이 알림의 대상이어야 하지만, 그 정보를 찾을 수 없는 경우 사용하는 값.
+   */
+  UNKNOWN("__UNKNOWN__");
 
   private final String value;
 
