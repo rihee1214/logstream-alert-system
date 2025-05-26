@@ -1,5 +1,9 @@
 package com.rihee.alerting.mockservice.simpleCall;
 
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.LOG_TYPE;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
 import static com.rihee.alerting.mockservice.constants.MockupHeaders.MOCK_AUTH_TOKEN_HEADER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,9 +15,12 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.rihee.alerting.common.config.CommonInterceptorConfiguration;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
+import com.rihee.alerting.common.log.constant.LogType;
 import com.rihee.alerting.mockservice.configuration.MockHttpServletRequestConfig;
 import com.rihee.alerting.mockservice.log.MemoryAppender;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,24 +28,34 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * {@code SimpleMockServiceTests}는 mock-service 모듈의 단순 호출 테스트를 수행하며,
- * 인증 헤더 처리 및 구조화된 로그의 필수 필드(traceId, spanId, parentSpanId) 포함 여부를 검증합니다.
+ * {@code BranchMockServiceCallTests}는 mock-service 모듈의 핵심 비즈니스 흐름을 따라가며
+ * 로그 기반 트레이스 ID 전파, Span 계층 구조가 정상적으로 기록되는지를 검증하는 통합 테스트입니다.
  *
- * <p>{@link MockMvc}를 사용하여 실제 HTTP 요청과 유사한 방식으로 API를 호출하며,
- * 테스트 중 출력된 로그는 {@link MemoryAppender}를 통해 메모리에 저장되어 검증됩니다.
+ * <p>시나리오는 다음과 같은 호출 흐름을 기반으로 합니다:
+ * <pre>
+ * 1. branchBiz 진입
+ * 2. branchBiz → middleBiz → simpleBiz (재귀적 외부 호출)
+ * 3. 이후 branchBiz가 직접 simpleBiz를 다시 호출 (분기 재진입)
+ * </pre>
  *
- * <p>테스트는 공통 StructuredLogger와 커스텀 로그 인터셉터가 정상 동작하는지를 확인하기 위해 사용됩니다.
- *
- * @see StructuredLogger
- * @see MemoryAppender
+ * <p>각 호출에서 기록되는 로그는 {@code MemoryAppender}를 통해 실시간 수집되며,
+ * 다음 항목들을 검증합니다:
+ * <ul>
+ *   <li>단일 traceId의 일관성 유지 여부</li>
+ *   <li>spanId → parentSpanId로 연결되는 계층적 호출 구조</li>
+ *   <li>총 로그 수 (26개)가 정확히 발생했는지</li>
+ * </ul>
  *
  * @author 리희
+ * @see StructuredLogger
+ * @see MemoryAppender
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @AutoConfigureMockMvc
 @Import({MockHttpServletRequestConfig.class, CommonInterceptorConfiguration.class})
 public class BranchMockServiceCallTests {
@@ -86,21 +103,83 @@ public class BranchMockServiceCallTests {
   }
 
   /**
-   * 단순 mock 서비스 API에 대해 토큰 기반 인증 요청을 수행하고, 그 결과가 200 OK임을 확인합니다.
-   * 또한, 출력된 로그가 JSON 구조를 갖고 있으며 필수 필드(traceId, spanId, parentSpanId)가 포함되었는지를 검증합니다.
+   * 테스트 대상 URL에 HTTP 요청을 전송하여 다음을 검증합니다:
+   * <ol>
+   *   <li>모든 로그에서 traceId가 동일하게 유지됨</li>
+   *   <li>branch → middle → simple 흐름이 올바른 parentSpanId 계층으로 구성됨</li>
+   *   <li>branch → simple 재호출 시에도 적절한 parentSpanId 연결 확인</li>
+   * </ol>
+   *
+   * <p>전체 로그는 시간순으로 정렬되며, MDC에서 필드 추출 후 assert로 검증됩니다.
    *
    * @throws Exception HTTP 요청 수행 중 예외 발생 시
    */
   @Test
   public void branchMockupCallTest() throws Exception {
     // 첫 번째 요청으로 traceId, spanId가 잘 생성되어있는지 확인
-    mockMvc.perform(get("/simpleBiz").header(MOCK_AUTH_TOKEN_HEADER.getHeaderName(), "test-token"))
+    mockMvc.perform(get("/branchBiz").header(MOCK_AUTH_TOKEN_HEADER.getHeaderName(), "test-token"))
         .andExpect(status().isOk());
 
-    List<ILoggingEvent> events = memoryAppender.getLoggedEvents();
+    List<ILoggingEvent> events
+        = memoryAppender.getLoggedEvents()
+                        .stream()
+                        .filter(event -> LogType.BIZ.getCode()
+                            .equals(event.getMDCPropertyMap().get(LOG_TYPE.getName()))
+                        )
+                        .sorted(Comparator.comparing(ILoggingEvent::getTimeStamp))
+                        .toList();
 
-    assertThat(events.size()).isEqualTo(3);
+    assertThat(events.size()).isEqualTo(26);
 
+    Map<String, String> event1 = events.getFirst().getMDCPropertyMap();
+    Map<String, String> event2 = events.get(3).getMDCPropertyMap();
+    Map<String, String> event3 = events.get(6).getMDCPropertyMap();
+    Map<String, String> event4 = events.get(17).getMDCPropertyMap();
 
+    // 전체의 TraceId 동일성 검증
+    assertThat(event1.get(TRACE_ID.getName())).isEqualTo(event2.get(TRACE_ID.getName()));
+    assertThat(event1.get(TRACE_ID.getName())).isEqualTo(event3.get(TRACE_ID.getName()));
+    assertThat(event1.get(TRACE_ID.getName())).isEqualTo(event4.get(TRACE_ID.getName()));
+
+    // 전체의 부모 spanId와 자식의 parentSpanId 정합성 검증
+    assertThat(event1.get(SPAN_ID.getName())).isEqualTo(event2.get(PARENT_SPAN_ID.getName()));
+    assertThat(event2.get(SPAN_ID.getName())).isEqualTo(event3.get(PARENT_SPAN_ID.getName()));
+    assertThat(event1.get(SPAN_ID.getName())).isEqualTo(event4.get(PARENT_SPAN_ID.getName()));
   }
+
+  /* ▼ 호출 흐름 요약 (Stack 구조 기준)
+    FIRST PUSH
+    1.  branch C  -- FIRST BRANCH
+    2.      branch S
+    3.          branch I → call middleBiz
+    4.              middle C  -- FIRST MIDDLE
+    5.                  middle S
+    6.                      middle I → call simpleBiz
+    7.                          simple C  -- FIRST SIMPLE CALL BY MIDDLE
+    8.                              simple S
+    9.                                  simple D
+
+    POP
+    10.                                 ⬅ simple D
+    11.                             ⬅ simple S
+    12.                         ⬅ simple C
+    13.                     ⬅ middle I
+    14.                 ⬅ middle S
+    15.             ⬅ middle C
+    16.         ⬅ branch I
+
+    RE-ENTRY
+    17.         branch I
+    18.             simple C  -- FIRST SIMPLE CALL BY BRANCH
+    19.                 simple S
+    20.                     simple D
+
+    FINAL POP
+    21.                     ⬅ simple D
+    22.                 ⬅ simple S
+    23.             ⬅ simple C
+    24.         ⬅ branch I
+    25.     ⬅ branch S
+    26. ⬅ branch C
+   */
 }
