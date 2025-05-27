@@ -19,8 +19,8 @@ r += `---\n\n`;
 r += `- type: \`${selectedType}\`\n`;
 
 if (selectedType === "문서화 전략") {
-  r += `  - description: 문서 구조, 관리 정책, 문서 도구 관련 이슈\n`
-  r += `    - ex) Obsidian 도입, \`docs\` Vault 분리 등\n\n`;
+  r += `    - description: 문서 구조, 관리 정책, 문서 도구 관련 이슈\n`
+  r += `        - ex) Obsidian 도입, \`docs\` Vault 분리 등\n\n`;
 } else if (selectedType === "운영 환경") {
   r += `  - description: 개발/배포/테스트 환경 전반의 인프라 구성 이슈\n`
   r += `    - ex) 로컬 실행 시 오류, CI/CD 구성 충돌, 포트 충돌 등\n\n`;
