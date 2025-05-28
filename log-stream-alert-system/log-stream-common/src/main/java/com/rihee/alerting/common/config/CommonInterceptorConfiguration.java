@@ -1,12 +1,9 @@
 package com.rihee.alerting.common.config;
 
-import com.rihee.alerting.common.interceptor.AbstractStructuredLogInterceptor;
-import com.rihee.alerting.common.interceptor.DefaultStructuredLogInterceptor;
 import com.rihee.alerting.common.interceptor.SpanLabelBeanPostProcessor;
 import com.rihee.alerting.common.interceptor.SpanLabelRegistry;
-import com.rihee.alerting.common.interceptor.StructuredLogInterceptorFactory;
+import com.rihee.alerting.common.interceptor.StructuredLogInterceptor;
 import io.micrometer.common.lang.NonNullApi;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,20 +15,15 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Spring Web MVC 설정 클래스입니다.
+ * {@code CommonInterceptorConfiguration}은 StructuredLogInterceptor를 Spring MVC에 등록하는 설정 클래스입니다.
  *
- * <p>HTTP 요청 처리 흐름에 {@link DefaultStructuredLogInterceptor}를 등록하여,
- * 로그 트레이싱 및 MDC 컨텍스트 초기화/정리를 전역적으로 적용합니다.
- * </p>
+ * <p>해당 클래스는 모든 서비스에서 공통적으로 적용되는 structured logging interceptor를 Bean으로 등록하고,
+ * Spring MVC의 InterceptorRegistry에 포함시킵니다.
  *
- * <p>또한
- * {@link SpanLabelRegistry}, {@link SpanLabelBeanPostProcessor},
- * {@link DefaultStructuredLogInterceptor} 등의 로깅 및 인터셉터 관련 빈을 명시적으로 구성하여 초기화 순서 및 의존성 문제를 방지합니다.
- * </p>
+ * <p>설정은 자동 구성(auto configuration)으로 제공되며, 수동 구성 없이도 동작하도록 설계되어 있습니다.
+ * 별도의 필터 체인 분리 없이, 모든 요청에 대해 structured logging이 자동 적용됩니다.
  *
- * @see DefaultStructuredLogInterceptor
- * @see SpanLabelRegistry
- * @see SpanLabelBeanPostProcessor
+ * @see StructuredLogInterceptor
  */
 @Configuration
 @NonNullApi
@@ -97,50 +89,44 @@ public class CommonInterceptorConfiguration implements WebMvcConfigurer {
   }
 
   /**
-   * {@link AbstractStructuredLogInterceptor} 빈을 생성합니다.
+   * MDC 기반 structured logging을 위한 인터셉터 {@link StructuredLogInterceptor}를 생성합니다.
    *
-   * <p>이 인터셉터는 모든 HTTP 요청 전후에 MDC 값을 설정 및 해제하며,
-   * 요청 간 traceId / parentSpanId / spanId의 추적을 가능하게 합니다.</p>
+   * <p>모든 HTTP 요청의 시작 시점에 traceId, spanId, parentSpanId, serviceName 등 로깅 관련 정보를
+   * MDC에 자동 설정하며, 요청 종료 시점에는 MDC를 정리합니다.</p>
    *
-   * <p>{@link StructuredLogInterceptorFactory}가 정의된 경우 이를 사용해
-   * 커스텀 인터셉터를 생성하며, 그렇지 않으면 기본 {@link DefaultStructuredLogInterceptor}를 생성합니다.</p>
+   * <p>이 구현체는 시스템 정책에 따라 로그 추적 ID 생성 및 유효성 검사 정책을 고정화하며,
+   * 커스터마이징 없이 통일된 방식으로 동작합니다.</p>
    *
    * @param registry spanLabel 정보를 보유한 {@link SpanLabelRegistry} 인스턴스
-   * @param factoryProvider 커스텀 인터셉터 생성을 위한 팩토리의 지연 주입 제공자
-   * @return MDC 설정용 {@link AbstractStructuredLogInterceptor} 인스턴스
+   * @return MDC 설정용 {@link StructuredLogInterceptor} 인스턴스
    */
   @Bean
-  public AbstractStructuredLogInterceptor structuredLogInterceptor(
-                            SpanLabelRegistry registry,
-                            ObjectProvider<StructuredLogInterceptorFactory> factoryProvider) {
-
-    StructuredLogInterceptorFactory factory = factoryProvider.getIfAvailable();
-    return factory != null ? factory.create(registry, serviceName)
-                           : new DefaultStructuredLogInterceptor(registry, this.serviceName);
+  public StructuredLogInterceptor structuredLogInterceptor(
+                            SpanLabelRegistry registry) {
+    return new StructuredLogInterceptor(registry, this.serviceName);
   }
 
   /**
-   * {@link WebMvcConfigurer}를 구현한 빈을 통해
-   * {@link AbstractStructuredLogInterceptor}를 모든 요청 경로에 등록합니다.
+   * {@link StructuredLogInterceptor}를 Spring MVC의 전역 인터셉터로 등록합니다.
    *
-   * <p>이 설정은 Spring MVC 핸들러 체인에 인터셉터를 전역적으로 포함시킵니다.</p>
+   * <p>이 설정은 {@code order(0)}으로 가장 먼저 실행되도록 보장되며,
+   * 로그 추적에 필요한 MDC 필드(traceId, spanId, serviceName 등)를 요청 초기에 설정합니다.</p>
    *
-   * <p><b>우선순위:</b> {@code order(0)}으로 설정되어 있어 가장 먼저 실행됩니다.
-   * 이는 traceId, spanId, logtype 등 로깅 기반 MDC 값 설정을 보장하기 위한 필수 설정입니다.</p>
+   * <p><b>정책 강제화:</b> 해당 인터셉터는 사용자 정의 로직 없이 정책에 따라 고정된 방식으로 동작하며,
+   * 시스템의 모든 서비스에서 동일한 포맷의 로그를 강제합니다.</p>
    *
-   * <p><b>주의:</b> 이후 등록되는 커스텀 인터셉터는 MDC 값을 덮어쓰거나 삭제하지 않도록 주의해야 합니다.
-   * 순서 보장을 위해 {@code order > 0} 이상을 권장하며, 이 설정은 변경하지 않는 것이 좋습니다.</p>
+   * <p><b>주의사항:</b> 이후에 등록되는 모든 커스텀 인터셉터는 MDC 값을 수정하거나 제거하지 않도록 주의해야 합니다.
+   * 반드시 {@code order > 0} 이상의 값으로 등록하십시오.</p>
    *
    * @param interceptor 등록할 MDC 로깅 인터셉터 인스턴스
    * @return 인터셉터가 등록된 {@link WebMvcConfigurer} 구현체
    */
   @Bean
   public WebMvcConfigurer addStructuredLogInterceptor(
-                                                AbstractStructuredLogInterceptor interceptor) {
+                                                StructuredLogInterceptor interceptor) {
     return new WebMvcConfigurer() {
         @Override
         public void addInterceptors(InterceptorRegistry registry) {
-          // 최우선 등록
           registry.addInterceptor(interceptor).order(0);
         }
     };

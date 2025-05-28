@@ -1,9 +1,13 @@
 package com.rihee.alerting.common.log.constant;
 
 /**
- * 구조화(Structured) 로깅 시 사용되는 표준 필드 정의 Enum.<br>
- * 모든 로그는 이 Enum에서 정의한 표준 필드명을 사용하여 생성된다.<br>
- * 시스템 간 로그 표준화 및 유지보수를 위해 통일된 키 네이밍 규칙을 따른다.
+ * {@code StructuredLogProperties}는 StructuredLogInterceptor의 동작을 제어하기 위한 설정 값을 제공합니다.
+ *
+ * <p>현재 이 속성들은 서비스 명(name)이나 메타 필드 구성 등, 로그의 구조를 구성하는 데 사용됩니다.
+ *
+ * <p>해당 설정은 서비스 단위로 개별 구성 가능하며, structured logging 생태계 내 일관된 정책을 유지하는 데 기여합니다.
+ *
+ * @see com.rihee.alerting.common.interceptor.StructuredLogInterceptor
  */
 public enum StructuredLogProperties {
 
@@ -67,6 +71,16 @@ public enum StructuredLogProperties {
    * 특정 API 호출이나 비즈니스 흐름에서 동적으로 추가할 수 있는 키-값 쌍.
    */
   STACK_TRACE("stacktrace"),
+  /**
+   * 요청 단위 또는 작업 단위 이름.<br>
+   * 해당 로그를 발생시킨 구체적인 서비스 내 작업 또는 API 엔드포인트를 식별하는 값입니다.
+   *
+   * <p>보통 컨트롤러의 메서드 수준에서 {@code spanName}이나 {@code spanLabel} 등의 값으로 지정되며,
+   * 분산 추적 또는 로깅 분석 시 어떤 비즈니스 기능이 호출되었는지 명확히 알 수 있도록 합니다.
+   *
+   * <p>예: {@code purchaseProduct}, {@code cancelReservation}, {@code issueCoupon}
+   */
+  NAME("name"),
   /**
    * 추가 메타데이터를 담는 영역.<br>
    * 특정 API 호출이나 비즈니스 흐름에서 동적으로 추가할 수 있는 키-값 쌍.

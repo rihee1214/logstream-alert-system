@@ -2,6 +2,7 @@ package com.rihee.alerting.common.interceptor;
 
 import static com.rihee.alerting.common.constant.DefaultValues.B3HEADER_SAMPLED_DEFAULT;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.META;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.NAME;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
@@ -16,30 +17,44 @@ import io.micrometer.common.lang.NonNullApi;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Pattern;
 import org.slf4j.MDC;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * HTTP 요청마다 MDC (Mapped Diagnostic Context)를 세팅하여 로깅에 필요한 메타데이터를 구성하고,
- * 요청 처리 후 MDC를 정리하는 인터셉터입니다.
+ * {@code StructuredLogInterceptor}는 모든 HTTP 요청에 대해 traceId, spanId, parentSpanId를 자동으로 설정하고,
+ * Structured Logging을 위한 MDC 구성을 보장하는 시스템 전용 인터셉터입니다.
  *
- * <p>- 요청 헤더의 traceId, parentSpanId, spanId를 기반으로 트레이싱 정보를 구성합니다.
- * - {@link SpanLabelRegistry}를 통해 메서드에 매핑된 spanLabel을 활용하여 spanId를 생성합니다.
- * - 공통적으로 서비스 이름, 호스트 이름, 컨테이너 이름을 MDC에 포함합니다.
- * </p>
+ * <p>외부에서 들어오는 traceId 및 parentSpanId는 고정된 유효성 정책에 따라 검증되며,
+ * 유효하지 않은 경우 자동으로 재생성되거나 무시됩니다. 이는 시스템 전체의 추적 ID 통일성을 유지하기 위함입니다.
  *
- * <p><b>사용 예시</b>: API 요청 로깅을 위한 선행 인터셉터로 활용</p>
+ * <p>다음 조건을 기준으로 유효성을 판단합니다:
+ * <ul>
+ *   <li><b>traceId</b>: 요청 흐름 전반을 식별하기 위한 ID (32의 배수 길이)</li>
+ *   <li><b>spanId</b>: 단일 작업 또는 호출 단위를 식별하는 ID (16의 배수 길이)</li>
+ *   <li><b>parentSpanId</b>: 이전 호출의 spanId. 유효하지 않으면 무시됨</li>
+ * </ul>
+ *
+ * <p>생성된 ID는 MDC에 저장되며, 로그 수집기나 추적 시스템에서 활용할 수 있도록 구조화된 로그로 출력됩니다.
+ *
+ * <p><b>정책 고정:</b> 생성 및 검증 정책은 코드 내부에 캡슐화되며 외부에서 재정의할 수 없습니다.
+ *
+ * <p><b>Note:</b> meta 필드는 B3 헤더 sampled/flags 정보를 수집 목적으로 포함되며, 비즈니스 로그에는 사용되지 않을 수 있습니다.
  */
 @NonNullApi
-public abstract class AbstractStructuredLogInterceptor implements HandlerInterceptor {
+public final class StructuredLogInterceptor implements HandlerInterceptor {
 
   // 모든 섹터에서 잡히지 않은 Exception을 afterCompletion 에서 로그로 찍어내기 위한 용도
   private static final StructuredLogger logger
-      = StructuredLoggerFactory.getLogger(AbstractStructuredLogInterceptor.class);
+      = StructuredLoggerFactory.getLogger(StructuredLogInterceptor.class);
   // Json 생성을 위한 ObjectNode를 생성하기 위한 요소.
   private static final ObjectMapper mapper = new ObjectMapper();
+  // traceId, spanId에 적합하지 않는 문자가 있는지 확인하기 위한 패턴
+  private static final Pattern HEX_PATTERN = Pattern.compile("^[0-9a-f]+$");
 
   // 요청 대상 메서드에 들어있는 spanLabel 매핑 정보가 담겨있는 레지스트리
   private final SpanLabelRegistry registry;
@@ -53,7 +68,7 @@ public abstract class AbstractStructuredLogInterceptor implements HandlerInterce
    * @param registry 요청 대상 메서드에 들어있는 spanLabel 매핑 정보가 담겨있는 레지스트리.
    * @param serviceName MDC에 기본 세팅될 서비스 정보.
    */
-  public AbstractStructuredLogInterceptor(SpanLabelRegistry registry,
+  public StructuredLogInterceptor(SpanLabelRegistry registry,
                                     String serviceName) {
     this.registry = registry;
     this.serviceName = serviceName;
@@ -62,38 +77,44 @@ public abstract class AbstractStructuredLogInterceptor implements HandlerInterce
   /**
    * HTTP 요청 시작 시, 로그 및 추적을 위한 정보를 MDC에 설정합니다.
    *
-   * <p>다음과 같은 정보를 MDC에 등록합니다:</p>
+   * <p>다음 정보를 MDC에 설정합니다:
    * <ul>
-   *     <li><b>{@code traceId}</b>: 요청 헤더에 존재하면 사용하고, 없으면 새로 생성</li>
-   *     <li><b>{@code spanId}</b>: {@link SpanLabelRegistry}를 통해 핸들러 메서드에 매핑된 라벨 기반으로 생성</li>
-   *     <li><b>{@code parentSpanId}</b>: 요청 헤더에 {@code spanId}가 있으면 상위 span으로 설정</li>
-   *     <li><b>기본 필드</b>: {@code serviceName}, {@code hostName}, {@code containerName}도 함께 설정</li>
-   *     <li><b>{@code meta}</b>: {@code sampled}, {@code flags} 값을 JSON 형태로 구조화하여 추가</li>
+   *   <li><b>{@code traceId}</b>: 요청 헤더의 값이 유효하면 사용, 유효하지 않거나 누락 시 새로 생성됨
+   *     <ul><li>형식: 32 이상의 길이를 가진, 32의 배수인 소문자 hex 문자열</li></ul>
+   *   </li>
+   *   <li><b>{@code spanId}</b>: {@link SpanLabelRegistry}에 매핑된 라벨 기반으로 생성되며,
+   *     <ul><li>형식: 16 이상의 길이를 가진, 16의 배수인 소문자 hex 문자열</li></ul>
+   *   </li>
+   *   <li><b>{@code parentSpanId}</b>: 요청 헤더에 존재하는 {@code spanId}가 유효하면 상위 스팬으로 설정</li>
+   *   <li><b>{@code serviceName}</b>, {@code hostName}, {@code containerName} 등 시스템 정보 추가</li>
+   *   <li><b>{@code meta}</b>: {@code sampled}, {@code flags} 등 B3 헤더 정보 포함 (선택적)</li>
    * </ul>
    *
-   * @param request  현재 HTTP 요청 객체
-   * @param response 현재 HTTP 응답 객체
-   * @param handler  실제 요청을 처리할 컨트롤러 핸들러
-   * @return 항상 {@code true} 반환하여 DispatcherServlet의 이후 체인을 계속 진행
+   * <p>모든 값은 MDC에 설정되어 구조화 로그에 포함되며, 로그 추적 및 수집 시스템에서 활용됩니다.</p>
    */
   @Override
   public final boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                                                                         Object handler) {
     // 요청 헤더 기반 traceId, parentSpanId, spanId 세팅
     String traceId = request.getHeader(B3Header.TRACE_ID.getHeaderName());
-    String spanId = request.getHeader(B3Header.SPAN_ID.getHeaderName());
 
-    if (!StringUtils.hasText(traceId)) {
-      traceId = generateTraceId(traceId);
+    // TRACE_ID가 형식에 맞으면 그대로 사용하고, 그렇지 않으면 새로 생성, SPAN_ID는 새로 생성
+    if (isNeedNewTraceId(traceId)) {
+      traceId = generateTraceId();
     }
     MDC.put(TRACE_ID.getName(), traceId);
+    MDC.put(SPAN_ID.getName(), generateSpanId());
+
+    // 헤더를 통해 들어온 SPAN_ID가 적절하면 PARENT_SPAN_ID로 사용
+    String spanId = request.getHeader(B3Header.SPAN_ID.getHeaderName());
+    if (isValidSpanId(spanId)) {
+      MDC.put(PARENT_SPAN_ID.getName(), spanId);
+    }
+
+    //
     if (handler instanceof HandlerMethod handlerMethod) {
       registry.findLabel(handlerMethod.getMethod())
-              .ifPresent(label -> MDC.put(SPAN_ID.getName(), generateSpanId(spanId, label)));
-    }
-    String parentSpanId = generateParentSpanId(spanId);
-    if (StringUtils.hasText(parentSpanId)) {
-      MDC.put(PARENT_SPAN_ID.getName(), parentSpanId);
+              .ifPresent(label -> MDC.put(NAME.getName(), label));
     }
 
     // Meta에 로그 추적기를 위한 선택 헤더 추가.
@@ -140,7 +161,7 @@ public abstract class AbstractStructuredLogInterceptor implements HandlerInterce
    *
    * @return {@link SpanLabelRegistry} 인스턴스
    */
-  protected SpanLabelRegistry getRegistry() {
+  private SpanLabelRegistry getRegistry() {
     return this.registry;
   }
 
@@ -151,7 +172,7 @@ public abstract class AbstractStructuredLogInterceptor implements HandlerInterce
    *
    * @return 서비스 이름 문자열
    */
-  protected String getServiceName() {
+  private String getServiceName() {
     return this.serviceName;
   }
 
@@ -161,10 +182,11 @@ public abstract class AbstractStructuredLogInterceptor implements HandlerInterce
    * <p>일반적으로 traceId가 비어있거나 유효하지 않은 경우 새 traceId를 생성합니다.
    * 서브 클래스는 traceId 생성 정책 또는 포맷을 자유롭게 정의할 수 있습니다.</p>
    *
-   * @param traceId 요청 헤더로 전달된 traceId
    * @return 최종적으로 사용될 traceId 문자열
    */
-  protected abstract String generateTraceId(String traceId);
+  private String generateTraceId() {
+    return UUID.randomUUID().toString().replace("-", "");
+  }
 
   /**
    * 요청 헤더의 기존 spanId와 메서드의 spanLabel을 기반으로 새로운 spanId를 생성합니다.
@@ -172,23 +194,37 @@ public abstract class AbstractStructuredLogInterceptor implements HandlerInterce
    * <p>서브 클래스는 spanId의 구조(예: 서비스명-업무명-순번) 또는 연결 방식을 정의할 수 있습니다.
    * trace 트리의 계층 구조를 명확히 하기 위해 parentSpanId를 고려한 형식을 사용하는 것이 일반적입니다.</p>
    *
-   * @param spanId    요청 헤더에서 전달된 부모 spanId
-   * @param spanLabel {@link SpanLabelRegistry}에서 조회된 메서드 고유 라벨
    * @return 최종적으로 로깅에 사용될 spanId
    */
-  protected abstract String generateSpanId(String spanId, String spanLabel);
+  private String generateSpanId() {
+    long randomLong = ThreadLocalRandom.current().nextLong();
+    return Long.toHexString(randomLong).toLowerCase();
+  }
 
   /**
-   * 요청 헤더에서 전달된 {@code spanId}를 기반으로 {@code parentSpanId}를 생성할지 여부를 결정합니다.
+   * 지정된 값이 유효하지 않은 traceId인지 검사합니다.
+   * 유효 기준: 길이가 32의 배수이고, 소문자 hex 문자로만 구성된 문자열
    *
-   * <p>이 메서드는 MDC에 저장할 {@code parentSpanId} 값을 정의하며,
-   * 오버라이딩을 통해 비즈니스 요구에 따라 포함 여부와 값을 제어할 수 있습니다.</p>
-   *
-   * <p>반환값이 {@code null} 또는 빈 문자열인 경우, {@code parentSpanId}는 MDC에 포함되지 않습니다.
-   * 반대로 유효한 문자열을 반환하면 해당 값이 MDC에 등록됩니다.</p>
-   *
-   * @param spanId 요청 헤더에서 전달된 spanId
-   * @return MDC에 등록할 parentSpanId, 등록을 생략하려면 {@code null} 또는 빈 문자열
+   * @param traceId 검증 대상 traceId
+   * @return 유효하면 false
    */
-  protected abstract String generateParentSpanId(String spanId);
+  private boolean isNeedNewTraceId(String traceId) {
+    return StringUtils.hasText(traceId)
+        && traceId.length() >= 32
+        && traceId.length() % 32 == 0
+        && HEX_PATTERN.matcher(traceId).matches();
+  }
+
+  /**
+   * 전달된 spanId가 유효한 hex 문자열이며, 길이가 16 이상의 16의 배수인지 확인합니다.
+   *
+   * @param spanId 클라이언트 또는 이전 요청에서 전달된 spanId
+   * @return 유효한 경우 true
+   */
+  private boolean isValidSpanId(String spanId) {
+    return StringUtils.hasText(spanId)
+        && spanId.length() >= 16
+        && spanId.length() % 16 == 0
+        && HEX_PATTERN.matcher(spanId).matches();
+  }
 }

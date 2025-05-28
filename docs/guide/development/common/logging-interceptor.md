@@ -40,16 +40,11 @@ String spanLabel() default "";
 - Spring MVC에 Interceptor 및 Argument Resolver를 등록하는 구성 클래스입니다.
 - `StructuredLogInterceptor`를 등록하며, 사용자가 커스터마이징한 구현도 주입할 수 있도록 구성되어 있습니다.
 
-### 2. `DefaultStructuredLogInterceptor`
-
-- 공통 제공 Interceptor의 기본 구현입니다.
-- MDC에 `traceId`, `spanId`, `parentSpanId`, `logtype` 등을 자동 설정합니다.
-- 요청 시점/종료 시점 로그를 각각 출력합니다.
-
-### 3. `AbstractStructuredLogInterceptor`
-
-- `StructuredLogInterceptor`의 추상 베이스 클래스입니다.
-- 커스터마이징 시 이 클래스를 상속하여 처리 흐름만 바꾸면 됩니다.
+### 2. `StructuredLogInterceptor`
+- 시스템 정책에 따라 traceId, spanId, parentSpanId를 자동 생성 및 설정하는 단일 인터셉터입니다.
+- 모든 서비스에서 동일한 구조화 로그 포맷을 보장하며, 별도의 커스터마이징은 불가능합니다.
+- 추후 길이 확장 필요 시, traceId는 32의 배수, spanId는 16의 배수가 되도록 설정하면 된다.
+- MDC에 서비스 식별자(`service`), 작업 단위 이름(`name`), 호스트/컨테이너 정보 등을 자동 설정합니다.
 
 ---
 
@@ -70,29 +65,21 @@ String spanLabel() default "";
 
 ## 🔧 StructuredLogInterceptor 확장 지점
 
-서비스별로 로깅 로직을 달리 하고 싶다면, 다음 방법으로 확장 가능합니다:
+StructuredLogInterceptor는 시스템 정책으로 고정된 인터셉터입니다.  
+더 이상 별도의 Factory 등록이나 상속을 통한 커스터마이징은 지원되지 않으며,  
+전체 구조화 로깅 체계를 통일하기 위한 목적상 반드시 공통 구현을 사용해야 합니다.
 
-1. `AbstractStructuredLogInterceptor`를 상속하여 원하는 로깅 로직 구현
-2. `StructuredLogInterceptorFactory`를 Bean으로 등록
-3. 공통 모듈 설정 시, 해당 Factory를 통해 사용자 정의 interceptor 사용됨
-
-```java
-@Bean 
-public StructuredLogInterceptorFactory customFactory() {    
-	return (registry, serviceName) 
-				-> new MyCustomInterceptor(registry, serviceName); 
-}
-```
+다만 길이를 증가 시키는 것은 가능하며, common영역을 수정해야합니다.
 
 ---
 
 ## 💡 개발 시 주의사항
 
-| 항목                    | 설명                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------- |
-| interceptor 우선순위      | 공통 Interceptor는 `@Order(0)`으로 등록됨.  <br>Biz에서 추가하는 Interceptor는 반드시 `@Order(1)` 이상 사용 |
-| `StructuredLogger` 사용 | Interceptor 내부 로직이나 트레이스 로그를 출력할 때는 반드시 StructuredLogger를 사용                          |
-| 메서드별 spanLabel 설정     | 최대한 모든 controller 메서드에 **각기 다른**`spanLabel`을 설정하는 것을 권장 (디폴트는 비어 있음)                  |
+| 항목                    | 설명                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| interceptor 우선순위      | 공통 Interceptor는 `@Order(0)`으로 등록됨.  <br>Biz에서 추가하는 Interceptor는 반드시 `@Order(1)` 이상 사용                      |
+| `StructuredLogger` 사용 | Interceptor 내부 로직이나 트레이스 로그를 출력할 때는 반드시 StructuredLogger를 사용                                               |
+| 로그 `name` 필드 구성       | `spanLabel`을 기반으로 name 필드가 설정되며, 해당 서비스에서 어떤 작업이 수행되었는지를 명확히 나타냅니다. 모든 컨트롤러 메서드에 spanLabel을 설정하는 것을 권장합니다. |
 
 ---
 ## 📎 관련 문서
