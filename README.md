@@ -21,18 +21,18 @@
 
 ## 🛠 기술 스택
 
-| 영역            | 사용 기술                               			                   | 기술 설명									                  						                                                                                                                     |
-|---------------|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Language      | Java 21                              			                  | 최신 LTS 버전의 Java를 기반으로 클라우드 및 컨테이너 환경에 최적화된 JVM 사용 						                                                                                                   |
-| Framework     | Spring Boot 3.4.4                    			                  | REST API 제공, Kafka 통신, 설정 분리 등 서비스 전반을 구성하는 핵심 프레임워크						                                                                                                 |
-| Messaging     | Apache Kafka                         			                  | 이벤트 기반 로그 처리 및 알림 트리거를 위한 메시지 브로커			          						                                                                                                       |
-| Database      | PostgreSQL<br> Redis                 			                  | 사원/부서 정보를 저장하는 영속 저장소<br>알림 대상 정보 캐싱을 통한 성능 개선 및 트래픽 분산		 		                                                                                               |
-| Log Forwarder | Filebeat                                                  | Mock 서비스에서 출력되는 stdout 로그를 수집하여 Kafka로 전달. 로그 포워딩을 위한 경량 수집기로, 설정이 간단하고 보안 관리가 용이함                                                                         |
-| Log Storage   | Elasticsearch                        			                  | 업무 및 시스템 로그 저장, kibana 연동을 통한 검색 및 조회 기능 제공							   	                                                                                                     |
-| Monitoring    | Prometheus<br>Alertmanager<br>Grafana<br>Kibana<br>Zipkin | 애플리케이션 상태(Memory, CPU, Health 등) 및 요청 지표 수집을 위한 모니터링 시스템<br>이상 상태 감지 시 알림 전송(Slack, 메일 등 연동 가능)<br>그래프 기반 대시보드 시각화<br>상세 로그 검색 및 분석<br>서비스 호출 흐름 및 트레이스 추적 |
-| Build Tool    | Gradle (Groovy DSL)<br>Checkstyle                			      | 멀티 모듈 환경에서 효율적인 의존성 및 빌드 관리<br>Checkstyle을 통해 빌드 타임에 코드 스타일 검사 수행												                                                                              |
-| Deployment    | Docker Compose<br>Kubernetes         			                  | 로컬 테스트용 경량 환경 구성<br>운영 환경에서 안정적이고 확장 가능한 MSA 배포를 위한 클러스터 			                                                                                               |
-| CI/CD         | GitHub Actions (예정)                 			                   | 코드 변경 사항 자동 빌드 및 배포 자동화를 위한 워크플로											                                                                                                                |
+| 영역            | 사용 기술                               			              | 기술 설명									                  						                                                                                              |
+|---------------|------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| Language      | Java 21                              			             | 최신 LTS 버전의 Java를 기반으로 클라우드 및 컨테이너 환경에 최적화된 JVM 사용 						                                                                            |
+| Framework     | Spring Boot 3.4.4                    			             | REST API 제공, Kafka 통신, 설정 분리 등 서비스 전반을 구성하는 핵심 프레임워크						                                                                          |
+| Messaging     | Apache Kafka                         			             | 이벤트 기반 로그 처리 및 알림 트리거를 위한 메시지 브로커			          						                                                                                |
+| Database      | PostgreSQL<br> Redis                 			             | 사원/부서 정보를 저장하는 영속 저장소<br>알림 대상 정보 캐싱을 통한 성능 개선 및 트래픽 분산		 		                                                                        |
+| Log Forwarder | Filebeat                                             | Mock 서비스에서 출력되는 stdout 로그를 수집하여 Kafka로 전달. 로그 포워딩을 위한 경량 수집기로, 설정이 간단하고 보안 관리가 용이함                                                  |
+| Log Storage   | Elasticsearch                        			             | 업무 및 시스템 로그 저장, kibana 연동을 통한 검색 및 조회 기능 제공							   	                                                                              |
+| Monitoring    | Prometheus<br>Alertmanager<br>Grafana<br>Kibana      | 애플리케이션 상태(Memory, CPU, Health 등) 및 요청 지표 수집을 위한 모니터링 시스템<br>이상 상태 감지 시 알림 전송(Slack, 메일 등 연동 가능)<br>그래프 기반 대시보드 시각화<br>상세 로그 검색 및 분석 |
+| Build Tool    | Gradle (Groovy DSL)<br>Checkstyle                			 | 멀티 모듈 환경에서 효율적인 의존성 및 빌드 관리<br>Checkstyle을 통해 빌드 타임에 코드 스타일 검사 수행												                                                       |
+| Deployment    | Docker Compose<br>Kubernetes         			             | 로컬 테스트용 경량 환경 구성<br>운영 환경에서 안정적이고 확장 가능한 MSA 배포를 위한 클러스터 			                                                                        |
+| CI/CD         | GitHub Actions (예정)                 			              | 코드 변경 사항 자동 빌드 및 배포 자동화를 위한 워크플로											                                                                                         |
 
 ---
 
@@ -142,5 +142,5 @@
 
 ---
 ## 📄 별첨 문서
-- [작업 진행 이력(workflow.md)](./docs/workflow.md)
+- [작업 진행 이력(workflow.md)](./docs/workflow-plan.md)
 - [아키텍처 정의 및 변경 이력](./docs/architecture/architecture.md)

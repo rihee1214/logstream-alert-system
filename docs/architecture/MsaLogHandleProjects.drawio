@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Whale/4.31.304.16 Safari/537.36" scale="1" border="0" version="26.2.14">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Whale/4.31.304.16 Safari/537.36" scale="1" border="0" version="27.0.8">
   <diagram name="페이지-1" id="jw8IQPoCw4GdPcp-_bTI">
-    <mxGraphModel dx="1678" dy="901" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1426" dy="766" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -10,11 +10,11 @@
         <mxCell id="0wmGPp9-1j7nRuPfBWGD-2" value="&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 204)); font-size: 13px;&quot;&gt;&lt;font style=&quot;&quot;&gt;&lt;b style=&quot;&quot;&gt;* Mockup 서비스 컨테이너 내부에&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;background-color: transparent; font-size: 13px;&quot;&gt;Filebeat가 존재&lt;/b&gt;&lt;/font&gt;&lt;/font&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 204)); font-size: 13px;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 13px; background-color: transparent;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;/b&gt;&lt;/font&gt;&lt;/font&gt;&lt;span style=&quot;font-family: -apple-system, BlinkMacSystemFont, &amp;quot;Malgun Gothic&amp;quot;, &amp;quot;맑은 고딕&amp;quot;, helvetica, &amp;quot;Apple SD Gothic Neo&amp;quot;, helvetica, &amp;quot;나눔바른고딕 옛한글&amp;quot;, &amp;quot;NanumBarunGothic YetHangul&amp;quot;, sans-serif; font-size: 15px; letter-spacing: -0.3px;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 204));&quot;&gt;→&amp;nbsp;&lt;/font&gt;&lt;/span&gt;&lt;b style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 204)); background-color: transparent; font-size: 13px;&quot;&gt;&amp;nbsp;모든 로그 Logging service로 전송)&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 204)); font-size: 12px;&quot;&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;&lt;b&gt;* Prometheus Wrapping Service는 Prometheus와 동일하게 H/A 구성이 되어있어야 함&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;font-size: 13px; color: light-dark(rgb(0, 0, 0), rgb(0, 0, 204));&quot;&gt;&lt;b style=&quot;&quot;&gt;* Prometheus가 Actuator를 Call하여 해당 Metric 정보를 Alertmanger로 전송&amp;nbsp;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 204));&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;&lt;b style=&quot;&quot;&gt;* Alertmanager는 Alert 조건 충족 시 경고 전송&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;/b&gt;&lt;/font&gt;&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;&lt;b style=&quot;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;/span&gt;&lt;/b&gt;&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;b style=&quot;background-color: transparent; font-size: 13px; color: rgb(211, 84, 0);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 204));&quot;&gt;&amp;nbsp; (Alert 메시지 전송 정책은 README.md 참조)&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=light-dark(#FFFFFF,#FFFFFF);" parent="1" vertex="1">
           <mxGeometry x="45.5" y="90" width="534.5" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="t0eLqG50b9E7v3T-fCQ3-8" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b style=&quot;&quot;&gt;Prometheus Wrapping Service&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(로깅 정책 및 알림 정책 적용)&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="t0eLqG50b9E7v3T-fCQ3-8" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b style=&quot;&quot;&gt;Prometheus Wrapping Service&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(로깅 정책 및 알림 정책 적용)&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="300.5" y="216" width="195" height="104" as="geometry" />
         </mxCell>
-        <mxCell id="kldEur-k-xEW_WKJFzGf-8" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Monitoring Service&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
-          <mxGeometry x="560" y="250" width="170" height="220" as="geometry" />
+        <mxCell id="kldEur-k-xEW_WKJFzGf-8" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Monitoring Service&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="560" y="250" width="170" height="170" as="geometry" />
         </mxCell>
         <mxCell id="0wmGPp9-1j7nRuPfBWGD-1" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Mock Service&lt;br&gt;(BIZ service)&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=light-dark(#000000,#333333);strokeWidth=2;fillColor=light-dark(#FFFFFF,#E8F0FE);" parent="1" vertex="1">
           <mxGeometry x="100" y="248" width="120" height="60" as="geometry" />
@@ -146,7 +146,7 @@
         </mxCell>
         <mxCell id="0wmGPp9-1j7nRuPfBWGD-47" value="SMS 재전송 요청" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="0wmGPp9-1j7nRuPfBWGD-46" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="-9" y="42" as="offset" />
+            <mxPoint x="-5" y="27" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="0wmGPp9-1j7nRuPfBWGD-48" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);" parent="1" source="0wmGPp9-1j7nRuPfBWGD-30" edge="1">
@@ -167,10 +167,10 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="0wmGPp9-1j7nRuPfBWGD-50" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Kibana&lt;/b&gt;&lt;br&gt;(로그 상세 검색)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
-          <mxGeometry x="607.5" y="289" width="95" height="42" as="geometry" />
+          <mxGeometry x="603.5" y="289" width="95" height="42" as="geometry" />
         </mxCell>
-        <mxCell id="0wmGPp9-1j7nRuPfBWGD-51" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Grafana&lt;br&gt;&lt;/b&gt;(전체 추이 분석)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
-          <mxGeometry x="607.5" y="349" width="95" height="42" as="geometry" />
+        <mxCell id="0wmGPp9-1j7nRuPfBWGD-51" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Grafana&lt;br&gt;&lt;/b&gt;(전체 흐름 및 &lt;br&gt;추이 분석)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="603.5" y="349" width="95" height="51" as="geometry" />
         </mxCell>
         <mxCell id="sU0YqpQDTPmREk61F6C5-5" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(V0.5 | 2025-05-15)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="24" y="810" width="140" height="30" as="geometry" />
@@ -178,16 +178,13 @@
         <mxCell id="tmtFoyBRQ7CB1CaWHIDz-4" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Alertmanager&lt;/b&gt;&lt;br&gt;- 오류 발생 시 빠르게 알림 전송&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="563.5" y="173" width="167.5" height="55" as="geometry" />
         </mxCell>
-        <mxCell id="kldEur-k-xEW_WKJFzGf-1" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Zipkin&lt;br&gt;&lt;/b&gt;(로그 흐름 분석)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
-          <mxGeometry x="607.5" y="409" width="95" height="42" as="geometry" />
-        </mxCell>
         <mxCell id="kldEur-k-xEW_WKJFzGf-5" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-17" target="0wmGPp9-1j7nRuPfBWGD-51" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="480" y="439" as="sourcePoint" />
             <mxPoint x="423" y="629" as="targetPoint" />
             <Array as="points">
               <mxPoint x="580" y="397" />
-              <mxPoint x="580" y="370" />
+              <mxPoint x="580" y="375" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -198,16 +195,6 @@
             <Array as="points">
               <mxPoint x="580" y="397" />
               <mxPoint x="580" y="310" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="kldEur-k-xEW_WKJFzGf-7" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-17" target="kldEur-k-xEW_WKJFzGf-1" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="720" y="420" as="sourcePoint" />
-            <mxPoint x="648" y="336" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="580" y="397" />
-              <mxPoint x="580" y="430" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -239,10 +226,10 @@
         <mxCell id="6CuhKZ-NRaIwMdvNTyGU-2" value="&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;biz-log-YYYY.MM.dd&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;act-log-YYYY.MM.dd&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;sys-log-&lt;/font&gt;&lt;/font&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;YYYY.MM.dd&lt;/font&gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=light-dark(#FFFFFF,#FFFFFF);align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="256" y="375" width="129" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="t0eLqG50b9E7v3T-fCQ3-1" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Prometheus&lt;/b&gt;&lt;br&gt;- BIZ 시스템 메트릭 정보 수집&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="t0eLqG50b9E7v3T-fCQ3-1" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;&lt;b&gt;Prometheus&lt;/b&gt;&lt;br&gt;- BIZ 시스템 메트릭 정보 수집&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFFFFF,#E8F0FE);strokeColor=light-dark(#000000,#333333);strokeWidth=2;" parent="1" vertex="1">
           <mxGeometry x="315" y="223.5" width="165" height="55" as="geometry" />
         </mxCell>
-        <mxCell id="t0eLqG50b9E7v3T-fCQ3-3" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="0wmGPp9-1j7nRuPfBWGD-1" target="t0eLqG50b9E7v3T-fCQ3-1">
+        <mxCell id="t0eLqG50b9E7v3T-fCQ3-3" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="0wmGPp9-1j7nRuPfBWGD-1" target="t0eLqG50b9E7v3T-fCQ3-1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="540" y="407" as="sourcePoint" />
             <mxPoint x="618" y="440" as="targetPoint" />
@@ -252,7 +239,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="t0eLqG50b9E7v3T-fCQ3-4" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="t0eLqG50b9E7v3T-fCQ3-8" target="tmtFoyBRQ7CB1CaWHIDz-4">
+        <mxCell id="t0eLqG50b9E7v3T-fCQ3-4" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="t0eLqG50b9E7v3T-fCQ3-8" target="tmtFoyBRQ7CB1CaWHIDz-4" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="230" y="269" as="sourcePoint" />
             <mxPoint x="325" y="269" as="targetPoint" />
@@ -262,12 +249,12 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="t0eLqG50b9E7v3T-fCQ3-15" value="Alert 전송 책임&lt;br&gt;(WrappingService)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" vertex="1" connectable="0" parent="t0eLqG50b9E7v3T-fCQ3-4">
+        <mxCell id="t0eLqG50b9E7v3T-fCQ3-15" value="Alert 전송 책임&lt;br&gt;(WrappingService)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="t0eLqG50b9E7v3T-fCQ3-4" vertex="1" connectable="0">
           <mxGeometry x="0.0549" relative="1" as="geometry">
             <mxPoint x="-50" y="-31" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="t0eLqG50b9E7v3T-fCQ3-9" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=0.87;exitY=0.99;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="t0eLqG50b9E7v3T-fCQ3-8" target="0wmGPp9-1j7nRuPfBWGD-17">
+        <mxCell id="t0eLqG50b9E7v3T-fCQ3-9" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=0.87;exitY=0.99;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="t0eLqG50b9E7v3T-fCQ3-8" target="0wmGPp9-1j7nRuPfBWGD-17" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="398" y="320" as="sourcePoint" />
             <mxPoint x="470" y="367" as="targetPoint" />
@@ -276,7 +263,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="t0eLqG50b9E7v3T-fCQ3-13" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=-0.004;exitY=0.131;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="t0eLqG50b9E7v3T-fCQ3-8">
+        <mxCell id="t0eLqG50b9E7v3T-fCQ3-13" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=light-dark(#000000,#333333);exitX=-0.004;exitY=0.131;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="t0eLqG50b9E7v3T-fCQ3-8" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="230" y="288" as="sourcePoint" />
             <mxPoint x="120" y="470" as="targetPoint" />
@@ -286,12 +273,12 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="t0eLqG50b9E7v3T-fCQ3-14" value="Alertmanager 요청이 5회 이상 실패시" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" vertex="1" connectable="0" parent="t0eLqG50b9E7v3T-fCQ3-13">
+        <mxCell id="t0eLqG50b9E7v3T-fCQ3-14" value="Alertmanager 요청이 5회 이상 실패시" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=light-dark(#FFFFFF,#FFFFFF);fontColor=light-dark(#000000,#000000);" parent="t0eLqG50b9E7v3T-fCQ3-13" vertex="1" connectable="0">
           <mxGeometry x="-0.3608" y="1" relative="1" as="geometry">
             <mxPoint x="74" y="-2" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="t0eLqG50b9E7v3T-fCQ3-10" value="&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(WrappingService 책임)&lt;/font&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;metric-log-YYYY.MM.dd&lt;/font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=light-dark(#FFFFFF,#FFFFFF);align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="t0eLqG50b9E7v3T-fCQ3-10" value="&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;(WrappingService 책임)&lt;/font&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 0, 0));&quot;&gt;metric-log-YYYY.MM.dd&lt;/font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=light-dark(#FFFFFF,#FFFFFF);align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="324.5" y="323" width="137.5" height="35" as="geometry" />
         </mxCell>
       </root>

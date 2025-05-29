@@ -1,14 +1,9 @@
 package com.rihee.alerting.mockservice.infra;
 
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
-
-import com.rihee.alerting.common.constant.B3Header;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
 import com.rihee.alerting.common.log.constant.LogType;
-import io.micrometer.observation.ObservationRegistry;
+import com.rihee.alerting.common.util.TraceableWebClientBuilderFactory;
 import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.core.env.Environment;
@@ -68,8 +63,7 @@ public class MockExternalCallImpl implements MockExternalCall {
    * @param env Spring Environment 객체로부터 설정값을 주입 받음
    * @throws IllegalStateException {@code mockup.external.base-url}이 비어 있거나 존재하지 않으면 예외 발생
    */
-  public MockExternalCallImpl(Environment env,
-                              ObservationRegistry registry) {
+  public MockExternalCallImpl(Environment env) {
     String port = env.getProperty("server.port");
     if (!StringUtils.hasText(port)) {
       logger.warn(LogType.SYS, "server.port를 지정하지 않았습니다.");
@@ -84,33 +78,17 @@ public class MockExternalCallImpl implements MockExternalCall {
       );
     }
 
-    this.webClient = WebClient.builder()
-        .observationRegistry(registry)
+    this.webClient = TraceableWebClientBuilderFactory.makeNewTraceableWebClientBuilder()
         .baseUrl(baseUrl + port)// 실제 테스트용 mock 서버 baseUrl
         .filter(((request, next) -> {
-          Map<String, String> mdcMap = MDC.getCopyOfContextMap();
-          if (mdcMap == null) {
-            throw new IllegalStateException(
-                "MDC context is missing. "
-                    + "This WebClient must be invoked within a structured logging context "
-                    + "(e.g., via controller or scheduled task)."
-            );
-          }
-          String traceId = mdcMap.get(TRACE_ID.getName());
-          String spanId = mdcMap.get(SPAN_ID.getName());
-          String parentSpanId = mdcMap.get(PARENT_SPAN_ID.getName());
           ClientRequest newReq
               = ClientRequest.from(request)
                           .headers(httpHeaders -> {
-                            httpHeaders.set(B3Header.TRACE_ID.getHeaderName(), traceId);
-                            httpHeaders.set(B3Header.SPAN_ID.getHeaderName(), spanId);
-                            httpHeaders.set(B3Header.PARENT_SPAN_ID.getHeaderName(), parentSpanId);
                             httpHeaders.set(MOCK_AUTH_TOKEN_HEADER, "test-token");
                           })
                           .build();
 
           return next.exchange(newReq)
-              .contextWrite(ctx -> ctx.put("mdc", mdcMap))
               .doFinally(sigType -> MDC.clear());
         }))
         .build();
@@ -129,7 +107,7 @@ public class MockExternalCallImpl implements MockExternalCall {
   public String externalMiddleCall() {
     logger.info(LogType.BIZ, "External Middle Call 서비스 시작.");
     try {
-      return invokeExternalCallWithMdc(HttpMethod.POST.name(), "/middleBiz", "[I Called MiddleBiz]")
+      return invokeExternalCall(HttpMethod.POST.name(), "/middleBiz", "[I Called MiddleBiz]")
           .block();
     } catch (Exception e) {
       logger.error(LogType.BIZ, "Exception during externalMiddleCall", e);
@@ -150,7 +128,7 @@ public class MockExternalCallImpl implements MockExternalCall {
   public String externalSimpleCall() {
     logger.info(LogType.BIZ, "External Simple Call 서비스 시작.");
     try {
-      return invokeExternalCallWithMdc(HttpMethod.GET.name(), "/simpleBiz", "[I Called simpleBiz]")
+      return invokeExternalCall(HttpMethod.GET.name(), "/simpleBiz", "[I Called simpleBiz]")
           .block();
     } catch (Exception e) {
       logger.error(LogType.BIZ, "Exception during externalMiddleCall", e);
@@ -158,7 +136,9 @@ public class MockExternalCallImpl implements MockExternalCall {
     }
   }
 
-  private Mono<String> invokeExternalCallWithMdc(String method, String uri, String body) {
+  private Mono<String> invokeExternalCall(String method, String uri, String body) {
+    Map<String, String> mdcSnapshot = MDC.getCopyOfContextMap();
+
     WebClient.RequestHeadersSpec<?> request
         = webClient.method(HttpMethod.valueOf(method.toUpperCase()))
                   .uri(uri);
@@ -167,21 +147,22 @@ public class MockExternalCallImpl implements MockExternalCall {
       request = ((WebClient.RequestBodySpec) request).bodyValue(body);
     }
 
-    Map<String, String> mdcMap = MDC.getCopyOfContextMap();
-
     return request.retrieve()
         .bodyToMono(String.class)
+        .transformDeferredContextual((mono, ctx) -> {
+          MDC.setContextMap(mdcSnapshot);
+          return mono;
+        })
         .doOnNext(resp -> {
-          MDC.setContextMap(mdcMap);
+          MDC.setContextMap(mdcSnapshot);
           logger.info(LogType.BIZ, "External response for {}: {}", uri, resp);
         })
         .onErrorResume(WebClientResponseException.class, e -> {
-          MDC.setContextMap(mdcMap);
+          MDC.setContextMap(mdcSnapshot);
           logger.warn(LogType.BIZ, "External call {} failed with status {}",
                       uri, e.getStatusCode());
           return Mono.just("ERROR: " + e.getStatusCode());
-        })
-        .doFinally(signalType -> MDC.clear());
+        });
   }
 
 }

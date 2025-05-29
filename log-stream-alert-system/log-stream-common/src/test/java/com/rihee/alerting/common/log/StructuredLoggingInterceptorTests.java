@@ -127,14 +127,8 @@ public class StructuredLoggingInterceptorTests {
     // 두 가지 요청을 보고 인터셉터가 제대로 된 동작을 하는지 확인
     assertThat(traceId1).isEqualTo(traceId2);
     assertThat(spanId1).isEqualTo(parentSpanId2);
-    assertThat(extractSpanSequence(spanId1) + 1).isEqualTo(extractSpanSequence(spanId2));
 
     memoryAppender.clear();
   }
 
-  private int extractSpanSequence(String spanId) {
-    String[] parts = spanId.split("-");
-    // NOTE: 포맷: {서비스명}-{spanLabel}-{번호}
-    return Integer.parseInt(parts[parts.length - 1]);
-  }
 }

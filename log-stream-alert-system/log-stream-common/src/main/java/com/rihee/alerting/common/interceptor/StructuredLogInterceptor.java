@@ -1,14 +1,13 @@
 package com.rihee.alerting.common.interceptor;
 
 import static com.rihee.alerting.common.constant.DefaultValues.B3HEADER_SAMPLED_DEFAULT;
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.META;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.FLAGS;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.NAME;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SAMPLED;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.rihee.alerting.common.constant.B3Header;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
@@ -34,16 +33,18 @@ import org.springframework.web.servlet.HandlerInterceptor;
  *
  * <p>다음 조건을 기준으로 유효성을 판단합니다:
  * <ul>
- *   <li><b>traceId</b>: 요청 흐름 전반을 식별하기 위한 ID (32의 배수 길이)</li>
- *   <li><b>spanId</b>: 단일 작업 또는 호출 단위를 식별하는 ID (16의 배수 길이)</li>
+ *   <li><b>traceId</b>: 요청 흐름 전반을 식별하기 위한 ID (16진수 문자열, 32의 배수 길이 권장)</li>
+ *   <li><b>spanId</b>: 단일 작업 또는 호출 단위를 식별하는 ID (16의 배수 길이 권장)</li>
  *   <li><b>parentSpanId</b>: 이전 호출의 spanId. 유효하지 않으면 무시됨</li>
  * </ul>
  *
- * <p>생성된 ID는 MDC에 저장되며, 로그 수집기나 추적 시스템에서 활용할 수 있도록 구조화된 로그로 출력됩니다.
+ * <p>생성된 ID는 MDC에 저장되며, 로그 수집기나 추적 시스템에서 활용할 수 있도록 구조화된 로그로 출력됩니다.</p>
  *
- * <p><b>정책 고정:</b> 생성 및 검증 정책은 코드 내부에 캡슐화되며 외부에서 재정의할 수 없습니다.
+ * <p><b>정책 고정:</b> 생성 및 검증 정책은 코드 내부에 캡슐화되며 외부에서 재정의할 수 없습니다.</p>
  *
- * <p><b>Note:</b> meta 필드는 B3 헤더 sampled/flags 정보를 수집 목적으로 포함되며, 비즈니스 로그에는 사용되지 않을 수 있습니다.
+ * <p><b>B3 호환성:</b> 본 인터셉터는 Zipkin B3 헤더 규격에 따라
+ * traceId, spanId, parentSpanId, sampled, flags 필드를 지원하며,
+ * 다른 추적 시스템과의 연동을 고려한 통일된 필드 구조를 유지합니다.</p>
  */
 @NonNullApi
 public final class StructuredLogInterceptor implements HandlerInterceptor {
@@ -51,8 +52,6 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
   // 모든 섹터에서 잡히지 않은 Exception을 afterCompletion 에서 로그로 찍어내기 위한 용도
   private static final StructuredLogger logger
       = StructuredLoggerFactory.getLogger(StructuredLogInterceptor.class);
-  // Json 생성을 위한 ObjectNode를 생성하기 위한 요소.
-  private static final ObjectMapper mapper = new ObjectMapper();
   // traceId, spanId에 적합하지 않는 문자가 있는지 확인하기 위한 패턴
   private static final Pattern HEX_PATTERN = Pattern.compile("^[0-9a-f]+$");
 
@@ -87,7 +86,6 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
    *   </li>
    *   <li><b>{@code parentSpanId}</b>: 요청 헤더에 존재하는 {@code spanId}가 유효하면 상위 스팬으로 설정</li>
    *   <li><b>{@code serviceName}</b>, {@code hostName}, {@code containerName} 등 시스템 정보 추가</li>
-   *   <li><b>{@code meta}</b>: {@code sampled}, {@code flags} 등 B3 헤더 정보 포함 (선택적)</li>
    * </ul>
    *
    * <p>모든 값은 MDC에 설정되어 구조화 로그에 포함되며, 로그 추적 및 수집 시스템에서 활용됩니다.</p>
@@ -117,17 +115,14 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
               .ifPresent(label -> MDC.put(NAME.getName(), label));
     }
 
-    // Meta에 로그 추적기를 위한 선택 헤더 추가.
     String sampled = request.getHeader(B3Header.SAMPLED.getHeaderName());
     String flags = request.getHeader(B3Header.FLAGS.getHeaderName());
 
-    ObjectNode json = mapper.createObjectNode();
-    json.put("sampled", StringUtils.hasText(sampled) ? sampled
-                                                            : B3HEADER_SAMPLED_DEFAULT.getValue());
+    MDC.put(SAMPLED.getName(), StringUtils.hasText(sampled) ? sampled
+                                                          : B3HEADER_SAMPLED_DEFAULT.getValue());
     if (StringUtils.hasText(flags)) {
-      json.put("flags", flags);
+      MDC.put(FLAGS.getName(), flags);
     }
-    MDC.put(META.getName(), json.toString());
     return true;
   }
 
@@ -209,10 +204,10 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
    * @return 유효하면 false
    */
   private boolean isNeedNewTraceId(String traceId) {
-    return StringUtils.hasText(traceId)
-        && traceId.length() >= 32
-        && traceId.length() % 32 == 0
-        && HEX_PATTERN.matcher(traceId).matches();
+    return !StringUtils.hasText(traceId)
+        || traceId.length() < 32
+        || traceId.length() % 32 != 0
+        || !HEX_PATTERN.matcher(traceId).matches();
   }
 
   /**
