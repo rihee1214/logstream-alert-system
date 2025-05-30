@@ -2,19 +2,16 @@ package com.rihee.alerting.common.actuator;
 
 import static com.rihee.alerting.common.log.constant.LogType.ACT;
 import static com.rihee.alerting.common.log.constant.LogType.SYS;
-import static com.rihee.alerting.common.log.constant.MetaProperties.ELAPSED_MS;
-import static com.rihee.alerting.common.log.constant.MetaProperties.METHOD;
-import static com.rihee.alerting.common.log.constant.MetaProperties.STATUS_CODE;
-import static com.rihee.alerting.common.log.constant.MetaProperties.STATUS_MESSAGE;
-import static com.rihee.alerting.common.log.constant.MetaProperties.URI;
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.META;
+import static com.rihee.alerting.common.log.constant.ReqProperties.ELAPSED_MS;
+import static com.rihee.alerting.common.log.constant.ReqProperties.METHOD;
+import static com.rihee.alerting.common.log.constant.ReqProperties.STATUS_CODE;
+import static com.rihee.alerting.common.log.constant.ReqProperties.STATUS_MESSAGE;
+import static com.rihee.alerting.common.log.constant.ReqProperties.URI;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SERVICE;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.util.SimpleJsonUtils;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
@@ -210,23 +207,30 @@ public class ActuatorHealthMonitoringScheduler {
         ? ((HttpStatus) status).getReasonPhrase()
         : HttpStatus.valueOf(statusCode).getReasonPhrase();
 
-    // 로깅 전 메타 정보 세팅
-    Map<String, Object> rawMeta = Map.of(
-        METHOD.getKey(), response.request().getMethod().name(),
-        URI.getKey(), uri,
-        STATUS_CODE.getKey(), statusCode,
-        STATUS_MESSAGE.getKey(), statusMessage,
-        ELAPSED_MS.getKey(), stopWatch.getTotalTimeMillis()
-    );
-    putRawMetaToMdc(rawMeta);
-
+    Map<String, String> mdcSnapshot = MDC.getCopyOfContextMap();
     // 실질 로깅 작업
     return response.bodyToMono(String.class).flatMap(body -> {
-      if (response.statusCode().is2xxSuccessful()) {
-        logger.info(ACT, body);
-      } else if (response.statusCode().isError()) {
-        logger.warn(ACT, body);
+      try {
+        // 로깅 전 메타 정보 세팅
+        MDC.put(METHOD.getKey(), response.request().getMethod().name());
+        MDC.put(URI.getKey(), uri);
+        MDC.put(STATUS_CODE.getKey(), String.valueOf(statusCode));
+        MDC.put(STATUS_MESSAGE.getKey(), statusMessage);
+        MDC.put(ELAPSED_MS.getKey(), String.valueOf(stopWatch.getTotalTimeMillis()));
+
+        if (response.statusCode().is2xxSuccessful()) {
+          logger.info(ACT, body);
+        } else if (response.statusCode().isError()) {
+          logger.warn(ACT, body);
+        }
+      } finally {
+        if (mdcSnapshot != null) {
+          MDC.setContextMap(mdcSnapshot);
+        } else {
+          MDC.clear();
+        }
       }
+
       return Mono.empty();
     });
   }
@@ -244,31 +248,16 @@ public class ActuatorHealthMonitoringScheduler {
   private void handleActuatorError(Throwable ex, StopWatch stopWatch, String uri) {
     // 로깅 전 메타 정보 세팅
     stopWatch.stop();
-    Map<String, Object> rawMeta = Map.of(
-        METHOD.getKey(), HttpMethod.GET.name(),
-        URI.getKey(), uri,
-        ELAPSED_MS.getKey(), stopWatch.getTotalTimeMillis()
-    );
-    putRawMetaToMdc(rawMeta);
-    // 실질 로깅작업
-    logger.warn(ACT, "During Actuator Call", ex);
+    Map<String, String> mdcSnapshot = MDC.getCopyOfContextMap();
+    try {
+      MDC.put(METHOD.getKey(), HttpMethod.GET.name());
+      MDC.put(URI.getKey(), uri);
+      MDC.put(ELAPSED_MS.getKey(), String.valueOf(stopWatch.getTotalTimeMillis()));
+      // 실질 로깅작업
+      logger.warn(ACT, "During Actuator Call", ex);
+    } finally {
+      MDC.setContextMap(mdcSnapshot);
+    }
   }
 
-  /**
-   * 지정된 메타 정보를 JSON 문자열로 직렬화하여 MDC에 설정합니다.
-   *
-   * <p>직렬화 중 오류가 발생한 경우, 빈 JSON 객체({@code {}})를 기본값으로 사용하며,
-   * 변환 오류는 warn 레벨의 시스템 로그로 기록됩니다.
-   *
-   * @param rawMeta 로그에 포함할 메타 정보 Map
-   */
-  private void putRawMetaToMdc(Map<String, Object> rawMeta) {
-    String meta = "{}";
-    try {
-      meta = SimpleJsonUtils.writeValueAsString(rawMeta);
-    } catch (JsonProcessingException e) {
-      logger.warn(SYS, "Meta 정보를 JSON 문자열로 변환하는 중 오류가 발생했습니다.", e);
-    }
-    MDC.put(META.getName(), meta);
-  }
 }

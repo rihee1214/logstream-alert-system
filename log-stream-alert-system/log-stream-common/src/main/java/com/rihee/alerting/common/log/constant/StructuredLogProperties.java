@@ -113,15 +113,7 @@ public enum StructuredLogProperties {
    *
    * <p>일반적으로 traceId 또는 spanId 단위의 duration을 측정하여 기록합니다.
    */
-  DURATION("duration"),
-
-  /**
-   * (폐기 예정) 메타 필드 영역.
-   *
-   * <p>모든 키-값 쌍은 개별 속성으로 분리되어 관리되며, 해당 필드는 향후 제거될 예정입니다.
-   */
-  @Deprecated
-  META("meta");
+  DURATION("duration");
 
   private final String name;
 

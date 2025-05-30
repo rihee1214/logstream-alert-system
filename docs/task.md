@@ -35,23 +35,24 @@
 	- [ ] 요청하여 실패, 성공을 트리거 하거나, 여러가지 명령을 줄 수 있는 로직 작성
 	- [ ] Exeption을 내놓도록 하여 오류시 stacktrace도 나오는지 확인
 - [ ] 05/25 생각한 내용
-	- [ ] meta영역의 정합성 고민 (필요하면 그냥 추가한 다음 logging service에서 정리할지 고민해봐야함.)
+	- [x] meta영역의 정합성 고민 (필요하면 그냥 추가한 다음 logging service에서 정리할지 고민해봐야함.)
 	- [ ] webClient에서 MDC, header 세팅 관련된 요소(간단한 수준의 MDC 전파) 고민해야함
-	- [ ] spanId 정책 관련해서 spanId를 중복이 적도록 하기 위해 UUID를 추가할지 고민
+	- [x] spanId 정책 관련해서 spanId를 중복이 적도록 하기 위해 UUID를 추가할지 고민
 	- [ ] workflow에 내가 지금까지 한것들 중 가장 중요하고 복잡한 것들에 대해 일자랑 생각한 것들을 정리해야할 필요가 있을듯.
 - [ ] 05/28 생각한 내용
 	- [ ] 길이필드는 32, 16의 배수가 될 수 있도록 설정할 수 있는 요소를 application.properties에 넣도록 고려
 	- [ ] 메타 영역의 생존 여부 고려
 		- [x] 문서 작성
-		- [ ] 리팩토링으로 meta관련 모든 요소 제거
+		- [x] 리팩토링으로 meta관련 모든 요소 제거
 			- [x] interceptor 코드에서 meta 제거
-			- [ ] actuator 코드에서 meta 제거
-		- [ ] biz, act, sys log contract 문서 모두 수정하기
+			- [x] actuator 코드에서 meta 제거
+		- [x] biz, act, sys log contract 문서 모두 수정하기
 		- [ ] TraceId 검증 정책 완화 고려(duration에 대한 고민 중 결국 spanId는 자기가 만들더라도, 추적성을 위해 검증은 간단하게 하여, 추적이라도 가능한 수준으로 만들 수 있게 해야함)
 			- [ ] 입력된 traceId가 없으면 생성
 			- [ ] 있으면 그대로 사용
 			- [ ] logging service에서 traceId를 강하게 검증한 후 제대로 된 형식의 traceId가 아니면 원래 저장하는 곳이 아닌 다른 곳에 저장하도록 함
 			      - 그렇게 함으로써 모든 로그의 이력이 가능하면서도, 분석 성능을 높이고, 이상한 요소들만 모아 둠으로써 안정성을 챙길 수 있음
+
 ---
 # 이미 작업한 목록
 #done

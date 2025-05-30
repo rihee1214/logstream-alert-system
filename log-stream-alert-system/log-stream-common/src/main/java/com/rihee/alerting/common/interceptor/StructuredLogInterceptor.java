@@ -91,8 +91,8 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
    * <p>모든 값은 MDC에 설정되어 구조화 로그에 포함되며, 로그 추적 및 수집 시스템에서 활용됩니다.</p>
    */
   @Override
-  public final boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-                                                                        Object handler) {
+  public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+      Object handler) {
     // 요청 헤더 기반 traceId, parentSpanId, spanId 세팅
     String traceId = request.getHeader(B3Header.TRACE_ID.getHeaderName());
 
@@ -158,17 +158,6 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
    */
   private SpanLabelRegistry getRegistry() {
     return this.registry;
-  }
-
-  /**
-   * 현재 서비스의 이름을 반환합니다.
-   *
-   * <p>SpanId 생성 및 로그 필드 구성 시 서비스 식별자로 사용됩니다.</p>
-   *
-   * @return 서비스 이름 문자열
-   */
-  private String getServiceName() {
-    return this.serviceName;
   }
 
   /**

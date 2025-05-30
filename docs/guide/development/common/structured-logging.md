@@ -14,15 +14,15 @@ ___
 
 ## 🧱 로그 구조
 
-모든 로그는 JSON 기반으로 출력되며, 다음 세 가지 형태로 구분됩니다:
+모든 로그는 JSON 기반으로 출력되며, 다음 세 가지 로그타입이 존재합니다:
 
-| 로그 타입                          | 설명                              | 문서 링크                                                                          |
-| ------------------------------ | ------------------------------- | ------------------------------------------------------------------------------ |
-| Biz 로그 (`logtype: "biz"`)      | 서비스 흐름 상의 업무 처리 결과 기록           | [bizlog-contract](../../../contracts/logging/log-structure/bizlog-contract.md) |
-| 시스템 로그 (`logtype: "sys"`)      | 예외 및 내부 시스템 오류 기록               | [syslog-contract](../../../contracts/logging/log-structure/syslog-contract.md) |
-| Actuator 로그 (`logtype: "act"`) | 헬스 체크 결과 등 Actuator 기반 상태 정보 기록 | [actlog-contract](../../../contracts/logging/log-structure/actlog-contract.md) |
+| 로그 타입                          | 설명                              |
+| ------------------------------ | ------------------------------- |
+| Biz 로그 (`logtype: "biz"`)      | 서비스 흐름 상의 업무 처리 결과 기록           |
+| 시스템 로그 (`logtype: "sys"`)      | 예외 및 내부 시스템 오류 기록               |
+| Actuator 로그 (`logtype: "act"`) | 헬스 체크 결과 등 Actuator 기반 상태 정보 기록 |
 
-각 로그는 공통적으로 `timestamp`, `traceId`, `spanId`, `level`, `service`, `host`, `container`, `meta` 등의 필드를 포함합니다.
+> 로그의 상세 구조는 [log-level-semantics](../../../contracts/logging/log-level-semantics.md) 을 참조하세요
 
 ---
 

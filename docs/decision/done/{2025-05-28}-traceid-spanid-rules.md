@@ -15,7 +15,7 @@ status: "done" # [in-progress|done|canceled]
     - 완료 일자 : 2025-05-28
     - 작성자 : 이리희
     - 참석자 : 이리희
-    - 관련 문서 : [bizlog-contract](../../contracts/logging/log-structure/bizlog-contract.md)
+    - 관련 문서 : [bizlog-contract](bizlog-contract.md)
 
 ---
 
