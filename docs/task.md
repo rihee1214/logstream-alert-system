@@ -3,18 +3,11 @@
 #task
 - [ ] git, github branch 전략 고민하기
 - [ ] checkstyle 제대로 동작 안하는 현상 고쳐야함
-- [ ] Mockup서비스 구축
-	- [ ] controller, service, dao 단계로 동작하도록 처리
-	- [ ] db연결은 굳이 필요없고, db에서 select한 것처럼 동작하게 만들기.
-	- [ ] 한 controller 여러개의 controller를 호출하게 만들고 추적이 되는지 확인 필요
-	- [ ] scheduler가 돌면서 계속 특정 controller를 call하여 로그가 계속 쌓이도록 만들기
 - [ ] docker, docker-compose.yml, kubernetes.yml 파일에 주석과 환경 변수 넣을 요소
 	- [ ] Common 영역
 		- [ ] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
 		- [ ] Actuator를 Call하는 prometheus 인증 헤더 토큰(환경변수 key값: monitoring.token)
 	       (HTTP header = X-Monitoring-Token)을 환경 변수로 넣어야 한다는 내용 문서화 필요.
-- [ ] java option으로 넣어주는 properties를 Spring 기동시 검증할 수 있도록 해야함.
-	- [ ] 다만 문제는 모든 모듈에서 각자가 가지고 있는 properties만 검증하게 하려면 main에서 호출하게 만드는 것은 문제가 있음 (의존 대상자의 validate는 되지 않기 때문)
 - [ ] Logging service 로직에 대한 고려
 	- [ ] 어떻게 해야 warn레벨의 요소를 적절하게 notification에 보낼 수 있을지.
 	- [ ] error는 바로 보내야겠지만, warn은 애매한 경우가 많을 수 있음
@@ -30,7 +23,7 @@
 	- [ ] biz 개발자 가이드에 주의해야 할 사항 정의
 		- [ ] webClient, Future등을 사용하는 경우에 bizLog를 찍을때, traceId와 같은 MDC정보가 전파될 수 있도록 수동으로 처리해야 한다는 문단 추가하기
 - [ ] Mockup 영역 작업 필요 사항
-	- [ ] 여러가지 복잡한 흐름 로직 작성
+	- [x] 여러가지 복잡한 흐름 로직 작성
 	- [ ] 스케쥴러를 통해 일정 주기마다 요청하는 로직 작성
 	- [ ] 요청하여 실패, 성공을 트리거 하거나, 여러가지 명령을 줄 수 있는 로직 작성
 	- [ ] Exeption을 내놓도록 하여 오류시 stacktrace도 나오는지 확인
@@ -52,6 +45,10 @@
 			- [ ] 있으면 그대로 사용
 			- [ ] logging service에서 traceId를 강하게 검증한 후 제대로 된 형식의 traceId가 아니면 원래 저장하는 곳이 아닌 다른 곳에 저장하도록 함
 			      - 그렇게 함으로써 모든 로그의 이력이 가능하면서도, 분석 성능을 높이고, 이상한 요소들만 모아 둠으로써 안정성을 챙길 수 있음
+- [ ] 각 문서 폴더에 README.md 파일 추가
+	- [ ] 1. 해당 폴더에 잇는 모든 문서들이 무엇을 의미하는지, 폴더명의 의미가 무엇인지 기재하여 이해를 도움
+	- [ ] 2. 해당 폴더에 있는 모든 요소들에 대한 인덱스 역할을 한다. (폴더 하위로 파일 같은 식으로 hierarchy 식으로 기재하기)
+- [ ] 계약 문서와, biz service 개발 가이드에 webClient관련 내용 추가하기
 
 ---
 # 이미 작업한 목록
@@ -124,3 +121,11 @@
 	- [x] property 검증에 대한 내용도 common 개발 가이드에 추가하고, biz문서에도 그것은 각자의 책임이라고 명시하기.
 - [x] **05/26 고민내용 : 모든것을 MVP로 만들고, 추후 넣었으면 좋겠는 것들, 정책 혹은 코드는 문서로 남겨만 두자!** -> decision에 추가필요
 - [x] 05/27 생각한 내용 (ZIPKIN은 수집의 요소도 들어가고 영속성 DB와는 영 맞지 않기 때문에 제거해야함)
+- [x] java option으로 넣어주는 properties를 Spring 기동시 검증할 수 있도록 해야함.
+	- [x] 다만 문제는 모든 모듈에서 각자가 가지고 있는 properties만 검증하게 하려면 main에서 호출하게 만드는 것은 문제가 있음 (의존 대상자의 validate는 되지 않기 때문)
+- [x] Mockup서비스 구축
+	- [x] controller, service, dao 단계로 동작하도록 처리
+	- [x] db연결은 굳이 필요없고, db에서 select한 것처럼 동작하게 만들기.
+	- [x] 한 controller 여러개의 controller를 호출하게 만들고 추적이 되는지 확인 필요
+- [x] mockup 서비스의 webclient에서 응답 로깅시 req 헤더들을 넣지 않는 문제 해결하기
+      (Actuator 참조)

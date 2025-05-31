@@ -1,5 +1,11 @@
 package com.rihee.alerting.mockservice.infra;
 
+import static com.rihee.alerting.common.log.constant.ReqProperties.ELAPSED_MS;
+import static com.rihee.alerting.common.log.constant.ReqProperties.METHOD;
+import static com.rihee.alerting.common.log.constant.ReqProperties.STATUS_CODE;
+import static com.rihee.alerting.common.log.constant.ReqProperties.STATUS_MESSAGE;
+import static com.rihee.alerting.common.log.constant.ReqProperties.URI;
+
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
 import com.rihee.alerting.common.log.constant.LogType;
@@ -8,7 +14,10 @@ import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -142,27 +151,45 @@ public class MockExternalCallImpl implements MockExternalCall {
     WebClient.RequestHeadersSpec<?> request
         = webClient.method(HttpMethod.valueOf(method.toUpperCase()))
                   .uri(uri);
-
     if (HttpMethod.POST.name().equals(method.toUpperCase())) {
       request = ((WebClient.RequestBodySpec) request).bodyValue(body);
     }
 
-    return request.retrieve()
-        .bodyToMono(String.class)
-        .transformDeferredContextual((mono, ctx) -> {
-          MDC.setContextMap(mdcSnapshot);
-          return mono;
-        })
-        .doOnNext(resp -> {
-          MDC.setContextMap(mdcSnapshot);
-          logger.info(LogType.BIZ, "External response for {}: {}", uri, resp);
-        })
-        .onErrorResume(WebClientResponseException.class, e -> {
-          MDC.setContextMap(mdcSnapshot);
-          logger.warn(LogType.BIZ, "External call {} failed with status {}",
-                      uri, e.getStatusCode());
-          return Mono.just("ERROR: " + e.getStatusCode());
-        });
+    StopWatch stopWatch = new StopWatch();
+    stopWatch.start();
+
+    return request
+            .exchangeToMono(resp -> {
+              MDC.setContextMap(mdcSnapshot);
+              stopWatch.stop();
+
+              HttpStatusCode status = resp.statusCode();
+              int statusCode = status.value();
+              String statusMessage = (status instanceof HttpStatus)
+                  ? ((HttpStatus) status).getReasonPhrase()
+                  : HttpStatus.valueOf(statusCode).getReasonPhrase();
+
+              MDC.put(METHOD.getKey(), resp.request().getMethod().name());
+              MDC.put(URI.getKey(), uri);
+              MDC.put(STATUS_CODE.getKey(), String.valueOf(status.value()));
+              MDC.put(STATUS_MESSAGE.getKey(), statusMessage);
+              MDC.put(ELAPSED_MS.getKey(), String.valueOf(stopWatch.getTotalTimeMillis()));
+
+              logger.info(LogType.BIZ, "External response for {}: {}", uri, resp);
+
+              return resp.bodyToMono(String.class);
+            })
+            .onErrorResume(WebClientResponseException.class, e -> {
+              MDC.setContextMap(mdcSnapshot);
+              stopWatch.stop();
+
+              MDC.put(METHOD.getKey(), method.toUpperCase());
+              MDC.put(URI.getKey(), uri);
+              MDC.put(ELAPSED_MS.getKey(), String.valueOf(stopWatch.getTotalTimeMillis()));
+              logger.warn(LogType.BIZ, "External call {} failed with status {}",
+                          uri, e.getStatusCode());
+              return Mono.just("ERROR: " + e.getStatusCode());
+            });
   }
 
 }
