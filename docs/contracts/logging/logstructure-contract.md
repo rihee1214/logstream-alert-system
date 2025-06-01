@@ -46,18 +46,19 @@
 
 ---
 
-## 3️⃣ 요청 필드 (req.*)
+## 3️⃣ Http 요청, 응답 필드 (http.*)
 
 > 이 필드들은 HTTP 외부 요청-응답에 대한 추가 정보로, **LoggingService에서 수집 및 Json 구조화**하여 저장됩니다.  
-> 필드 네임스페이스는 `"req."` 로 시작되며, UI 상 분리 및 분석을 용이하게 하기 위한 정책입니다.
+> 필드 네임스페이스는 `"http."` 로 시작되며, UI 상 분리 및 분석을 용이하게 하기 위한 정책입니다.
 
-| 필드명               | 설명 |
-|----------------------|------|
-| `req.method`         | HTTP 메서드 (GET, POST 등) |
-| `req.uri`            | 요청 URI |
-| `req.statusCode`     | 응답 상태 코드 (예: 200) |
-| `req.statusMessage`  | 응답 상태 메시지 (예: OK) |
-| `req.elapsedMs`      | 요청-응답 간 소요 시간 (ms) |
+| 필드명                  | 설명                     |
+| -------------------- | ---------------------- |
+| `http.method`        | HTTP 메서드 (GET, POST 등) |
+| `http.uri`           | 요청 URI                 |
+| `http.statusCode`    | 응답 상태 코드 (예: 200)      |
+| `http.statusMessage` | 응답 상태 메시지 (예: OK)      |
+| `http.elapsedMs`     | 요청-응답 간 소요 시간 (ms)     |
+| `http.remoteTraceId` | 상대가 사용하는 TraceId       |
 
 ---
 

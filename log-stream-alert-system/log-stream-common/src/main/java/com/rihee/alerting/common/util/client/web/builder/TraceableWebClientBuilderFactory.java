@@ -1,4 +1,4 @@
-package com.rihee.alerting.common.util;
+package com.rihee.alerting.common.util.client.web.builder;
 
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;

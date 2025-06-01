@@ -1,11 +1,16 @@
 package com.rihee.alerting.common.actuator;
 
+import static com.rihee.alerting.common.log.constant.CallCommonProperties.ELAPSED_MS;
+import static com.rihee.alerting.common.log.constant.CallCommonProperties.TYPE;
+import static com.rihee.alerting.common.log.constant.HttpCallProperties.METHOD;
+import static com.rihee.alerting.common.log.constant.HttpCallProperties.STATUS_CODE;
+import static com.rihee.alerting.common.log.constant.HttpCallProperties.STATUS_MESSAGE;
+import static com.rihee.alerting.common.log.constant.HttpCallProperties.URI;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rihee.alerting.common.CommonTestBootstrap;
 import com.rihee.alerting.common.log.appender.MemoryAppender;
@@ -13,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -110,14 +114,20 @@ public class ActuatorSchedulerTests {
 
     // 3. JSON 파싱
     Map<String, String> mdcMap = log.map(ILoggingEvent::getMDCPropertyMap).orElse(new HashMap<>());
-    String rawMeta = mdcMap.get("meta");
-    assertThat(rawMeta).as("meta 필드는 비어있으면 안됩니다.").isNotNull();
+    Map<String, String> reqMap = Map.of(
+        TYPE.getKey(), mdcMap.get(TYPE.getKey()),
+        ELAPSED_MS.getKey(), mdcMap.get(ELAPSED_MS.getKey()),
+        METHOD.getKey(), mdcMap.get(METHOD.getKey()),
+        STATUS_CODE.getKey(), mdcMap.get(STATUS_CODE.getKey()),
+        STATUS_MESSAGE.getKey(), mdcMap.get(STATUS_MESSAGE.getKey()),
+        URI.getKey(), mdcMap.get(URI.getKey())
+    );
 
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode meta = Assertions.assertDoesNotThrow(() -> mapper.readTree(mdcMap.get("meta")),
-        "meta 필드를 Json으로 만들 수 없습니다. : " + rawMeta);
+    for (String key : reqMap.keySet()) {
+      assertThat(reqMap.get(key)).as(key + "| 의 값은 비어있으면 안됩니다.").isNotEmpty();
+    }
 
-    int statusCode = meta.get("statusCode").asInt();
+    int statusCode = Integer.parseInt(reqMap.get(STATUS_CODE.getKey()));
     assertThat(statusCode).as("HTTP 상태 코드는 200이어야 합니다.")
                           .isEqualTo(200);
   }

@@ -12,14 +12,14 @@ import com.rihee.alerting.common.constant.B3Header;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
 import com.rihee.alerting.common.log.constant.LogType;
-import io.micrometer.common.lang.NonNullApi;
-import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 import org.slf4j.MDC;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -46,7 +46,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * traceId, spanId, parentSpanId, sampled, flags 필드를 지원하며,
  * 다른 추적 시스템과의 연동을 고려한 통일된 필드 구조를 유지합니다.</p>
  */
-@NonNullApi
 public final class StructuredLogInterceptor implements HandlerInterceptor {
 
   // 모든 섹터에서 잡히지 않은 Exception을 afterCompletion 에서 로그로 찍어내기 위한 용도
@@ -91,8 +90,8 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
    * <p>모든 값은 MDC에 설정되어 구조화 로그에 포함되며, 로그 추적 및 수집 시스템에서 활용됩니다.</p>
    */
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-      Object handler) {
+  public boolean preHandle(HttpServletRequest request,
+          @NonNull HttpServletResponse response, @NonNull Object handler) {
     // 요청 헤더 기반 traceId, parentSpanId, spanId 세팅
     String traceId = request.getHeader(B3Header.TRACE_ID.getHeaderName());
 
@@ -123,6 +122,11 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
     if (StringUtils.hasText(flags)) {
       MDC.put(FLAGS.getName(), flags);
     }
+
+    // response에 현재 사용중인 TraceId를 넣어주어, 바뀌더라도 추적이 가능하도록 처리
+    if (!response.isCommitted()) {
+      response.setHeader(B3Header.TRACE_ID.getHeaderName(), traceId);
+    }
     return true;
   }
 
@@ -138,8 +142,8 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
    *                 include exceptions that have been handled through an exception resolver
    */
   @Override
-  public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
-                                                Object handler, @Nullable Exception ex) {
+  public void afterCompletion(@NonNull HttpServletRequest request,
+          @NonNull HttpServletResponse response, @NonNull Object handler, @Nullable Exception ex) {
     // 요청 중 예외 발생시 StructuredLogging처리
     if (ex != null) {
       logger.error(LogType.SYS, "Exception during request", ex);

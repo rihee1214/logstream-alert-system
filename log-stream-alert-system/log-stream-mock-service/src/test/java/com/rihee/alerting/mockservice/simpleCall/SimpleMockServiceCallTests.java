@@ -105,7 +105,7 @@ public class SimpleMockServiceCallTests {
 
     List<ILoggingEvent> events = memoryAppender.getLoggedEvents();
 
-    assertThat(events.size()).isEqualTo(3);
+    assertThat(events.size()).isEqualTo(6);
 
     List<String> tranIds = new ArrayList<>();
     List<String> spanIds = new ArrayList<>();

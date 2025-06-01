@@ -1,15 +1,18 @@
 package com.rihee.alerting.common.actuator;
 
+import static com.rihee.alerting.common.log.constant.CallCommonProperties.ELAPSED_MS;
+import static com.rihee.alerting.common.log.constant.CallCommonProperties.TYPE;
+import static com.rihee.alerting.common.log.constant.CallType.HTTP;
+import static com.rihee.alerting.common.log.constant.HttpCallProperties.METHOD;
+import static com.rihee.alerting.common.log.constant.HttpCallProperties.STATUS_CODE;
+import static com.rihee.alerting.common.log.constant.HttpCallProperties.STATUS_MESSAGE;
+import static com.rihee.alerting.common.log.constant.HttpCallProperties.URI;
 import static com.rihee.alerting.common.log.constant.LogType.ACT;
 import static com.rihee.alerting.common.log.constant.LogType.SYS;
-import static com.rihee.alerting.common.log.constant.ReqProperties.ELAPSED_MS;
-import static com.rihee.alerting.common.log.constant.ReqProperties.METHOD;
-import static com.rihee.alerting.common.log.constant.ReqProperties.STATUS_CODE;
-import static com.rihee.alerting.common.log.constant.ReqProperties.STATUS_MESSAGE;
-import static com.rihee.alerting.common.log.constant.ReqProperties.URI;
 import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SERVICE;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 
+import com.rihee.alerting.common.constant.DefaultValues;
 import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
 import java.time.Duration;
@@ -203,15 +206,23 @@ public class ActuatorHealthMonitoringScheduler {
     stopWatch.stop();
     HttpStatusCode status = response.statusCode();
     int statusCode = status.value();
-    String statusMessage = (status instanceof HttpStatus)
-        ? ((HttpStatus) status).getReasonPhrase()
-        : HttpStatus.valueOf(statusCode).getReasonPhrase();
+
+    String statusMessage;
+    if (status instanceof HttpStatus) {
+      statusMessage = ((HttpStatus) status).getReasonPhrase();
+    } else {
+      HttpStatus tempStatus = HttpStatus.resolve(statusCode);
+      statusMessage = tempStatus != null
+                              ? tempStatus.getReasonPhrase()
+                              : DefaultValues.UNKNOWN.getValue();
+    }
 
     Map<String, String> mdcSnapshot = MDC.getCopyOfContextMap();
     // 실질 로깅 작업
     return response.bodyToMono(String.class).flatMap(body -> {
       try {
         // 로깅 전 메타 정보 세팅
+        MDC.put(TYPE.getKey(), HTTP.getType());
         MDC.put(METHOD.getKey(), response.request().getMethod().name());
         MDC.put(URI.getKey(), uri);
         MDC.put(STATUS_CODE.getKey(), String.valueOf(statusCode));
@@ -250,6 +261,7 @@ public class ActuatorHealthMonitoringScheduler {
     stopWatch.stop();
     Map<String, String> mdcSnapshot = MDC.getCopyOfContextMap();
     try {
+      MDC.put(TYPE.getKey(), HTTP.getType());
       MDC.put(METHOD.getKey(), HttpMethod.GET.name());
       MDC.put(URI.getKey(), uri);
       MDC.put(ELAPSED_MS.getKey(), String.valueOf(stopWatch.getTotalTimeMillis()));
