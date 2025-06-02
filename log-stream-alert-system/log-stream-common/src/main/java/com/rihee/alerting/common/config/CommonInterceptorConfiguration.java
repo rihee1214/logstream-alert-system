@@ -1,8 +1,14 @@
 package com.rihee.alerting.common.config;
 
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
+import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
+
 import com.rihee.alerting.common.interceptor.SpanLabelBeanPostProcessor;
 import com.rihee.alerting.common.interceptor.SpanLabelRegistry;
 import com.rihee.alerting.common.interceptor.StructuredLogInterceptor;
+import com.rihee.alerting.common.log.StructuredLogger;
+import com.rihee.alerting.common.log.StructuredLoggerFactory;
+import com.rihee.alerting.common.log.constant.LogType;
 import io.micrometer.common.lang.NonNullApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -32,17 +38,24 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
                         havingValue = "true", matchIfMissing = false)
 public class CommonInterceptorConfiguration implements WebMvcConfigurer {
 
+  private static final StructuredLogger logger
+                        = StructuredLoggerFactory.getLogger(CommonInterceptorConfiguration.class);
   /**
    * serviceName 로그에 포함될 서비스 이름(예: user-service).
    */
   private final String serviceName;
+
+  private final int traceIdMultiplier;
+  private final int spanIdMultiplier;
 
   /**
    * MDC 세팅을 위한 Interceptor에 사용될 serviceId 초기화.
    *
    * @param serviceName spanId 생성 규칙에 들어갈 서비스 명.
    */
-  public CommonInterceptorConfiguration(@Value("${service.name}") String serviceName) {
+  public CommonInterceptorConfiguration(@Value("${service.name}") String serviceName,
+                                  @Value("${tracing.traceId.multiplier}") String traceIdMultiplier,
+                                  @Value("${tracing.spanId.multiplier}") String spanIdMultiplier) {
     if (!StringUtils.hasText(serviceName)) {
       throw new IllegalStateException(
           "Missing required configuration: 'service.name'. "
@@ -50,6 +63,22 @@ public class CommonInterceptorConfiguration implements WebMvcConfigurer {
       );
     }
     this.serviceName = serviceName;
+
+    this.traceIdMultiplier = parseMultiplier(TRACE_ID.name(), traceIdMultiplier);
+    this.spanIdMultiplier = parseMultiplier(SPAN_ID.name(), spanIdMultiplier);
+  }
+
+  private int parseMultiplier(String name, String value) {
+    if (!StringUtils.hasText(value)) {
+      return 1;
+    }
+    try {
+      return Integer.parseInt(value);
+    } catch (NumberFormatException e) {
+      logger.warn(LogType.SYS, "Invalid value for {}: '{}'. Using default value of 1.",
+                                                                                      name, value);
+      return 1;
+    }
   }
 
   /**
@@ -103,7 +132,8 @@ public class CommonInterceptorConfiguration implements WebMvcConfigurer {
   @Bean
   public StructuredLogInterceptor structuredLogInterceptor(
                             SpanLabelRegistry registry) {
-    return new StructuredLogInterceptor(registry, this.serviceName);
+    return new StructuredLogInterceptor(registry,
+                                        this.traceIdMultiplier, this.spanIdMultiplier);
   }
 
   /**

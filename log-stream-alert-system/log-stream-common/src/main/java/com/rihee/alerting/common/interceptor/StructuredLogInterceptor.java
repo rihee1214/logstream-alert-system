@@ -57,19 +57,30 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
   // 요청 대상 메서드에 들어있는 spanLabel 매핑 정보가 담겨있는 레지스트리
   private final SpanLabelRegistry registry;
 
-  // MDC에 기본 세팅될 서비스, 호스트, 컨테이너 정보
-  private final String serviceName;
+  private final int traceIdMultiplier;
+  private final int spanIdMultiplier;
 
   /**
-   * MDC 자동 생성 작업을 하는 로깅 인터셉터를 위한 기본 생성자입니다.
+   * MDC 자동 생성 및 traceId/spanId 생성을 담당하는 로깅 인터셉터의 기본 생성자입니다.
    *
-   * @param registry 요청 대상 메서드에 들어있는 spanLabel 매핑 정보가 담겨있는 레지스트리.
-   * @param serviceName MDC에 기본 세팅될 서비스 정보.
+   * <p>이 생성자는 {@link SpanLabelRegistry}를 통해 각 메서드에 지정된 spanLabel을 추출하고,
+   * 설정된 배수만큼의 traceId 및 spanId를 생성하여 MDC(Mapped Diagnostic Context)에 자동으로 삽입합니다.
+   * 이는 추적성(log traceability)을 강화하고 로그 분석 시 흐름 파악을 용이하게 하기 위한 목적입니다.</p>
+   *
+   * <p>{@code traceIdMultiplier}는 UUID 단위를 몇 배로 연결하여 traceId의 길이를 확장할지 결정하며,
+   * {@code spanIdMultiplier}는 무작위 long 값을 몇 개 연결하여 spanId의 길이를 조정할지를 결정합니다.
+   * 이 두 값은 시스템 간 고유성 보장이나 추적 단위별 식별력을 강화할 수 있도록 설계 유연성을 제공합니다.</p>
+   *
+   * @param registry          요청 대상 메서드에 선언된 spanLabel 정보를 제공하는 레지스트리
+   * @param traceIdMultiplier traceId 생성을 위한 UUID 배수 (예: 2 → 64자리 traceId)
+   * @param spanIdMultiplier  spanId 생성을 위한 random long 배수 (예: 2 → 32자리 hex spanId)
    */
   public StructuredLogInterceptor(SpanLabelRegistry registry,
-                                    String serviceName) {
+                                    int traceIdMultiplier,
+                                    int spanIdMultiplier) {
     this.registry = registry;
-    this.serviceName = serviceName;
+    this.traceIdMultiplier = traceIdMultiplier;
+    this.spanIdMultiplier = spanIdMultiplier;
   }
 
   /**
@@ -104,9 +115,7 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
 
     // 헤더를 통해 들어온 SPAN_ID가 적절하면 PARENT_SPAN_ID로 사용
     String spanId = request.getHeader(B3Header.SPAN_ID.getHeaderName());
-    if (isValidSpanId(spanId)) {
-      MDC.put(PARENT_SPAN_ID.getName(), spanId);
-    }
+    MDC.put(PARENT_SPAN_ID.getName(), spanId);
 
     //
     if (handler instanceof HandlerMethod handlerMethod) {
@@ -168,25 +177,41 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
    * 요청 헤더에서 전달된 traceId를 기반으로 최종 traceId 값을 생성합니다.
    *
    * <p>일반적으로 traceId가 비어있거나 유효하지 않은 경우 새 traceId를 생성합니다.
-   * 서브 클래스는 traceId 생성 정책 또는 포맷을 자유롭게 정의할 수 있습니다.</p>
+   * 이 메서드는 {@code traceIdMultiplier} 설정값에 따라 UUID를 여러 개 연결하여 traceId의 길이를 늘립니다.
+   * 이를 통해 충돌 확률을 줄이고 시스템 간 구분력을 높일 수 있습니다.
    *
-   * @return 최종적으로 사용될 traceId 문자열
+   * <p>서브 클래스는 traceId 생성 정책이나 포맷(예: 접두어 포함, 시간 기반 등)을 자유롭게 재정의할 수 있습니다.</p>
+   *
+   * @return 최종적으로 사용될 traceId 문자열 (예: 32 * multiplier 길이의 UUID hex 문자열)
    */
   private String generateTraceId() {
-    return UUID.randomUUID().toString().replace("-", "");
+    StringBuilder sb = new StringBuilder(traceIdMultiplier * 32);
+    for (int i = 0; i < traceIdMultiplier; i++) {
+      sb.append(UUID.randomUUID().toString().replace("-", ""));
+    }
+    return sb.toString();
   }
+
 
   /**
    * 요청 헤더의 기존 spanId와 메서드의 spanLabel을 기반으로 새로운 spanId를 생성합니다.
    *
-   * <p>서브 클래스는 spanId의 구조(예: 서비스명-업무명-순번) 또는 연결 방식을 정의할 수 있습니다.
-   * trace 트리의 계층 구조를 명확히 하기 위해 parentSpanId를 고려한 형식을 사용하는 것이 일반적입니다.</p>
+   * <p>{@code spanIdMultiplier} 설정값에 따라 무작위 long 값을 여러 개 16진수로 변환하여 연결된 형태로 spanId를 구성합니다.
+   * 일반적으로 trace 트리의 계층 구조를 명확히 하기 위해 parentSpanId와의 연결성을 고려하거나,
+   * spanId를 고유하게 만들기 위해 이와 같은 방식으로 생성합니다.
    *
-   * @return 최종적으로 로깅에 사용될 spanId
+   * <p>서브 클래스는 spanId의 구조(예: 서비스명-업무명-순번) 또는 연결 방식을 정의할 수 있으며,
+   * 형식의 일관성과 길이 보장이 필요한 경우 고정 포맷(hex padding)도 고려할 수 있습니다.</p>
+   *
+   * @return 최종적으로 로깅에 사용될 spanId 문자열 (예: 16 * multiplier 길이의 hex 문자열)
    */
   private String generateSpanId() {
-    long randomLong = ThreadLocalRandom.current().nextLong();
-    return Long.toHexString(randomLong).toLowerCase();
+    StringBuilder sb = new StringBuilder(spanIdMultiplier * 16);
+    for (int i = 0; i < spanIdMultiplier; i++) {
+      long randomLong = ThreadLocalRandom.current().nextLong();
+      sb.append(String.format("%016x", randomLong));
+    }
+    return sb.toString();
   }
 
   /**
@@ -201,18 +226,5 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
         || traceId.length() < 32
         || traceId.length() % 32 != 0
         || !HEX_PATTERN.matcher(traceId).matches();
-  }
-
-  /**
-   * 전달된 spanId가 유효한 hex 문자열이며, 길이가 16 이상의 16의 배수인지 확인합니다.
-   *
-   * @param spanId 클라이언트 또는 이전 요청에서 전달된 spanId
-   * @return 유효한 경우 true
-   */
-  private boolean isValidSpanId(String spanId) {
-    return StringUtils.hasText(spanId)
-        && spanId.length() >= 16
-        && spanId.length() % 16 == 0
-        && HEX_PATTERN.matcher(spanId).matches();
   }
 }
