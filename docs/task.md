@@ -46,6 +46,17 @@
 			- [ ] logging service에서 traceId를 강하게 검증한 후 제대로 된 형식의 traceId가 아니면 원래 저장하는 곳이 아닌 다른 곳에 저장하도록 함
 			      - 그렇게 함으로써 모든 로그의 이력이 가능하면서도, 분석 성능을 높이고, 이상한 요소들만 모아 둠으로써 안정성을 챙길 수 있음
 - [ ] 계약 문서와, biz service 개발 가이드에 webClient관련 내용 추가하기
+- [ ] 06/03 작업 후 남은 내용
+	- [ ] WebClient 관련 정책 문서화
+	    - [ ] 요청 처리: builder 내부 filter 사용해 MDC, B3 헤더 등 주입 정책 설명 추가
+	    - [ ] 응답 처리: `Mono<WebClientCallResult>`를 이용한 후처리 정책 설명 추가
+	    - [ ] 예외 처리: Mono.error 활용 방식과 Error 레벨 로깅 정책 반영
+	- [ ] StackTrace 출력 정책 정리
+	    - [ ] Error 레벨에서만 StackTrace 출력하도록 제한
+	    - [ ] StackTrace 정보량 줄이면서도 핵심 내용 유지하는 출력 방식 고안
+	- [ ] application.properties에 환경변수관련 내용 추가하기.
+		- [ ] tracing.traceId.multiplier : traceId 길이 설정(배수)
+		- [ ] tracing.spanId.multiplier : spanId 길이 설정(배수)
 
 ---
 # 이미 작업한 목록

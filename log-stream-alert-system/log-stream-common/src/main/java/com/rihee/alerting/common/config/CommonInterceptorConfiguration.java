@@ -54,8 +54,8 @@ public class CommonInterceptorConfiguration implements WebMvcConfigurer {
    * @param serviceName spanId 생성 규칙에 들어갈 서비스 명.
    */
   public CommonInterceptorConfiguration(@Value("${service.name}") String serviceName,
-                                  @Value("${tracing.traceId.multiplier}") String traceIdMultiplier,
-                                  @Value("${tracing.spanId.multiplier}") String spanIdMultiplier) {
+                                @Value("${tracing.traceId.multiplier:1}") String traceIdMultiplier,
+                                @Value("${tracing.spanId.multiplier:1}") String spanIdMultiplier) {
     if (!StringUtils.hasText(serviceName)) {
       throw new IllegalStateException(
           "Missing required configuration: 'service.name'. "
