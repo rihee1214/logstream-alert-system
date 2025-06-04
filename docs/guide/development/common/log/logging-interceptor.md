@@ -84,5 +84,5 @@ StructuredLogInterceptor는 시스템 정책으로 고정된 인터셉터입니�
 ---
 ## 📎 관련 문서
 
-- [structured-logging.md](./structured-logging.md)
-- [structured-log-extension.md](./structured-log-extension.md)
+- [structured-logging.md](structured-logging.md)
+- [structured-log-extension.md](structured-log-extension.md)

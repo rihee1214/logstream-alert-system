@@ -32,25 +32,13 @@
 	- [ ] webClient에서 MDC, header 세팅 관련된 요소(간단한 수준의 MDC 전파) 고민해야함
 	- [x] spanId 정책 관련해서 spanId를 중복이 적도록 하기 위해 UUID를 추가할지 고민
 	- [ ] workflow에 내가 지금까지 한것들 중 가장 중요하고 복잡한 것들에 대해 일자랑 생각한 것들을 정리해야할 필요가 있을듯.
-- [ ] 05/28 생각한 내용
-	- [ ] 길이필드는 32, 16의 배수가 될 수 있도록 설정할 수 있는 요소를 application.properties에 넣도록 고려
-	- [ ] 메타 영역의 생존 여부 고려
-		- [x] 문서 작성
-		- [x] 리팩토링으로 meta관련 모든 요소 제거
-			- [x] interceptor 코드에서 meta 제거
-			- [x] actuator 코드에서 meta 제거
-		- [x] biz, act, sys log contract 문서 모두 수정하기
-		- [ ] TraceId 검증 정책 완화 고려(duration에 대한 고민 중 결국 spanId는 자기가 만들더라도, 추적성을 위해 검증은 간단하게 하여, 추적이라도 가능한 수준으로 만들 수 있게 해야함)
-			- [ ] 입력된 traceId가 없으면 생성
-			- [ ] 있으면 그대로 사용
-			- [ ] logging service에서 traceId를 강하게 검증한 후 제대로 된 형식의 traceId가 아니면 원래 저장하는 곳이 아닌 다른 곳에 저장하도록 함
-			      - 그렇게 함으로써 모든 로그의 이력이 가능하면서도, 분석 성능을 높이고, 이상한 요소들만 모아 둠으로써 안정성을 챙길 수 있음
 - [ ] 계약 문서와, biz service 개발 가이드에 webClient관련 내용 추가하기
 - [ ] 06/03 작업 후 남은 내용
 	- [ ] WebClient 관련 정책 문서화
 	    - [ ] 요청 처리: builder 내부 filter 사용해 MDC, B3 헤더 등 주입 정책 설명 추가
 	    - [ ] 응답 처리: `Mono<WebClientCallResult>`를 이용한 후처리 정책 설명 추가
 	    - [ ] 예외 처리: Mono.error 활용 방식과 Error 레벨 로깅 정책 반영
+	    - [ ] 응답 수신시, response헤더로 들어온 B3헤더 traceId를 remoteTraceId 항목으로 MDC세팅 후 로깅할 수 있도록 강조하기.
 	- [ ] StackTrace 출력 정책 정리
 	    - [ ] Error 레벨에서만 StackTrace 출력하도록 제한
 	    - [ ] StackTrace 정보량 줄이면서도 핵심 내용 유지하는 출력 방식 고안
@@ -140,3 +128,14 @@
 - [x] 각 문서 폴더에 README.md 파일 추가
 	- [x] 1. 해당 폴더에 잇는 모든 문서들이 무엇을 의미하는지, 폴더명의 의미가 무엇인지 기재하여 이해를 도움
 	- [x] 2. 해당 폴더에 있는 모든 요소들에 대한 인덱스 역할을 한다. (폴더 하위로 파일 같은 식으로 hierarchy 식으로 기재하기)
+- [x] 05/28 생각한 내용
+	- [x] 길이필드는 32, 16의 배수가 될 수 있도록 설정할 수 있는 요소를 application.properties에 넣도록 고려
+	- [x] 메타 영역의 생존 여부 고려
+		- [x] 문서 작성
+		- [x] 리팩토링으로 meta관련 모든 요소 제거
+			- [x] interceptor 코드에서 meta 제거
+			- [x] actuator 코드에서 meta 제거
+		- [x] biz, act, sys log contract 문서 모두 수정하기
+	- [x] TraceId 검증 정책 완화 고려(duration에 대한 고민 중 결국 spanId는 자기가 만들더라도, 추적성을 위해 검증은 간단하게 하여, 추적이라도 가능한 수준으로 만들 수 있게 해야함)
+		- [x] 입력된 traceId가 없으면 생성
+		- [x] logging service에서 traceId를 강하게 검증한 후 제대로 된 형식의 traceId가 아니면 새로 생성한 후, response헤더에 넣어 보내도록 한다. 그렇게 하여 상대가 로깅하게 만들어서 일말의 추적 가능성을 남긴다.

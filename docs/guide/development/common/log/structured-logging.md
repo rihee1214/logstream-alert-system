@@ -22,7 +22,7 @@ ___
 | 시스템 로그 (`logtype: "sys"`)      | 예외 및 내부 시스템 오류 기록               |
 | Actuator 로그 (`logtype: "act"`) | 헬스 체크 결과 등 Actuator 기반 상태 정보 기록 |
 
-> 로그의 상세 구조는 [log-level-semantics](../../../contracts/logging/log-level-semantics.md) 을 참조하세요
+> 로그의 상세 구조는 [log-level-semantics](log-level-semantics.md) 을 참조하세요
 
 ---
 
@@ -36,7 +36,7 @@ ___
 | `WARN`  | 주의/경고 상황 | 실패 가능성은 있으나 치명적이지 않은 조건 |
 | `ERROR` | 예외 발생    | 오류 발생 및 처리 불가능한 문제      |
 
-📎 자세한 레벨 정의는: [log-level-semantics.md](../../../contracts/logging/log-level-semantics.md)
+📎 자세한 레벨 정의는: [log-level-semantics.md](log-level-semantics.md)
 
 ---
 
@@ -56,7 +56,7 @@ logger.info(LogType.BIZ, "사용자 조회 성공: id={}", userId);
 - 로그 인스턴스를 생성하고, 공통 MDC 설정을 부여합니다.
 - Biz 서비스에서는 직접 사용 가능하며, 필요 시 구현체를 교체해 확장할 수 있습니다.
 
-📎 확장 방법 보기: [structured-log-extension.md](./structured-log-extension.md)
+📎 확장 방법 보기: [structured-log-extension.md](structured-log-extension.md)
 
 | 대상         | 사용 여부                 | 비고                      |
 | ---------- | --------------------- | ----------------------- |

@@ -92,6 +92,6 @@ X-Monitoring-Token: MyPrometheusSecret
 
 ## 📎 관련 문서
 
-- [structured-logging.md – 로그 출력 구조 및 logback 설정](./structured-logging.md)
-- [structured-log-extension.md – 로그 확장 지점](./structured-log-extension.md)
-- [log-level-semantics.md](../../../contracts/logging/log-level-semantics.md)
+- [structured-logging.md – 로그 출력 구조 및 logback 설정](structured-logging.md)
+- [structured-log-extension.md – 로그 확장 지점](structured-log-extension.md)
+- [log-level-semantics.md](log-level-semantics.md)

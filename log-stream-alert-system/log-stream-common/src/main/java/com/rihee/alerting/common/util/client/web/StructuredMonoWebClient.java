@@ -107,6 +107,7 @@ public class StructuredMonoWebClient<T> {
     stopWatch.start();
     return wc.method(method)
         .uri(uri)
+        // 기본 요청 헤더 세팅
         .headers(httpHeaders -> {
           String traceId = snapshot.get(TRACE_ID.getName());
           String spanId = snapshot.get(SPAN_ID.getName());
@@ -119,6 +120,7 @@ public class StructuredMonoWebClient<T> {
           }
         })
         .bodyValue(data)
+        // MDC 정보를 세팅 후 로깅하여 비동기 환경에서 추적이 가능한 단초를 제공하고, response를 객체로 만들어 제공
         .exchangeToMono(resp -> {
           MDC.setContextMap(snapshot);
           stopWatch.stop();
@@ -158,12 +160,14 @@ public class StructuredMonoWebClient<T> {
               MDC.get(RESP_TRACE_ID.getKey())
           );
 
+          // 개발자가 실 환경에서 사용할 수 있을만한 구조로 response를 담아 Mono로 return
           return resp.bodyToMono(String.class)
                   .map(body -> {
                     return WebClientCallResult.processedWebClientCallResult(status, resp.headers(),
                                                              body, stopWatch.getTotalTimeMillis());
                   });
         })
+        // 자원 회수를 위해 stopwatch를 종료하고, Mono.error로 에러 전파
         .onErrorResume(throwable -> {
           stopWatch.stop();
           return Mono.error(throwable);

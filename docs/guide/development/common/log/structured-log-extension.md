@@ -69,6 +69,6 @@ public StructuredLoggerFactory customLoggerFactory() {
 
 ## 📎 관련 문서
 
-- [structured-logging.md – 기본 로그 구조 설명](./structured-logging.md)
-- [log-level-semantics.md](../../../contracts/logging/log-level-semantics.md)
-- [logging-interceptor.md](./logging-interceptor.md)
+- [structured-logging.md – 기본 로그 구조 설명](structured-logging.md)
+- [log-level-semantics.md](log-level-semantics.md)
+- [logging-interceptor.md](logging-interceptor.md)

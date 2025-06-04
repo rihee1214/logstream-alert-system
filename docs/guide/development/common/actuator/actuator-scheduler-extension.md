@@ -62,6 +62,6 @@ monitoring.scheduler.enabled=false
 
 ## 📎 관련 문서
 
-- [actuator-logging.md](./actuator-logging.md)
-- [structured-logging.md](./structured-logging.md)
-- [structured-log-extension.md](./structured-log-extension.md)
+- [actuator-logging.md](actuator-logging.md)
+- [structured-logging.md](structured-logging.md)
+- [structured-log-extension.md](structured-log-extension.md)

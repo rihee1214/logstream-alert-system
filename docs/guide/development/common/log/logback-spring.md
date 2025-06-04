@@ -58,6 +58,6 @@
 
 ## 🔎 기타 참고 문서
 
-- [Structured Logging 개요](./structured-logging.md)
+- [Structured Logging 개요](structured-logging.md)
 - [Biz 로그 계약 문서](bizlog-contract.md)
-- [로그 레벨 의미](../../../contracts/logging/log-level-semantics.md)
+- [로그 레벨 의미](log-level-semantics.md)

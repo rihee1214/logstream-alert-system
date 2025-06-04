@@ -89,9 +89,9 @@ traceId / spanId 생성 규칙 및 유효성 검증 정책 확정
 
 ## 관련 코드(Linked Code)
 
-| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                      | 비고                |
-| ---------- | ------------------ | ------------------------------------------------------ | ----------------- |
-| common     | src/main/java      | com.rihee.logging.interceptor.StructuredLogInterceptor | 정책 적용 위치          |
+| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                      | 비고       |
+| ---------- | ------------------ | ------------------------------------------------------ | -------- |
+| common     | src/main/java      | com.rihee.logging.interceptor.StructuredLogInterceptor | 정책 적용 위치 |
 
 ## 리스크 및 대응(Risks & Mitigation)
 

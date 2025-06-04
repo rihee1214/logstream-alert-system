@@ -1,7 +1,7 @@
 ---
-title: "webclient-unified-handling"
-date: "2025-05-31"
-status: "in-progress" # [in-progress|done|canceled]
+title: webclient-unified-handling
+date: 2025-05-31
+status: done
 ---
 
 # 📝 사고 및 결정 사항 기록
@@ -10,11 +10,11 @@ status: "in-progress" # [in-progress|done|canceled]
 
 ## 0. 결정 여부
 
-- 🔁 적용 예정
-	- 작업자 : 리희
-	- 작업 완료 예정일 : ASAP
-	- 작성자 : 리희
-	- 참석자 : 없음
+- ✅ 적용 완료
+	- 작업자 : 이리희
+    - 완료 일자 : 2025-06-03
+	- 작성자 : 이리희
+	- 참석자 : 이리희
     - 관련 문서 : [관련 문서명](경로)
 
 
@@ -95,9 +95,10 @@ WebClient 요청 및 응답 처리 전략 통합
 
 _(관련 소스파일, 클래스명을 정리한다)_
 
-| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함) | 비고 |
-|--------------|------------------------|--------------------------|------|
-|              |                        |                          |      |
+| 모듈(Module) | 소스 경로(Source Path) | 클래스명 (Package 포함)                                                      | 비고  |
+| ---------- | ------------------ | ---------------------------------------------------------------------- | --- |
+| common     | src/main/java      | com.rihee.alerting.common.util.client.web.StructuredMonoWebClient      |     |
+| common     | src/main/java      | com.rihee.alerting.common.util.client.web.response.WebClientCallResult |     |
 
 ## 대안 방안(Alternative Options)
 

@@ -30,9 +30,10 @@
 
 ---
 
-## 2️⃣ 추적 필드 (Biz Log Only)
+## 2️⃣ 추적 필드 (Must Biz Log)
 
-> 이 필드들은 **logtype: biz** 인 경우에만 포함되어야 하며, 로그 추적(trace)을 위한 필수 항목입니다.
+> 이 필드들은 주로 **logtype: biz** 인 경우에 포함되며, 로그 추적(trace)을 위한 필수 항목입니다.
+> (biz요소가 아닌 필드에서 세팅되어 있더라도 상관 없지만, 무시될 뿐이며, biz로그에서는 무조건 필수로 들어가야 합니다.)
 
 | 필드명         | 설명 |
 |----------------|------|
@@ -42,7 +43,8 @@
 | `sampled`      | 트레이싱 여부 (1 or 0) |
 | `flags`        | 디버깅 플래그 (1 or 0) |
 
-> ⚠️ LoggingService는 traceId의 형식을 검증하며, 잘못된 traceId는 별도 인덱스에 보관됩니다.
+> ⚠️ LoggingService는 traceId의 형식을 검증하며, 잘못된 traceId를 받으면, 새로운 traceId를 생성하여 사용하고, 요청자에게 응답 헤더로 TraceId를 제공합니다.
+> 해당 요청자는 그 응답헤더를 call.remoteTraceId로 받아서 로깅을 한 후 무시합니다.
 
 ---
 
@@ -53,22 +55,13 @@
 
 | 필드명                  | 설명                     |
 | -------------------- | ---------------------- |
-| `http.method`        | HTTP 메서드 (GET, POST 등) |
-| `http.uri`           | 요청 URI                 |
-| `http.statusCode`    | 응답 상태 코드 (예: 200)      |
-| `http.statusMessage` | 응답 상태 메시지 (예: OK)      |
-| `http.elapsedMs`     | 요청-응답 간 소요 시간 (ms)     |
-| `http.remoteTraceId` | 상대가 사용하는 TraceId       |
-
----
-
-## 🪧 로그 타입별 필드 포함 여부
-
-| 필드 그룹         | biz 로그 | sys 로그 | act 로그 |
-|-------------------|----------|----------|----------|
-| 공통 필드         | ✅        | ✅        | ✅        |
-| 추적 필드 (B3)     | ✅        | ❌        | ❌        |
-| 요청 필드 (req.*) | ✅        | △ (선택) | ✅        |
+| `call.type`          | 어떤 방식으로 Call했는지 (http) |
+| `call.method`        | HTTP 메서드 (GET, POST 등) |
+| `call.uri`           | 요청 URI                 |
+| `call.statusCode`    | 응답 상태 코드 (예: 200)      |
+| `call.statusMessage` | 응답 상태 메시지 (예: OK)      |
+| `call.elapsedMs`     | 요청-응답 간 소요 시간 (ms)     |
+| `call.remoteTraceId` | 상대가 사용하는 TraceId       |
 
 ---
 

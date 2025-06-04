@@ -4,7 +4,6 @@ import com.rihee.alerting.common.log.StructuredLogger;
 import com.rihee.alerting.common.log.StructuredLoggerFactory;
 import com.rihee.alerting.common.log.constant.LogType;
 import com.rihee.alerting.common.util.client.web.StructuredMonoWebClient;
-import com.rihee.alerting.common.util.client.web.builder.TraceableWebClientBuilderFactory;
 import com.rihee.alerting.common.util.client.web.response.WebClientCallResult;
 import java.util.Map;
 import org.slf4j.MDC;
