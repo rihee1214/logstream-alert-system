@@ -4,19 +4,15 @@
 
 ## 🧭 대상
 - 이 문서는 공통 컴포넌트를 개발하거나 확장하는 개발자에게 필요한 내용을 다룹니다.
-- 일반 비즈니스 서비스 개발자는 `/docs/biz/structured-webclient-usage.md` 문서를 참조하십시오.
+- 일반 비즈니스 서비스 개발자는 [structured-webclient-usage.md](../../biz/structured-webclient-usage) 문서를 참조하십시오.
 
 ## 🎯 목적
 - WebClient 기반 HTTP 호출의 일관된 로그/트레이싱/에러 처리 체계를 제공
-- MDC 기반의 traceId/operationId 전파를 자동화
-- 모든 결과를 `WebClientCallResult<T>` 또는 `Mono.error(...)` 형태로 통합 관리
+- MDC 기반의 traceId/spanId 전파를 자동화
+- 모든 호출 결과는 `Mono` 흐름 안에서 처리된다.
+	- 성공 시 `WebClientCallResult<T>`객체가 `Mono`로 감싸져 전달
+	- 실패 시 `Mono.error(...)`로 예외가 전달
 
-## 🧩 핵심 구성 요소 (목차 수준)
-- WebClient 커스터마이징 및 필터 구성
-- MDC Context 연동 전략
-- Mono.defer 사용 이유
-- 오류 처리 흐름 및 fallback 전략
-- 로그 출력/수집 연동 구조
 
 # 📘 StructuredMonoWebClient 공통 모듈 가이드
 
@@ -29,25 +25,29 @@
 
 ### 🔹 `StructuredMonoWebClient<T>`
 
-- 목적: 공통 HTTP 호출 처리용 WebClient 래퍼 클래스
-- 기능:
-  - MDC에 설정된 값 기반으로 B3 헤더 자동 삽입
-  - 요청-응답 시간 측정 및 로그 출력
-  - 응답을 `WebClientCallResult<T>` 형태로 감싸서 반환
-  - 예외 발생 시 `Mono.error()`로 전파 (로깅은 사용처에서 수행)
+- **목적**: WebClient 호출에 대한 일관된 로깅, 트레이싱, 예외 처리를 제공하는 공통 래퍼 클래스
+- **주요 기능**:
+	- 현재 MDC에 설정된 `traceId`, `spanId` 등을 기반으로 **B3 트레이싱 헤더 자동 삽입**
+	- 요청-응답의 소요 시간 측정 및 **MDC 전파가 불가능한 경계에서도 표준화된 로그 출력**
+	- 응답 헤더에 포함된 B3 traceId(`X-B3-TraceId`)를 수신한 경우, 해당 값을 `call.remoteTraceId`로 MDC에 설정하여 **상대 시스템의 트레이스 식별자 기록**
+	- 요청/응답 과정에서 수집한 주요 메타데이터(`call.method`, `call.uri`, `call.statusCode`, `call.elapsedMs` 등)를 MDC에 담아 **정책 기반 구조화 로그 출력**
+	- 정상 응답 시 결과를 `WebClientCallResult<T>`로 감싸 **`Mono`로 반환**
+	- 예외 발생 시 `Mono.error()`로 전달하되, **로깅은 호출자(사용처)에서 수행**
+
+> 🔖 관련 정책은 [`http.* 필드 정책 문서`](../../../../contracts/logging/logstructure-contract.md)에서 정의됩니다.**
 
 ---
 
 ## 2️⃣ 응답 포맷: `WebClientCallResult<T>`
 
-- 호출 결과를 감싸는 컨테이너 객체
+- 호출 결과를 감싸는 표준 컨테이너 객체
 - 주요 필드:
-  - `HttpStatusCode status`: HTTP 상태 코드
-  - `HttpHeaders headers`: 응답 헤더
-  - `T data`: 실제 응답 바디
-  - `long elapsedMs`: 소요 시간(ms)
+	- `HttpStatusCode status`: HTTP 상태 코드
+	-  `HttpHeaders headers`: 응답 헤더
+	- `T data`: 실제 응답 바디
+	- `long elapsedMs`: 소요 시간(ms)
 
-> 일반 개발자는 `.map(WebClientCallResult::getData)` 를 통해 응답 본문만 추출해 사용 가능
+> 💡 일반 개발자는 `.map(result -> WebClientCallResult.getData(result))` 를 통해 응답 데이터를 추출할 수 있으며, 필요에 따라 `headers`, `status`, `elapsedMs` 등 메타데이터도 자유롭게 활용 가능합니다.
 
 ---
 
@@ -56,7 +56,7 @@
 ### 🔧 메서드: `executeMonoCall(...)`
 
 ```java
-public Mono<WebClientCallResult<String>> executeMonoCall(HttpMethod method, String uri, T data)
+public Mono<WebClientCallResult<T>> executeMonoCall(HttpMethod method, String uri, T data)
 ```
 
 ### ▶️ 동작 순서:

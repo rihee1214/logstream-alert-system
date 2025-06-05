@@ -48,7 +48,7 @@ public class MockExternalCallImpl implements MockExternalCall {
    */
   private static final StructuredLogger logger
       = StructuredLoggerFactory.getLogger(MockExternalCallImpl.class);
-  private StructuredMonoWebClient<String> client;
+  private StructuredMonoWebClient client;
 
   /**
    * {@code MockExternalCallImpl} 생성자입니다.
@@ -87,7 +87,7 @@ public class MockExternalCallImpl implements MockExternalCall {
           return next.exchange(newReq)
               .doFinally(sigType -> MDC.clear());
         }));
-    client = new StructuredMonoWebClient<>(clientBuilder);
+    client = new StructuredMonoWebClient(clientBuilder);
   }
 
   /**
@@ -134,7 +134,7 @@ public class MockExternalCallImpl implements MockExternalCall {
 
   private Mono<String> invokeExternalCall(String method, String uri, String body) {
     Map<String, String> mdcSnapshot = MDC.getCopyOfContextMap();
-    return client.executeMonoCall(method, uri, body)
+    return client.executeMonoCall(method, uri, body, String.class)
         .map(
           WebClientCallResult::getData
         ).onErrorResume(ex -> {

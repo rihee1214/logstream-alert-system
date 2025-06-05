@@ -16,4 +16,4 @@
 - 오류 발생 시 `Mono.error(...)`로 전달되므로, 사용자 코드에서 예외 처리 필요
 
 ## 📂 관련 문서
-- [`structured-webclient.md`](structured-webclient.md.md) - 내부 구현 문서
+- [`structured-webclient.md`](structured-webclient.md) - 내부 구현 문서
