@@ -9,14 +9,14 @@ import org.springframework.web.reactive.function.client.ClientResponse.Headers;
  * <p>호출 성공 여부, 응답 상태 코드 및 헤더, 실제 응답 본문 데이터, 호출 소요 시간(ms) 등의 정보를 포함하며,
  * WebClient 호출의 추적 및 로깅을 위해 활용됩니다.
  *
- * @param <T> 응답 본문의 타입(되도록 String 타입 사용)
+ * @param <R> 응답 본문의 타입(되도록 String 타입 사용)
  * @author 리희
  * @since 1.0
  */
-public class WebClientCallResult<T> {
+public class WebClientCallResult<R> {
 
   /** 응답 메타 정보 및 본문을 담고 있는 내부 객체. */
-  private final HttpClientResponse<T> response;
+  private final HttpClientResponse<R> response;
 
   /** WebClient 호출의 총 소요 시간 (단위: 밀리초). */
   private final long elapsedMillis;
@@ -27,7 +27,7 @@ public class WebClientCallResult<T> {
    * @param response 응답 상태 및 데이터
    * @param elapsedMillis 호출 소요 시간
    */
-  private WebClientCallResult(HttpClientResponse<T> response, long elapsedMillis) {
+  private WebClientCallResult(HttpClientResponse<R> response, long elapsedMillis) {
     this.response = response;
     this.elapsedMillis = elapsedMillis;
   }
@@ -35,18 +35,18 @@ public class WebClientCallResult<T> {
   /**
    * WebClient 호출 결과를 감싸는 {@code WebClientCallResult}를 생성합니다.
    *
+   * @param <R>          응답 데이터 타입 (일반적으로 {@code String} 사용)
    * @param status       HTTP 상태 코드
    * @param headers      응답 헤더
    * @param data         응답 본문 (JSON 문자열 등)
    * @param elapsedMillis 호출 소요 시간 (단위: 밀리초)
-   * @param <T>          응답 데이터 타입 (일반적으로 {@code String} 사용)
    * @return 구조화된 WebClient 호출 결과
    */
-  public static <T> WebClientCallResult<T> processedWebClientCallResult(HttpStatusCode status,
+  public static <R> WebClientCallResult<R> processedWebClientCallResult(HttpStatusCode status,
                                                                         Headers headers,
-                                                                        T data,
+                                                                        R data,
                                                                         long elapsedMillis) {
-    HttpClientResponse<T> response = new HttpClientResponse<T>(status, headers, data);
+    HttpClientResponse<R> response = new HttpClientResponse<R>(status, headers, data);
     return new WebClientCallResult<>(response, elapsedMillis);
   }
 
@@ -82,7 +82,7 @@ public class WebClientCallResult<T> {
    *
    * @return 응답 데이터
    */
-  public T getData() {
+  public R getData() {
     return response.getData();
   }
 
@@ -100,17 +100,17 @@ public class WebClientCallResult<T> {
    *
    * <p>외부에서는 직접 사용할 필요 없이, {@link WebClientCallResult}를 통해 간접적으로 접근합니다.
    *
-   * @param <T> 응답 본문 타입
+   * @param <R> 응답 본문 타입
    */
-  private static class HttpClientResponse<T> {
+  private static class HttpClientResponse<R> {
     /** HTTP 상태 코드. */
     private final HttpStatusCode httpStatus;
     /** 응답 헤더. */
     private final Headers headers;
     /** 응답 본문. */
-    private final T data;
+    private final R data;
 
-    private HttpClientResponse(HttpStatusCode status, Headers headers, T data) {
+    private HttpClientResponse(HttpStatusCode status, Headers headers, R data) {
       this.httpStatus = status;
       this.headers = headers;
       this.data = data;
@@ -129,7 +129,7 @@ public class WebClientCallResult<T> {
      *
      * @return 응답 본문 데이터
      */
-    public T getData() {
+    public R getData() {
       return this.data;
     }
   }
