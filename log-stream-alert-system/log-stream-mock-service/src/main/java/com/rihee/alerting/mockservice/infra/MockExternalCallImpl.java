@@ -61,12 +61,6 @@ public class MockExternalCallImpl implements MockExternalCall {
    * @throws IllegalStateException {@code mockup.external.base-url}이 비어 있거나 존재하지 않으면 예외 발생
    */
   public MockExternalCallImpl(Environment env) {
-    String port = env.getProperty("server.port");
-    if (!StringUtils.hasText(port)) {
-      logger.warn(LogType.SYS, "server.port를 지정하지 않았습니다.");
-      port = "8080";
-    }
-
     String baseUrl = env.getProperty("mockup.external.base-url");
     if (!StringUtils.hasText(baseUrl)) {
       throw new IllegalStateException(
@@ -75,7 +69,7 @@ public class MockExternalCallImpl implements MockExternalCall {
       );
     }
 
-    WebClient.Builder clientBuilder = WebClient.builder().baseUrl(baseUrl + port)
+    WebClient.Builder clientBuilder = WebClient.builder().baseUrl(baseUrl)
         .filter(((request, next) -> {
           ClientRequest newReq
               = ClientRequest.from(request)

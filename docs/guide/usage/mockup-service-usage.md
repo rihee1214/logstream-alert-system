@@ -1,4 +1,4 @@
-# 🚀 Mockup 모듈 (Mockup Service) 기동 가이드
+# 🚀 Mockup Service 사용 가이드
 
 ## 📌 개요
 Mockup Service는 비즈니스 로그 이벤트를 발생시키는 테스트용 서비스입니다.  

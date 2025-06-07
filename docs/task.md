@@ -18,33 +18,31 @@
 	- [ ] 보안을 위해 Security 관련 코드를 추가해야함.(Common세팅 영향으로 무조건 만들어 넣어야함)
 	- [ ] @EnableWebSecurity을 설정해서 기본 security 설정은 무시하고, 직접 설정한 security가 작용되도록 해야 함
 	- [ ] 추후 기동 가이드에 common, mockup 모두에 들어가는 환경 설정들을 기록해야하고, 설명해야하며, @EnableWebSecurity는 물론, 각각의 역할을 정하고, 이것은 그저 mockup이라는 것을, 결국 biz영역의 개발자가 추가로 정의한 내용은 각자가 관리해야함을 명시
-	- [ ] 환경변수 설명 들어가야 하는 부분
-		- [ ] mockup.external.base-url (테스트를 위한 외부 요청 기본 URL주소)
+	- [x] 환경변수 설명 들어가야 하는 부분
+		- [x] mockup.external.base-url (테스트를 위한 외부 요청 기본 URL주소)
 	- [ ] biz 개발자 가이드에 주의해야 할 사항 정의
 		- [ ] webClient, Future등을 사용하는 경우에 bizLog를 찍을때, traceId와 같은 MDC정보가 전파될 수 있도록 수동으로 처리해야 한다는 문단 추가하기
 - [ ] Mockup 영역 작업 필요 사항
 	- [x] 여러가지 복잡한 흐름 로직 작성
 	- [ ] 스케쥴러를 통해 일정 주기마다 요청하는 로직 작성
 	- [ ] 요청하여 실패, 성공을 트리거 하거나, 여러가지 명령을 줄 수 있는 로직 작성
-	- [ ] Exeption을 내놓도록 하여 오류시 stacktrace도 나오는지 확인
-- [ ] 05/25 생각한 내용
-	- [x] meta영역의 정합성 고민 (필요하면 그냥 추가한 다음 logging service에서 정리할지 고민해봐야함.)
-	- [ ] webClient에서 MDC, header 세팅 관련된 요소(간단한 수준의 MDC 전파) 고민해야함
-	- [x] spanId 정책 관련해서 spanId를 중복이 적도록 하기 위해 UUID를 추가할지 고민
-	- [ ] workflow에 내가 지금까지 한것들 중 가장 중요하고 복잡한 것들에 대해 일자랑 생각한 것들을 정리해야할 필요가 있을듯.
-- [ ] 계약 문서와, biz service 개발 가이드에 webClient관련 내용 추가하기
+	- [x] Exeption을 내놓도록 하여 오류시 stacktrace도 나오는지 확인
+- [ ] workflow에 내가 지금까지 한것들 중 가장 중요하고 복잡한 것들에 대해 일자랑 생각한 것들을 정리해야할 필요가 있을듯.
 - [ ] 06/03 작업 후 남은 내용
-	- [ ] WebClient 관련 정책 문서화
-	    - [ ] 요청 처리: builder 내부 filter 사용해 MDC, B3 헤더 등 주입 정책 설명 추가
-	    - [ ] 응답 처리: `Mono<WebClientCallResult>`를 이용한 후처리 정책 설명 추가
-	    - [ ] 예외 처리: Mono.error 활용 방식과 Error 레벨 로깅 정책 반영
-	    - [ ] 응답 수신시, response헤더로 들어온 B3헤더 traceId를 remoteTraceId 항목으로 MDC세팅 후 로깅할 수 있도록 강조하기.
+	- [x] WebClient 관련 정책 문서화
+	    - [x] 요청 처리: builder 내부 filter 사용해 MDC, B3 헤더 등 주입 정책 설명 추가
+	    - [x] 응답 처리: `Mono<WebClientCallResult>`를 이용한 후처리 정책 설명 추가
+	    - [x] 예외 처리: Mono.error 활용 방식과 Error 레벨 로깅 정책 반영
+	    - [x] 응답 수신시, response헤더로 들어온 B3헤더 traceId를 remoteTraceId 항목으로 MDC세팅 후 로깅할 수 있도록 강조하기.
 	- [ ] StackTrace 출력 정책 정리
 	    - [ ] Error 레벨에서만 StackTrace 출력하도록 제한
 	    - [ ] StackTrace 정보량 줄이면서도 핵심 내용 유지하는 출력 방식 고안
-	- [ ] application.properties에 환경변수관련 내용 추가하기.
-		- [ ] tracing.traceId.multiplier : traceId 길이 설정(배수)
-		- [ ] tracing.spanId.multiplier : spanId 길이 설정(배수)
+	- [x] application.properties에 환경변수관련 내용 추가하기.
+		- [x] tracing.traceId.multiplier : traceId 길이 설정(배수)
+		- [x] tracing.spanId.multiplier : spanId 길이 설정(배수)
+- [ ] 06/07 작업 후 남은 내용
+	- [ ] common-component에 StructuredMonoWebClient에 대한 설명 및 참고 문서 추가하기.
+	- [ ] mockup-service-usage에 추후 테스트를 위해 알아야할 항목에 대한 정리 필요(스케쥴러 매니저 관련 내용)
 
 ---
 # 이미 작업한 목록
@@ -139,3 +137,8 @@
 	- [x] TraceId 검증 정책 완화 고려(duration에 대한 고민 중 결국 spanId는 자기가 만들더라도, 추적성을 위해 검증은 간단하게 하여, 추적이라도 가능한 수준으로 만들 수 있게 해야함)
 		- [x] 입력된 traceId가 없으면 생성
 		- [x] logging service에서 traceId를 강하게 검증한 후 제대로 된 형식의 traceId가 아니면 새로 생성한 후, response헤더에 넣어 보내도록 한다. 그렇게 하여 상대가 로깅하게 만들어서 일말의 추적 가능성을 남긴다.
+- [x] 05/25 생각한 내용
+	- [x] meta영역의 정합성 고민 (필요하면 그냥 추가한 다음 logging service에서 정리할지 고민해봐야함.)
+	- [x] webClient에서 MDC, header 세팅 관련된 요소(간단한 수준의 MDC 전파) 고민해야함
+	- [x] spanId 정책 관련해서 spanId를 중복이 적도록 하기 위해 UUID를 추가할지 고민
+- [x] 계약 문서와, biz service 개발 가이드에 webClient관련 내용 추가하기

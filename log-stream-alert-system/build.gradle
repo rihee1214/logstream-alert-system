@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'eclipse'
-    id 'org.springframework.boot' version '3.4.4' apply false
+    id 'org.springframework.boot' version '3.5.0'
     id 'io.spring.dependency-management' version '1.1.7'
     // 컴파일시 규칙 위반을 잡기 위한 도구
     id 'checkstyle'
@@ -33,7 +33,7 @@ tasks.named('check').configure {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
-    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'eclipse'
     apply plugin: 'checkstyle'
 
     if (project.name != 'common') {
@@ -42,7 +42,7 @@ subprojects {
 
     dependencyManagement {
         imports {
-            mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.4"
+            mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.0"
         }
     }
 
