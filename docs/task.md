@@ -3,46 +3,29 @@
 #task
 - [ ] git, github branch 전략 고민하기
 - [ ] checkstyle 제대로 동작 안하는 현상 고쳐야함
-- [ ] docker, docker-compose.yml, kubernetes.yml 파일에 주석과 환경 변수 넣을 요소
-	- [ ] Common 영역
-		- [ ] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
-		- [ ] Actuator를 Call하는 prometheus 인증 헤더 토큰(환경변수 key값: monitoring.token)
-	       (HTTP header = X-Monitoring-Token)을 환경 변수로 넣어야 한다는 내용 문서화 필요.
 - [ ] Logging service 로직에 대한 고려
 	- [ ] 어떻게 해야 warn레벨의 요소를 적절하게 notification에 보낼 수 있을지.
 	- [ ] error는 바로 보내야겠지만, warn은 애매한 경우가 많을 수 있음
 - [ ] Elasticsearch에 저장된 데이터 백업 및 압축 저장 관련된 정책 고려
 - [ ] 중복 키를 적용하여 alermanager에 적용하는 방법과, kafka에 적용하는 방법 둘다 알아보기
-- [ ] Mockup영역 문서화 고려하기
-	- [ ] mock.token 관련해서 요청시 최소한의 조치로 X-Auth-Token을 헤더에 넣어서 보내도록함
-	- [ ] 보안을 위해 Security 관련 코드를 추가해야함.(Common세팅 영향으로 무조건 만들어 넣어야함)
-	- [ ] @EnableWebSecurity을 설정해서 기본 security 설정은 무시하고, 직접 설정한 security가 작용되도록 해야 함
-	- [ ] 추후 기동 가이드에 common, mockup 모두에 들어가는 환경 설정들을 기록해야하고, 설명해야하며, @EnableWebSecurity는 물론, 각각의 역할을 정하고, 이것은 그저 mockup이라는 것을, 결국 biz영역의 개발자가 추가로 정의한 내용은 각자가 관리해야함을 명시
-	- [x] 환경변수 설명 들어가야 하는 부분
-		- [x] mockup.external.base-url (테스트를 위한 외부 요청 기본 URL주소)
-	- [ ] biz 개발자 가이드에 주의해야 할 사항 정의
-		- [ ] webClient, Future등을 사용하는 경우에 bizLog를 찍을때, traceId와 같은 MDC정보가 전파될 수 있도록 수동으로 처리해야 한다는 문단 추가하기
 - [ ] Mockup 영역 작업 필요 사항
 	- [x] 여러가지 복잡한 흐름 로직 작성
 	- [ ] 스케쥴러를 통해 일정 주기마다 요청하는 로직 작성
 	- [ ] 요청하여 실패, 성공을 트리거 하거나, 여러가지 명령을 줄 수 있는 로직 작성
 	- [x] Exeption을 내놓도록 하여 오류시 stacktrace도 나오는지 확인
 - [ ] workflow에 내가 지금까지 한것들 중 가장 중요하고 복잡한 것들에 대해 일자랑 생각한 것들을 정리해야할 필요가 있을듯.
-- [ ] 06/03 작업 후 남은 내용
-	- [x] WebClient 관련 정책 문서화
-	    - [x] 요청 처리: builder 내부 filter 사용해 MDC, B3 헤더 등 주입 정책 설명 추가
-	    - [x] 응답 처리: `Mono<WebClientCallResult>`를 이용한 후처리 정책 설명 추가
-	    - [x] 예외 처리: Mono.error 활용 방식과 Error 레벨 로깅 정책 반영
-	    - [x] 응답 수신시, response헤더로 들어온 B3헤더 traceId를 remoteTraceId 항목으로 MDC세팅 후 로깅할 수 있도록 강조하기.
-	- [ ] StackTrace 출력 정책 정리
-	    - [ ] Error 레벨에서만 StackTrace 출력하도록 제한
-	    - [ ] StackTrace 정보량 줄이면서도 핵심 내용 유지하는 출력 방식 고안
-	- [x] application.properties에 환경변수관련 내용 추가하기.
-		- [x] tracing.traceId.multiplier : traceId 길이 설정(배수)
-		- [x] tracing.spanId.multiplier : spanId 길이 설정(배수)
 - [ ] 06/07 작업 후 남은 내용
 	- [ ] common-component에 StructuredMonoWebClient에 대한 설명 및 참고 문서 추가하기.
 	- [ ] mockup-service-usage에 추후 테스트를 위해 알아야할 항목에 대한 정리 필요(스케쥴러 매니저 관련 내용)
+- [ ] 06/08 고민사항
+	- [ ] logging-serivce의 역할 수정
+		- [ ] 들어온 로그를 재구조화 한 후 elasticsearch에 적재.
+		- [ ] 이후 alerting 정책은 Notification service 추가하여 거기에 적재.
+	- [ ] Notification service 추가
+		- [ ] alerting (sms, email 같은 서비스) 서비스 제거
+		- [ ] 대신 정책과 알림 모두 진행
+		- [ ] 실패에 대한 처리도 여기서 맡게 됨
+	- [ ] 전체 아키텍처 수정되어야 함
 
 ---
 # 이미 작업한 목록
@@ -142,3 +125,27 @@
 	- [x] webClient에서 MDC, header 세팅 관련된 요소(간단한 수준의 MDC 전파) 고민해야함
 	- [x] spanId 정책 관련해서 spanId를 중복이 적도록 하기 위해 UUID를 추가할지 고민
 - [x] 계약 문서와, biz service 개발 가이드에 webClient관련 내용 추가하기
+- [x] 06/03 작업 후 남은 내용
+	- [x] WebClient 관련 정책 문서화
+	    - [x] 요청 처리: builder 내부 filter 사용해 MDC, B3 헤더 등 주입 정책 설명 추가
+	    - [x] 응답 처리: `Mono<WebClientCallResult>`를 이용한 후처리 정책 설명 추가
+	    - [x] 예외 처리: Mono.error 활용 방식과 Error 레벨 로깅 정책 반영
+	    - [x] 응답 수신시, response헤더로 들어온 B3헤더 traceId를 remoteTraceId 항목으로 MDC세팅 후 로깅할 수 있도록 강조하기.
+	- [x] StackTrace 출력 정책 정리
+	    - [x] Error 레벨에서만 StackTrace 출력하도록 제한
+	    - [x] StackTrace 정보량 줄이면서도 핵심 내용 유지하는 출력 방식 고안
+	- [x] application.properties에 환경변수관련 내용 추가하기.
+		- [x] tracing.traceId.multiplier : traceId 길이 설정(배수)
+		- [x] tracing.spanId.multiplier : spanId 길이 설정(배수)
+- [x] Mockup영역 문서화 고려하기
+	- [x] mock.token 관련해서 요청시 최소한의 조치로 X-Auth-Token을 헤더에 넣어서 보내도록함
+	- [x] @EnableWebSecurity을 설정해서 기본 security 설정은 무시하고, 직접 설정한 security가 작용되도록 해야 함
+	- [x] 환경변수 설명 들어가야 하는 부분
+		- [x] mockup.external.base-url (테스트를 위한 외부 요청 기본 URL주소)
+	- [x] biz 개발자 가이드에 주의해야 할 사항 정의
+		- [x] webClient, Future등을 사용하는 경우에 bizLog를 찍을때, traceId와 같은 MDC정보가 전파될 수 있도록 수동으로 처리해야 한다는 문단 추가하기
+- [x] docker, docker-compose.yml, kubernetes.yml 파일에 주석과 환경 변수 넣을 요소
+	- [x] Common 영역
+		- [x] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
+		- [x] Actuator를 Call하는 prometheus 인증 헤더 토큰(환경변수 key값: monitoring.token)
+	       (HTTP header = X-Monitoring-Token)을 환경 변수로 넣어야 한다는 내용 문서화 필요.

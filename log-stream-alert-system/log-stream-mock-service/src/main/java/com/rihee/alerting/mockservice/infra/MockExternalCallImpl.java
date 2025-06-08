@@ -69,12 +69,20 @@ public class MockExternalCallImpl implements MockExternalCall {
       );
     }
 
+    String mockAuthToken = env.getProperty("mockup.token");
+    if (!StringUtils.hasText(mockAuthToken)) {
+      throw new IllegalStateException(
+          "Missing required configuration: 'mockup.token'. "
+              + "Please set it using -Dmockup.token or environment variable."
+      );
+    }
+
     WebClient.Builder clientBuilder = WebClient.builder().baseUrl(baseUrl)
         .filter(((request, next) -> {
           ClientRequest newReq
               = ClientRequest.from(request)
               .headers(httpHeaders -> {
-                httpHeaders.set(MOCK_AUTH_TOKEN_HEADER, "test-token");
+                httpHeaders.set(MOCK_AUTH_TOKEN_HEADER, mockAuthToken);
               })
               .build();
 

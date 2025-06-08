@@ -33,6 +33,13 @@ import org.springframework.lang.NonNull;
  * </p>
  *
  * <p><b>생성 방법:</b> {@code StructuredLoggerFactory.getLogger(MyClass.class)}를 사용할 것.</p>
+ *
+ * <p><b>📌 로그 레벨별 예외 출력 정책:</b><br>
+ * - {@code error} 레벨에서만 {@code Throwable}을 포함한 로그 출력이 허용됩니다.<br>
+ * - {@code warn}, {@code info}, {@code debug}에서는 stack trace 출력은 <b>허용되지 않으며</b>,
+ *   필요 시 {@code e.getMessage()} 또는 커스텀 메시지를 명시적으로 출력해야 합니다.<br>
+ * - 이는 로그 노이즈 방지 및 운영 환경에서의 로그 가독성 확보를 위한 정책입니다.
+ * </p>
  */
 public class StructuredLoggerImpl implements StructuredLogger {
 
@@ -78,22 +85,6 @@ public class StructuredLoggerImpl implements StructuredLogger {
   }
 
   /**
-   * 지정된 {@code logType}으로 DEBUG 레벨 로그를 예외와 함께 기록합니다.
-   */
-  @Override
-  public void debug(LogType logType, String message, Throwable t) {
-    logWithMdc(logType, () -> log.debug(message, t));
-  }
-
-  /**
-   * 지정된 {@code logType}으로 DEBUG 레벨 로그를 예외 및 포맷 인자와 함께 기록합니다.
-   */
-  @Override
-  public void debug(LogType logType, String message, Throwable t, Object... args) {
-    logWithMdc(logType, () -> log.debug(message, args, t));
-  }
-
-  /**
    * 지정된 {@code logType}으로 INFO 레벨 로그를 기록합니다.
    */
   @Override
@@ -110,22 +101,6 @@ public class StructuredLoggerImpl implements StructuredLogger {
   }
 
   /**
-   * 지정된 {@code logType}으로 INFO 레벨 로그를 예외와 함께 기록합니다.
-   */
-  @Override
-  public void info(LogType logType, String message, Throwable t) {
-    logWithMdc(logType, () -> log.info(message, t));
-  }
-
-  /**
-   * 지정된 {@code logType}으로 INFO 레벨 로그를 예외 및 포맷 인자와 함께 기록합니다.
-   */
-  @Override
-  public void info(LogType logType, String message, Throwable t, Object... args) {
-    logWithMdc(logType, () -> log.info(message, args, t));
-  }
-
-  /**
    * 지정된 {@code logType}으로 WARN 레벨 로그를 기록합니다.
    */
   @Override
@@ -139,22 +114,6 @@ public class StructuredLoggerImpl implements StructuredLogger {
   @Override
   public void warn(LogType logType, String message, Object... args) {
     logWithMdc(logType, () -> log.warn(message, args));
-  }
-
-  /**
-   * 지정된 {@code logType}으로 WARN 레벨 로그를 예외와 함께 기록합니다.
-   */
-  @Override
-  public void warn(LogType logType, String message, Throwable t) {
-    logWithMdc(logType, () -> log.warn(message, t));
-  }
-
-  /**
-   * 지정된 {@code logType}으로 WARN 레벨 로그를 예외 및 포맷 인자와 함께 기록합니다.
-   */
-  @Override
-  public void warn(LogType logType, String message, Throwable t, Object... args) {
-    logWithMdc(logType, () -> log.warn(message, args, t));
   }
 
   /**
