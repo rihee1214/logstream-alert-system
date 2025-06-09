@@ -13,19 +13,23 @@
 	- [ ] 스케쥴러를 통해 일정 주기마다 요청하는 로직 작성
 	- [ ] 요청하여 실패, 성공을 트리거 하거나, 여러가지 명령을 줄 수 있는 로직 작성
 	- [x] Exeption을 내놓도록 하여 오류시 stacktrace도 나오는지 확인
-- [ ] workflow에 내가 지금까지 한것들 중 가장 중요하고 복잡한 것들에 대해 일자랑 생각한 것들을 정리해야할 필요가 있을듯.
-- [ ] 06/07 작업 후 남은 내용
-	- [ ] common-component에 StructuredMonoWebClient에 대한 설명 및 참고 문서 추가하기.
-	- [ ] mockup-service-usage에 추후 테스트를 위해 알아야할 항목에 대한 정리 필요(스케쥴러 매니저 관련 내용)
-- [ ] 06/08 고민사항
+- [ ] 아키텍처 수정에 대한 고민
 	- [ ] logging-serivce의 역할 수정
-		- [ ] 들어온 로그를 재구조화 한 후 elasticsearch에 적재.
+		- [ ] 들어온 로그를 재 구조화 한 후 elasticsearch에 적재.
 		- [ ] 이후 alerting 정책은 Notification service 추가하여 거기에 적재.
 	- [ ] Notification service 추가
 		- [ ] alerting (sms, email 같은 서비스) 서비스 제거
-		- [ ] 대신 정책과 알림 모두 진행
-		- [ ] 실패에 대한 처리도 여기서 맡게 됨
-	- [ ] 전체 아키텍처 수정되어야 함
+		- [ ] 알림과 실패에 대한 처리를 여기서 맡게 됨
+	- [ ] alert policy service 추가
+		- [ ] logging-service와 notification service 사이에 존재하는 정책 서비스
+		- [ ] alerting에 대한 모든 전략을 가지고 있는 요소 추가
+		- [ ] prometheus 는 메트릭 전략, 해당 서비스는 비지니스 로직에 대한 알림 전략
+		- [ ] 메트릭은 많이 바뀌지 않더라도 해당 요소는 많이 바뀔 것이므로 핵심 하위 도메인
+		- [ ] 메트릭은 바뀔 일이 잦지 않고, 중요도도 떨어지므로, 일반 하위 도메인으로 고려
+	- [ ] prometheus, prometheus wrapper, alertmanager 정책
+		- [ ] prometheus wrapper 를 가지고 갈 것인지
+		- [ ] alertmanager대신 notification service 사용에 대한 고민
+		- [ ] 위의 두 개의 사항은 각각의 통신에서 알림 전송을 잃어 버릴 수 있다는 문제점에 발생한 고민
 
 ---
 # 이미 작업한 목록
@@ -149,3 +153,6 @@
 		- [x] HOST, CONTAINER 명을 환경 변수로 넣어 주어야 함
 		- [x] Actuator를 Call하는 prometheus 인증 헤더 토큰(환경변수 key값: monitoring.token)
 	       (HTTP header = X-Monitoring-Token)을 환경 변수로 넣어야 한다는 내용 문서화 필요.
+- [x] 06/07 작업 후 남은 내용
+	- [x] common-component에 StructuredMonoWebClient에 대한 설명 및 참고 문서 추가하기.
+	- [x] mockup-service-usage에 추후 테스트를 위해 알아야할 항목에 대한 정리 필요(스케쥴러 매니저 관련 내용)
