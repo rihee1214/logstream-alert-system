@@ -30,12 +30,15 @@
 		- [ ] prometheus wrapper 를 가지고 갈 것인지
 		- [ ] alertmanager대신 notification service 사용에 대한 고민
 		- [ ] 위의 두 개의 사항은 각각의 통신에서 알림 전송을 잃어 버릴 수 있다는 문제점에 발생한 고민
-- [ ] 06/10 갑자기 테스트가 안되는 상황 발생. mockup 서비스 문제 해결해야함
-	- [ ] spring boot starter가 제대로 안붙는거 같음. 우선 common 서비스는 잘 동작하고 있음
-	- [ ] 문제 해결 후 해야할 일
-		- [ ]  prometheus 관련 테스트 세팅 준비 및 구성 고민
-		- [ ] alertmanager 세팅 구성 고민
-		- [ ] metric정보 저장을 위해, 그리고 중복되는 기능 문제로 직접 구현한 서비스 만들기로 결정.(이쪽이 유연성은 더 좋다.)
+- [x] 06/10 갑자기 테스트가 안되는 상황 발생. mockup 서비스 문제 해결해야함
+	- [x] spring boot starter가 제대로 안붙는거 같음. 우선 common 서비스는 잘 동작하고 있음
+	- [x] 문제 해결 후 해야할 일
+		- [x]  prometheus 관련 테스트 세팅 준비 및 구성 고민
+		- [x] alertmanager 세팅 구성 고민
+		- [x] metric정보 저장을 위해, 그리고 중복되는 기능 문제로 직접 구현한 서비스 만들기로 결정.(이쪽이 유연성은 더 좋다.)
+- [ ] prometheus call 테스트하는데 basicauth가 걸려서 그런가 403에러 발생
+	- [ ] 헤더는 잘 들어가고 있는거 확인함(wireshark로)
+	- [ ] basic auth로도 안됨 일단 다시 구조 확인해봐야 할듯
 
 ---
 # 이미 작업한 목록

@@ -60,7 +60,7 @@ public class CompositeStaticContextProvider extends AbstractJsonProvider<ILoggin
     if (!StringUtils.hasText(serviceName)) {
       throw new IllegalStateException(
           "Missing required configuration: 'service.name'. "
-              + "Please set it using -Dservice.name or in application.properties."
+              + "Please set it using -Dservice.name or Environment Variable."
       );
     }
   }

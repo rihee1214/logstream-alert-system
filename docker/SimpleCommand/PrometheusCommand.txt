@@ -1,0 +1,4 @@
+docker container run --name prometheus `
+                    -p 9090:9090 `
+                    -v [프로젝트 패스]/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml `
+                    prom/prometheus

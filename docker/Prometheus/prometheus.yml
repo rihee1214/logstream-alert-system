@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'mock-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: instance
+        replacement: 'mock-service'
+    scheme: http
+    http_headers:
+      X-Monitoring-Token:
+        values: [ "test-token" ]
+    basic_auth:
+      username: user
+      password: a2ed08ef-4a76-413a-8970-d3668d44606d

@@ -30,6 +30,7 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty "service.name", "mockup"
+    systemProperty "spring.profiles.active", "dev"
     environment "HOST", "localhost"
     environment "CONTAINER", "local-container"
     environment "monitoring.token", "test-token"
