@@ -86,12 +86,13 @@ public class MockupSecurity {
   @Bean
   @Order(0)
   public SecurityFilterChain permitFilter(HttpSecurity http) throws Exception {
-    http.authorizeHttpRequests(auth
-        -> auth.anyRequest()
-            .access((authSupplier, context) -> {
-              String token = context.getRequest().getHeader(MOCK_AUTH_TOKEN_HEADER);
-              return new AuthorizationDecision(mockAuthToken.equals(token));
-            }))
+    http.securityMatcher("/**")
+        .authorizeHttpRequests(auth
+            -> auth.anyRequest()
+              .access((authSupplier, context) -> {
+                String token = context.getRequest().getHeader(MOCK_AUTH_TOKEN_HEADER);
+                return new AuthorizationDecision(mockAuthToken.equals(token));
+              }))
         .csrf(AbstractHttpConfigurer::disable);
     return http.build();
   }

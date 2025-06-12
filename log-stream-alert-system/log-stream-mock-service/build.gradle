@@ -14,6 +14,10 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // prometheus를 이용하여 application health를 체크하기 위한 dependency
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
     // WebClient 전용 (자체 service call용)
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     // 보안을 위한 dependency

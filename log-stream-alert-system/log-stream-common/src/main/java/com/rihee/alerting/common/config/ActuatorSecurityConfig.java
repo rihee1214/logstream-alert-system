@@ -6,8 +6,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
@@ -89,11 +89,12 @@ public class ActuatorSecurityConfig {
                       String token = context.getRequest().getHeader(MONITORING_TOKEN_HEADER);
                       return new AuthorizationDecision(prometheusToken.equals(token));
                     })
-                    // 나머지 actuator 요청은 localhost 에서만 허용
+                    // /actuator/** 중 prometheus 외 모든 요청은 localhost 접근만 허용
                     .anyRequest()
                     .access((authentication, context)
-                        -> isLocalhostRequest(context)))
-        .httpBasic(AbstractHttpConfigurer::disable)
+                                                                    -> isLocalhostRequest(context))
+        )
+        .httpBasic(Customizer.withDefaults())
         .csrf(CsrfConfigurer::disable);
 
     return http.build();

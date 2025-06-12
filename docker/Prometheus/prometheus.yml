@@ -12,8 +12,9 @@ scrape_configs:
         replacement: 'mock-service'
     scheme: http
     http_headers:
+      # Prometheus가 Actuator에서 데이터를 가져오려면 세팅해야하는 헤더값
       X-Monitoring-Token:
         values: [ "test-token" ]
-    basic_auth:
-      username: user
-      password: a2ed08ef-4a76-413a-8970-d3668d44606d
+      # mockup 서비스를 호출하는 모든 요소는 해당 헤더를 가지고 있어야함(보안정책)
+      X-Auth-Token:
+        values: [ "test-token" ]
