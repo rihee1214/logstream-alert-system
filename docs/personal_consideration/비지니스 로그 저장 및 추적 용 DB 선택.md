@@ -240,4 +240,130 @@ MDC세팅을 자유롭게 해서 어떤 사용자든 자기가 추가하고 싶�
 
 
 ---
+## ScyllaDB에 대한 설명
+
+1. 관계형 데이터 베이스는 row단위로 쌓이지만, Column 지향 데이터 베이스는 column단위로 데이터가 쌓인다.
+	1. 관계형 데이터 베이스 처럼 null과 같은 값이 존재하지 않으므로, 없음을 표현하려면 그에 맞는 타입을 추가해 주어야 함.
+	   ex) `call.type: "none"`
+2. 어떤 타입의 인덱스든 지정이 되어야 where 절에서 사용할 수 있다.
+	1. **Primary Key (Partition Key + Clustering Key)** 
+		- **읽기 성능이 뛰어나지만, 쿼리 패턴이 고정되어야 함**
+		- **가장 기본이자 강력한 인덱스 방식**
+		- 테이블 생성 시 지정됨
+		- **Partition Key**: 데이터 분산(샤딩) 기준
+		- **Clustering Key**: 파티션 내부 정렬 기준
+		    - ✅ 가장 빠른 조회 가능 
+		      (`WHERE service = ? AND logtype = ? AND timestamp >= ?`)
+		- ❗ 파티션 키 조건 없이 조회 불가 (`logtype만 WHERE로 조회 불가`)
+		```ScyllaDB
+		/*
+		정의된 해당 요소들은 Column 지향 데이터베이스에서 where절 조건으로 사용할 수 있다.
+		*/
+		CREATE TABLE biz_logs (
+		  service       text,
+		  logtype       text,
+		  timestamp     timestamp,
+		  traceId       text,
+		  spanId        text,
+		  level         text,
+		  message       text,
+		  call_type     text,
+		  call_uri      text,
+		  -- (service, logtype) 은 샤딩을 위한 파티션 키로 동작한다.
+		  -- timestamp는 해당 파티션 내에 어떤 기준으로 정렬할 것인지를 지정한다.
+		  PRIMARY KEY ((service, logtype), timestamp)
+		);
+		```
+	2. **Secondary Index (Global Index)**
+		- **간단한 필터 조건에만 적합하며, 파티션을 많이 탐색하면 성능 저하**
+		- 특정 컬럼에 대해 **별도로 인덱스 생성**
+		- **파티션 키 외의 컬럼을 조건으로 WHERE에서 사용**하고 싶을 때 사용
+		- ✅ 단일 컬럼에 대한 간단한 조회 지원
+		- ❗ 대규모 테이블에선 성능 저하/불안정 가능성 있음
+		- ❗ 복잡한 WHERE 조건, 대량 파티션 탐색에는 부적합
+		```ScyllaDB
+		CREATE INDEX ON biz_logs (level);
+		```
+	3. **Materialized View**
+		- **복수 조회 패턴을 지원하지만, 쓰기 비용과 일관성 관리 부담이 따름**
+		- 특정 쿼리 패턴에 최적화된 **뷰 테이블을 사전에 구성**
+		- 새로운 테이블로 인식됨 (쓰기 비용 증가, 일관성 주의)
+		- ✅ `level` 기반으로 빠르게 조회 가능
+		- ❗ MV 대상 컬럼은 모두 NOT NULL 조건 필요
+		- ❗ MV도 결국 내부적으로 별도 테이블이므로 스토리지 사용 증가
+		```ScyllaDB
+		CREATE MATERIALIZED VIEW biz_logs_by_level AS
+		  SELECT * FROM biz_logs
+		  WHERE level IS NOT NULL AND service IS NOT NULL 
+			  AND logtype IS NOT NULL AND timestamp IS NOT NULL
+		  PRIMARY KEY ((level), service, logtype, timestamp);
+		```
+	4. ~~Custom Index~~
+		1. 사용자가 직접 정의한 인덱스를 사용하기 위한 요소로 SASI가 제일 많이 사용되는 Custom Index였음.
+		2. ScyllaDB에서는 더 이상 사용되지 않음
+	5. ~~SASI(Secondary Index for SSTable)~~
+		- 내부적으로 AppendOnly인 SStable을 사용하지만, 추가 병렬 SStable을 사용하여 범위 데이터 검색등의 고급 인덱스를 제공한다는 개념
+		- **ScyllaDB에서는 deprecated 됨.**
+			- 성능상의 이슈와 두 DB간 정합성 문제로 인해 이슈가 있음
+			- 하나의 테이블을 위해 두 종류의 DB를 관리해야함
+3. ScyllaDB 인덱스 타입별 비교 및 사용 전략
+
+| 인덱스 타입                                          | 추천 사용 시나리오                                                                                     | 장점                                           | 단점/제약                                                                                | 부적합한 경우                                                |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| **Primary Key**<br>(Partition + Clustering Key) | - 쿼리 패턴이 명확하고 고정적일 때<br>- 자주 조회되는 컬럼이 쿼리 조건에 항상 포함될 때<br>- 쓰기/읽기 모두 빠른 성능이 필요할 때               | ✅ 가장 빠른 조회<br>✅ 샤딩 및 정렬 기준으로 명확<br>✅ GC-safe | ❗ 쿼리 패턴 고정<br>❗ 파티션 키 없이 WHERE 사용 불가                                                 | - 다양한 조회 조건이 필요한 경우<br>- 조건이 자주 변경되는 대시보드형 쿼리          |
+| **Secondary Index**<br>(Global Index)           | - 단일 컬럼에 대한 **보조 조건 필터링**이 필요한 경우<br>- 간단한 검색 조건이지만, PK로 구성하기엔 애매할 때                           | ✅ WHERE에서 사용 가능<br>✅ 기존 테이블 구조 변경 없이 도입 가능   | ❗ 성능 불안정 (파티션 수 많으면 느림)<br>❗ 대량 쓰기/삭제 시 index lag 가능<br>❗ GC에 의해 인덱스 불일치 발생 가능       | - 대규모 테이블에서 복합 조건 쿼리<br>- 실시간 성능이 중요한 시스템              |
+| **Materialized View<br>(MV)**                   | - 특정 컬럼 기반의 조회가 반복되는 경우<br>- 역방향 조회(예: level, traceId 기준 등)를 정기적으로 할 때<br>- 쿼리 패턴이 2개 이상 존재할 때 | ✅ 파생 테이블로 빠른 조회 가능<br>✅ 다양한 인덱싱을 MV로 대응 가능   | ❗ 모든 MV 키는 NOT NULL 조건 필수<br>❗ 쓰기 성능 저하 (동시 복제됨)<br>❗ 일관성 제약 (Eventually Consistent) | - 실시간 강한 일관성이 필요한 시스템<br>- MV 생성 대상 컬럼이 null 가능성이 높을 때 |
+
+📌 인덱스 선택 기준 요약
+
+|상황|추천 인덱스|
+|---|---|
+|**정해진 조건으로만 검색 (정형화된 요청)**|Primary Key|
+|**비정형 필터 조건이 가끔 추가됨**|Secondary Index _(주의 필요)_|
+|**여러 방향으로 검색이 반복됨**|Materialized View|
+|**자주 변하는 필터 조건, 다양한 조회 조합**|❌ 별도 Search 엔진 (ex. Elasticsearch) 연계 고려|
+
+---
 ## Column 지향 데이터 베이스 사용시 쿼리에 대한 고민
+
+### 인덱스를 어떻게 잡고 갈 것이냐.
+#### 1️⃣ 공통 필드 (All Types)
+
+| 필드명          | 설명                              | 필수 여부 |
+| ------------ | ------------------------------- | ----- |
+| `logtype`    | 로그 유형 (biz, sys, act)           | Y     |
+| `timestamp`  | ISO 8601 DateTime (with offset) | Y     |
+| `level`      | 로그 레벨 (INFO, WARN, ERROR)       | Y     |
+| `service`    | 서비스 식별자                         | Y     |
+| `class`      | 로그 발생 클래스 (FQCN)                | Y     |
+| `message`    | 로그 메시지 본문                       | Y     |
+| `host`       | 로그 기록 서버의 호스트명                  | Y     |
+| `container`  | 컨테이너 ID                         | Y     |
+| `stacktrace` | 예외 발생 시 출력되는 스택 트레이스            | N     |
+#### 2️⃣ 추적 필드 (Must Biz Log)
+
+> 이 필드들은 주로 **logtype: biz** 인 경우에 포함되며, 로그 추적(trace)을 위한 필수 항목입니다.
+> (biz 타입이 아닌 로그에 포함되어도 문제는 없지만, 무시되며, biz 로그에서는 필수입니다.)
+
+| 필드명            | 설명               | 필수 여부           |
+| -------------- | ---------------- | --------------- |
+| `traceId`      | 전체 요청 흐름의 식별자    | Y               |
+| `spanId`       | 개별 작업 단위 식별자     | Y               |
+| `parentSpanId` | 상위 스팬 ID         | T (첫 요청이 아닐 경우) |
+| `sampled`      | 트레이싱 여부 (1 or 0) | N               |
+| `flags`        | 디버깅 플래그 (1 or 0) | N               |
+#### 3️⃣ Http 요청, 응답 필드 (call.type=http)
+
+> 이 필드들은 HTTP 외부 요청-응답에 대한 추가 정보로, **LoggingService에서 수집 및 Json 구조화**하여 저장됩니다.  
+> `"call.type=http"` 로 설정되어야 하며, UI 상 분리 및 분석을 용이하게 하기 위한 정책입니다.
+
+| 필드명                  | 설명                     | 필수 여부 |
+| -------------------- | ---------------------- | ----- |
+| `call.type`          | 어떤 방식으로 Call했는지 (http) | N     |
+| `call.method`        | HTTP 메서드 (GET, POST 등) | N     |
+| `call.uri`           | 요청 URI                 | N     |
+| `call.statusCode`    | 응답 상태 코드 (예: 200)      | N     |
+| `call.statusMessage` | 응답 상태 메시지 (예: OK)      | N     |
+| `call.elapsedMs`     | 요청-응답 간 소요 시간 (ms)     | N     |
+| `call.remoteTraceId` | 상대가 사용하는 TraceId       | N     |
+위의 내용들을 가지고 인덱스를 결정해야 한다.

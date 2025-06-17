@@ -62,13 +62,13 @@
 
 | 필드명                  | 설명                     | 필수 여부 |
 | -------------------- | ---------------------- | ----- |
-| `call.type`          | 어떤 방식으로 Call했는지 (http) | Y     |
-| `call.method`        | HTTP 메서드 (GET, POST 등) | Y     |
-| `call.uri`           | 요청 URI                 | Y     |
-| `call.statusCode`    | 응답 상태 코드 (예: 200)      | Y     |
-| `call.statusMessage` | 응답 상태 메시지 (예: OK)      | Y     |
-| `call.elapsedMs`     | 요청-응답 간 소요 시간 (ms)     | Y     |
-| `call.remoteTraceId` | 상대가 사용하는 TraceId       | Y     |
+| `call.type`          | 어떤 방식으로 Call했는지 (http) | N     |
+| `call.method`        | HTTP 메서드 (GET, POST 등) | N     |
+| `call.uri`           | 요청 URI                 | N     |
+| `call.statusCode`    | 응답 상태 코드 (예: 200)      | N     |
+| `call.statusMessage` | 응답 상태 메시지 (예: OK)      | N     |
+| `call.elapsedMs`     | 요청-응답 간 소요 시간 (ms)     | N     |
+| `call.remoteTraceId` | 상대가 사용하는 TraceId       | N     |
 
 ---
 
