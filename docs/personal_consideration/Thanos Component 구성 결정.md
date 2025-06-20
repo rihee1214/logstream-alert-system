@@ -14,7 +14,7 @@ Thanos는 여러가지 Component의 조합으로 이루어져 있기 때문에 �
 | **Receiver**       | 수집만 전담하는 component (모든 WAL 수신) — TSDB ingestion 전용  | ❌ Prometheus 대신 쓰는 구조에서만 사용           |
 
 - SideCar는 무조건 필수로 들어가야 한다. 
-  각 Prometheus 인스턴스에 붙어서 메트릭 데이터를 외부로 전달하고, 실시간 상태를 Querier에 노출하기 때문이다.
+  각 Prometheus 인스턴스에 붙어서 메트릭 데이터를 외부로 전달하고, 실시간 상태를 Query에 노출하기 때문이다.
 - StoreGateway도 필수다.
   객체 저장소에 저장된 장기 데이터를 Querier가 조회할 수 있도록 함 → 트렌드 분석, 리포트 용
 - Query
