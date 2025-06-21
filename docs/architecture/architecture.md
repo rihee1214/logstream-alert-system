@@ -100,3 +100,84 @@
 	- Wrapping Service는 동일한 장애 상황에서 Alertmanager 및 Notification Service로 중복 알림이 전송되지 않도록, 모든 알림 payload에 `dedup_key` 라벨을 포함하여 전송한다.
 	- Alertmanager 및 Notification Service는 이 키를 기준으로 일정 시간 동안 중복 알림을 억제하며,장애 알림이 한 번만 전송되도록 보장한다.
 	- Prometheus의 장애 대응 및 데이터 신뢰성 확보는 **Prometheus 자체의 HA 구성을 통해 보장**되어야 하며, Wrapping Service는 수집된 데이터를 후처리하는 데만 집중한다.
+---
+## V0.6 (2025-06-20)
+
+### 1. Thanos 도입
+
+- **도입 목적**:
+    - Prometheus의 단기 저장 한계를 극복하고, 장기 보관 및 Global Query 기능 확보
+    - Metric 기반 서비스의 장애 분석 및 시계열 흐름 파악 가능
+- **도입 컴포넌트**:
+    - `Sidecar`: Prometheus metric을 S3 객체 저장소로 실시간 업로드 + Query에 메트릭 제공
+    - `Compactor`: 장기 저장을 위한 압축 및 retention 관리
+    - `Query`: 모니터링 서비스를 위한 Global Query 처리
+    - `Query Frontend` _(추후 도입 고려)_: 쿼리 캐싱 및 트래픽 최적화 목적
+    - `Ruler` _(추후 도입 고려)_: Prometheus와 Alertmanager 중간에서 Alert 정책을 담당
+
+---
+
+### 2. Log Alert Rule Service 도입
+
+- **책임**:
+    - 비즈니스 로그 기반의 Alert 조건 정의 및 평가
+    - Redis 캐시 및 ScyllaDB를 기반으로 실시간 룰 평가 처리
+    - Notification 전송은 Kafka(notification-topic)를 통해 Alertmanager로 위임
+- **기존 시스템 대비 이점**:
+    - 로그 기반 Alert 흐름과 Metric 기반 Alert 흐름을 명확히 분리
+    - 향후 비즈니스 룰 확장 및 UI 기반 조건 관리 가능성 확보
+
+---
+### 3. Elasticsearch 제거 및 ScyllaDB 도입
+
+- **변경 목적**:
+    - 로그 수집 목적의 Elasticsearch는 고비용 구조이며, Scale-out 대비 성능 이점이 제한적
+	    - 중-대규모 기업 내부 플랫폼을 위한 프로젝트이기 때문에 Elasticsearch는 부적절
+    - 단순 검색용 로그 저장소보다 **분석/알림 기반 조회에 최적화된 KV 기반 Row Store**가 필요
+    - ScyllaDB는 Cassandra 호환 구조로 고성능 분산 로그 저장에 적합하며, 쓰기 집중형 구조에 강점이 있음
+- **ScyllaDB 도입 배경**:
+    - 기존 Elasticsearch는 JVM 기반으로 인한 GC 튜닝, 샤드 운영 등의 부담이 컸으며, 단순 검색 이상을 위해선 복잡한 구성 필요
+    - ScyllaDB는 다음과 같은 점에서 로그 저장소로 더 적합:
+		- **쓰기 성능 특화**: CPU 코어 기반 IO 스케줄링 구조로, 로그 수집처럼 대량 쓰기 작업에 강점
+		- **클라우드 친화성**: 클라우드 VM 환경에서 노드 단위 scale-out에 최적화되어 있음
+		- **SSD 친화적 설계**: LSM 구조 및 IO 병렬화 기반으로 디스크 효율이 우수함
+		- **정형화된 Row 기반 조회에 유리**: TraceId 기반 단건 조회, 병렬 탐색 등에 최적
+- **Elasticsearch 제거로 인한 이점**:
+    - 클러스터 운영 부담 감소 (샤드 관리, JVM 튜닝 등)
+    - 로그 데이터와 알림 조건 간의 직접 연계 용이 (e.g., Redis 캐시 기반 Rule 평가)
+- **추가 고려 사항**:
+	- 로그 데이터에 대해 **정형화된 PK 기반 조회**를 우선시함
+	    - e.g., `(traceId, spanId)` 기반 단건 추적
+	    - MV를 이용한 `operationId`, `timestamp` 단위 병렬 조회 필요
+	- 복잡 쿼리는 Monitoring Service 내부에서 ScyllaDB 직접 조회로 해결
+    - ScyllaDB에 대한 backup/restore 전략은 snapshot 기반으로 고려 (cf. `sstabledump`, `sstableloader`)
+---
+### 4. Monitoring 서비스의 책임 변경 및 Kibana 제거
+
+- **기존**: Kibana를 통한 로그 기반 시각화
+- **변경**: **DB의 변경으로 인해 더 이상 Kibana 사용 불가**
+    - Grafana를 통해 **전체 흐름/메트릭 기반 추이 분석 중심**의 모니터링 구조로 개편
+    - ScyllaDB에 대한 직접 쿼리는 별도 Monitoring Service 내부에서 처리 (복잡 쿼리 대응)
+    - Kibana는 로그 기반 UI 분석 툴로서의 역할이 약하고, 운영 가시성 측면에서 가치 감소
+
+---
+
+### 5. S3 객체 저장소 도입
+
+- **역할**:
+    - Thanos Sidecar가 업로드한 시계열 데이터를 장기 보관
+    - Thanos Query/Compactor가 직접 참조하는 메인 저장소
+    - 운영자는 S3 기반 메트릭 스냅샷을 기준으로 이력 분석 가능
+
+---
+
+### 6. Alertmanager의 책임 재정의
+
+- **역할 변경**:
+    - 기존: 단순한 알림 전송기
+    - 변경: **Metric + Log 기반 Alert의 통합 처리자**로 전환
+        - Metric Alert: Prometheus → Alertmanager
+        - Log Alert: Log Alert Rule Service → Kafka → Alertmanager
+- **정책 관리**:
+    - 향후 Ruler 도입 시 Alertmanager의 정책 수신 방식 변경 가능
+    - 알림 정책은 추후 `contracts` 폴더에 추가 예정
