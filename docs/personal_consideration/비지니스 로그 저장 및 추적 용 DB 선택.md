@@ -509,29 +509,28 @@ Materialized View는 유실 가능성이 존재하기 때문에, 사실상 조�
 위의 내용들을 가지고 인덱스를 결정해야 한다.
 
 ---
-## 결론
+## ✅ 최종 결론: 비즈니스 로그 저장소로서 ScyllaDB 선택 및 구조 설계 방향
 
-1. **ScyllaDB를 로그 저장소로 사용하기로 결정함.**
-	- 문서형 DB는 대량 로그 분석에 부적합 (index/scan 성능 한계).
-	- 관계형 DB는 수평 확장 및 고속 쓰기 부하에 한계가 있음.
-	- ScyllaDB는 Column Family 기반 구조로, 분산성과 쓰기 성능에서 유리함.
-2. **Master Table 중심 구조를 유지하고, 보조 조회는 MV(Materialized View)로 분리한다.**
-	- Master Table은 모든 필드를 포함한 완전 로그 저장소로 사용.
-	- MV는 특정 조건(traceId, level 등) 기반의 필터용 조회용 뷰로 활용.
-	- 👉 추후 성능 이슈 발생 시 MV → Index → 병렬 조회로 전환 가능.
-3. **로그 유일성에 대한 트레이드오프 인식 필요.**
-	- 개별 로그를 식별하는 PK 조건은 아직 확정하지 않음.
-	- 👉 추후 `log_id`, `log_offset`, `UUID` 등의 방식 고려 가능.
-	- 다만, 로그의 “묶음(traceId 또는 spanId 단위)”을 기준으로 조회한다면 해당 고려는 유예 가능.
-4. **Master Table의 PK 설계는 다음과 같이 설정한다.**
-	- **Partition Key**: `(traceId, spanId)`  
-		 → 동일 trace + span 로그를 같은 파티션에 저장함
-	- **Clustering Key**: `serviceName`
-		 → 서비스 필터링에 유리
-	- `timestamp`의 파티셔닝 여부는 추후 Hot Partition 발생 여부에 따라 재검토 예정
-5. **구조는 점진적으로 고도화한다.**
-	- 지금은 최소 구조와 병렬 조회 위주로 설계하고,
-	- 향후 트래픽/분석 목적 증가 시 MV 확장, Index 도입, 분석용 DB 연계 등으로 진화 가능
-6. ScyllaDB는 서브 쿼리, 조인 모두 지원하지 않음.
-
-## 추후 추가 예정
+1. **ScyllaDB를 로그 저장소로 최종 채택**
+    - 대규모 로그 수집/분석에 적합한 고성능 Row Store 기반 분산 DB
+    - 문서형(DB) 대비 고정된 스키마 기반으로 성능/운영 안정성 확보
+    - 관계형 DB보다 우수한 수평 확장성과 쓰기 처리량 보장
+2. **Master Table + Materialized View 구조 채택**
+    - Master Table은 모든 로그의 정본 저장소로 사용
+    - 다양한 조회 패턴(traceId, service, level 등)은 MV로 분리 대응
+    - 복잡 쿼리는 Monitoring Service가 직접 처리하거나 병렬 조회로 fallback
+3. **PK 설계 및 유일성 전략**
+    - Partition Key: `(traceId, spanId)`
+    - Clustering Key: `serviceName` (→ 추후 `timestamp` 포함 여부는 hot partition 분석 후 결정)
+    - 로그 단위 유일성(log_id, offset 등)은 현재 고려 대상이나, 당장 필요하지 않음
+4. **ScyllaDB 특성 기반 운영 전략 수립**
+    - 조인/서브쿼리 불가 → 조회 패턴은 MV 또는 서비스 로직에서 병렬 처리로 대체
+    - MV 유실 가능성 존재 → read-repair 및 backfill 전략 사전 수립
+    - 스키마 유연성 부족 → MDC 필드 확장 시 구조적 계약 필요
+5. **ElasticSearch 완전 제거 및 ScyllaDB로 이관**
+    - Kibana 시각화 제거, 모든 분석은 Grafana + ScyllaDB 직접 쿼리 + Metric 연계로 통합
+    - 고비용/운영 복잡성의 Elasticsearch 대신, 성능 중심 구조로 전환 완료
+6. **향후 확장 방향**
+    - MV 및 Secondary Index를 트래픽 기반으로 점진 도입
+    - 고급 분석은 별도 OLAP DB 또는 Search 엔진 연동 고려
+    - 알림 정책은 Log Alert Rule Service를 통해 Kafka → Alertmanager 흐름으로 통합
