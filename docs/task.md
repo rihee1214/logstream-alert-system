@@ -26,36 +26,13 @@
 		- [ ] prometheus 는 메트릭 전략, 해당 서비스는 비지니스 로직에 대한 알림 전략
 		- [ ] 메트릭은 많이 바뀌지 않더라도 해당 요소는 많이 바뀔 것이므로 핵심 하위 도메인
 		- [ ] 메트릭은 바뀔 일이 잦지 않고, 중요도도 떨어지므로, 일반 하위 도메인으로 고려
-	- [ ] prometheus, prometheus wrapper, alertmanager 정책
-		- [ ] prometheus wrapper 를 가지고 갈 것인지
-		- [ ] alertmanager대신 notification service 사용에 대한 고민
-		- [ ] 위의 두 개의 사항은 각각의 통신에서 알림 전송을 잃어 버릴 수 있다는 문제점에 발생한 고민
-- [x] 06/10 갑자기 테스트가 안되는 상황 발생. mockup 서비스 문제 해결해야함
-	- [x] spring boot starter가 제대로 안붙는거 같음. 우선 common 서비스는 잘 동작하고 있음
-	- [x] 문제 해결 후 해야할 일
-		- [x]  prometheus 관련 테스트 세팅 준비 및 구성 고민
-		- [x] alertmanager 세팅 구성 고민
-		- [x] metric정보 저장을 위해, 그리고 중복되는 기능 문제로 직접 구현한 서비스 만들기로 결정.(이쪽이 유연성은 더 좋다.)
-- [ ] prometheus call 테스트하는데 basicauth가 걸려서 그런가 403에러 발생
-	- [ ] 헤더는 잘 들어가고 있는거 확인함(wireshark로)
-	- [ ] basic auth로도 안됨 일단 다시 구조 확인해봐야 할듯
-- [ ] 📅 06/12 아키텍처 관련 문제점 발생
-	- [ ] ElasticSearch 관련 문제
-		- [ ] ❗ 메트릭 정보 저장 및 추적에 적합하지 않음
-			- [ ] 원인: Aggregation/Join/Flow 구조에 비효율적 → 상세 분석 예정
-		- [ ] ❗ 대량의 비즈니스 로그 분석에 제약 있음
-			- [ ] 30일 이상 장기 보존 + 흐름 유추가 어렵고, 비용도 큼 → 대안 검토
-	  - [ ] Prometheus 관련 문제
-		- [ ] ❗ ElasticSearch가 Prometheus 메트릭 백엔드로 적합하지 않음
-			- [ ] 이유: 메트릭 저장 방식이 다르고 효율성 저하
-		- [ ] ✅ Thanos, Cortex, Mimir 등 고려 대상
-			- [ ] 기능: 백업, 멀티 테넌시, 고가용성, 장기 저장 가능
-			- [ ] Trade-off: 복잡도 증가, 리소스 사용 증가 → 도입 시점 판단 필요
-- [ ] prometheus관련 문서 작성 필요
-	- [ ] 여러가지 보안 설정에는 해당 서비스가 가지고 있는 보안 정책에 더불어서 헤더로 X-Monitoring-Token을 가지고 있어야 한다고 명시할 것
-- [ ] biz 서비스 생성시 고려해야하는 것
-	- [ ] common영역에서 Actuator를 통해 health정보를 얻어오는 self call 을 하고 있는데, 이때에도 결국 비즈니스 영역에서 만든 security정책을 지켜야함.
-		- [ ] 그렇기 때문에 그것을 동적으로 처리할 수 있도록 정책을 잡고, 문서화를 해야함(mockup에도 적용시켜야함)
+	- [x] prometheus, prometheus wrapper, alertmanager 정책
+		- [x] prometheus wrapper 를 가지고 갈 것인지
+		- [x] alertmanager대신 notification service 사용에 대한 고민
+		- [x] 위의 두 개의 사항은 각각의 통신에서 알림 전송을 잃어 버릴 수 있다는 문제점에 발생한 고민
+- [x] biz 서비스 생성시 고려해야하는 것
+	- [x] common영역에서 Actuator를 통해 health정보를 얻어오는 self call 을 하고 있는데, 이때에도 결국 비즈니스 영역에서 만든 security정책을 지켜야함.
+		- [x] 그렇기 때문에 그것을 동적으로 처리할 수 있도록 정책을 잡고, 문서화를 해야함(mockup에도 적용시켜야함)
 - [ ] 전체 목표 재 고려
 	- [ ] 제품화 가능한 프레임워크 생성(솔루션이라고 생각했지만 구현하다보니 프레임워크가 됨)
 	- [ ] 프로젝트의 규모는 중-대규모의 구조를 가졌다는 것을 전제로 만들어짐
@@ -200,3 +177,26 @@
 	- [x] 비지니스 로그 저장 DB
 	- [x] thanos 어떤 컴포넌트를 이용할 것인지
 	- [x] 추적 모니터링 솔루션 어떤 것을 사용할 것인지
+- [x] 06/10 갑자기 테스트가 안되는 상황 발생. mockup 서비스 문제 해결해야함
+	- [x] spring boot starter가 제대로 안붙는거 같음. 우선 common 서비스는 잘 동작하고 있음
+	- [x] 문제 해결 후 해야할 일
+		- [x]  prometheus 관련 테스트 세팅 준비 및 구성 고민
+		- [x] alertmanager 세팅 구성 고민
+		- [x] metric정보 저장을 위해, 그리고 중복되는 기능 문제로 직접 구현한 서비스 만들기로 결정.(이쪽이 유연성은 더 좋다.)
+- [x] prometheus call 테스트하는데 basicauth가 걸려서 그런가 403에러 발생
+	- [x] 헤더는 잘 들어가고 있는거 확인함(wireshark로)
+	- [x] basic auth로도 안됨 일단 다시 구조 확인해봐야 할듯
+- [x] 📅 06/12 아키텍처 관련 문제점 발생
+	- [x] ElasticSearch 관련 문제
+		- [x] ❗ 메트릭 정보 저장 및 추적에 적합하지 않음
+			- [x] 원인: Aggregation/Join/Flow 구조에 비효율적 → 상세 분석 예정
+		- [x] ❗ 대량의 비즈니스 로그 분석에 제약 있음
+			- [x] 30일 이상 장기 보존 + 흐름 유추가 어렵고, 비용도 큼 → 대안 검토
+	  - [x] Prometheus 관련 문제
+		- [x] ❗ ElasticSearch가 Prometheus 메트릭 백엔드로 적합하지 않음
+			- [x] 이유: 메트릭 저장 방식이 다르고 효율성 저하
+		- [x] ✅ Thanos, Cortex, Mimir 등 고려 대상
+			- [x] 기능: 백업, 멀티 테넌시, 고가용성, 장기 저장 가능
+			- [x] Trade-off: 복잡도 증가, 리소스 사용 증가 → 도입 시점 판단 필요
+- [x] prometheus관련 문서 작성 필요
+	- [x] 여러가지 보안 설정에는 해당 서비스가 가지고 있는 보안 정책에 더불어서 헤더로 X-Monitoring-Token을 가지고 있어야 한다고 명시할 것
