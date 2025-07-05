@@ -2,30 +2,31 @@
 
 ## 로그 스키마
 
-| 스키마 명              | 스키마 설명                                                    |
-| ------------------ | --------------------------------------------------------- |
-| logtype            | 로그 유형 (biz, sys, act)                                     |
-| timestamp          | ISO 8601 DateTime (with offset)                           |
-| uuid               | 로그 식별자(중복 가능성 높으므로 traceId, timestamp, service등과 조합하여 사용) |
-| level              | 로그 레벨 (INFO, WARN, ERROR)                                 |
-| service            | 서비스 식별자                                                   |
-| class              | 로그 발생 클래스 (FQCN)                                          |
-| message            | 로그 메시지 본문                                                 |
-| host               | 로그 기록 서버의 호스트명                                            |
-| container          | 컨테이너 ID                                                   |
-| stacktrace         | 예외 발생 시 출력되는 스택 트레이스                                      |
-| traceId            | 전체 요청 흐름의 식별자                                             |
-| spanId             | 개별 작업 단위 식별자                                              |
-| parentSpanId       | 상위 스팬 ID                                                  |
-| sampled            | 트레이싱 여부 (1 or 0)                                          |
-| flags              | 디버깅 플래그 (1 or 0)                                          |
-| call_type          | 어떤 방식으로 Call했는지 (http)                                    |
-| call_method        | HTTP 메서드 (GET, POST 등)                                    |
-| call_uri           | 요청 URI                                                    |
-| call_statusCode    | 응답 상태 코드 (예: 200)                                         |
-| call_statusMessage | 응답 상태 메시지 (예: OK)                                         |
-| call_elapsedMs     | 요청-응답 간 소요 시간 (ms)                                        |
-| call_remoteTraceId | 상대가 사용하는 TraceId                                          |
+| 스키마 명                  | 스키마 설명                                                    |
+| ---------------------- | --------------------------------------------------------- |
+| logtype                | 로그 유형 (biz, sys, act)                                     |
+| timestamp              | ISO 8601 DateTime (with offset)                           |
+| **uuid**               | 로그 식별자(중복 가능성 높으므로 traceId, timestamp, service등과 조합하여 사용) |
+| **log_schema_version** | 로그 버전 (로그 스키마 변경시 버전 1추가)                                 |
+| level                  | 로그 레벨 (INFO, WARN, ERROR)                                 |
+| service                | 서비스 식별자                                                   |
+| class                  | 로그 발생 클래스 (FQCN)                                          |
+| message                | 로그 메시지 본문                                                 |
+| host                   | 로그 기록 서버의 호스트명                                            |
+| container              | 컨테이너 ID                                                   |
+| stacktrace             | 예외 발생 시 출력되는 스택 트레이스                                      |
+| traceId                | 전체 요청 흐름의 식별자                                             |
+| spanId                 | 개별 작업 단위 식별자                                              |
+| parentSpanId           | 상위 스팬 ID                                                  |
+| sampled                | 트레이싱 여부 (1 or 0)                                          |
+| flags                  | 디버깅 플래그 (1 or 0)                                          |
+| call_type              | 어떤 방식으로 Call했는지 (http)                                    |
+| call_method            | HTTP 메서드 (GET, POST 등)                                    |
+| call_uri               | 요청 URI                                                    |
+| call_statusCode        | 응답 상태 코드 (예: 200)                                         |
+| call_statusMessage     | 응답 상태 메시지 (예: OK)                                         |
+| call_elapsedMs         | 요청-응답 간 소요 시간 (ms)                                        |
+| call_remoteTraceId     | 상대가 사용하는 TraceId                                          |
 - UUID항목을 추가해서 MV에서 정확한 로그를 지정하여 base table에서 데이터를 가져올 수 있도록 한다.
 - 결국 timestamp, service, traceId, spanId, uuid 이 다섯가지 항목으로 조회할 수 있도록 한다.
 - 클러스터링 전략은 timestamp, service  나머지는 파티셔닝 조건으로 하여 모든 PK조건(클러스터링 + 파티셔닝 키) 조건을 만족시킨다.
@@ -41,6 +42,7 @@
 	    - **추적 기반 분석(traceId → spanId → uuid)** 을 가능하게 하기 위한 구성
 	    - 대부분의 쿼리에서 전체 PK 조건을 명시할 예정이므로, 파티션 키를 점차 좁혀가며 명확한 단일 로그 식별 가능
 	    - 일반적으로 `traceId`가 가장 범위가 넓고, `spanId`, `uuid` 순으로 좁아질 가능성이 높아 이 순서가 적절함
+
 ---
 ## 로그 스키마 추가 전략
 
@@ -119,3 +121,12 @@
 	2. clustering key : 아예 없거나 일부만 있어도 됨
 
 # 로그 분석 전략
+
+## 전체 구성
+1. MV로 분석하고자 하는 쿼리 실행 -> 그 결과로 데이터를 가져올 때 base table에서 가져오기.
+
+
+## 추가 고려사항
+1. 내부적으로 goship protocol을 사용하고 있기 때문에 MV를 하나의 노드에 추가하더라도 모든 노드에서 동일하게 추가된다.
+2. helm chart같은 것을 이용해서 설정이 자동으로 추가, 관리될 수 있도록 해야한다.
+3. 스키마 변경의 경우 복잡한 관리 프로세스를 따라야 한다.
