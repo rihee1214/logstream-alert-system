@@ -120,13 +120,34 @@
 	1. Partitioning key : 모든 key가 where 절에 있어야 함
 	2. clustering key : 아예 없거나 일부만 있어도 됨
 
+---
 # 로그 분석 전략
 
-## 전체 구성
-1. MV로 분석하고자 하는 쿼리 실행 -> 그 결과로 데이터를 가져올 때 base table에서 가져오기.
+## 분석 흐름 구성
 
+1. **사전 정의된 분석 쿼리 요구사항 확인**
+	- 사용 목적(대시보드, 알림, 보고서)에 따라 쿼리 설계
+2. **MV(Materialized View) 정의**
+	- 주 조회 필드를 기반으로 MV 설계 (ex. service, status, timestamp)
+	- TTL은 7~14일 내외로 설정하여 단기 분석 최적화
+3. **MV → BaseTable 연계**
+	- MV로 파티션 필터링 수행
+	- MV에 저장되지 않은 전체 필드는 BaseTable에서 조회 (join 또는 재요청)
+4. **분석 애플리케이션 처리**
+	- 분석 로직은 서비스 단에서 수행
+	- 버전 불일치 또는 필드 누락은 application 단에서 필터링 또는 fallback
 
-## 추가 고려사항
-1. 내부적으로 goship protocol을 사용하고 있기 때문에 MV를 하나의 노드에 추가하더라도 모든 노드에서 동일하게 추가된다.
-2. helm chart같은 것을 이용해서 설정이 자동으로 추가, 관리될 수 있도록 해야한다.
-3. 스키마 변경의 경우 복잡한 관리 프로세스를 따라야 한다.
+## 운영 환경 고려사항
+
+### MV 생성 및 전파
+- Scylla는 Gossip Protocol을 사용하므로, 한 노드에서 MV 생성 시 클러스터 전체에 전파됨
+- 단, 전파는 eventual consistency이며 schema agreement가 필요
+
+### 배포 및 자동화
+- MV 추가는 스키마 변경이므로 CI/CD에 포함하기 어려움
+- Helm Chart 또는 Custom Init Container에서 MV 포함된 schema 파일 적용 권장
+
+### 스키마 변경 전략
+- 기존 스키마에 영향 없이 MV만 추가하는 경우 → 개별 노드 Rolling Update 가능
+- 스키마 자체를 변경하는 경우 → downtime 또는 미러 클러스터 통한 migration 고려
+- 스키마 변경 내역은 GitOps + DR 문서로 기록 필요
