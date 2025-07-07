@@ -6,11 +6,15 @@ plugins {
 
 description = '''\
 Central log processor that stores logs and triggers alerts for critical events
-(Kafka에서 로그를 수신하고, Elasticsearch에 저장하며, WARN/ERROR 로그를 알림 서비스로 전달하는 중앙 로그 처리 서비스)
+(Kafka에서 로그를 수신하고, ScyllaDB에 저장하며, WARN/ERROR 로그를 알림 서비스로 전달하는 중앙 로그 처리 서비스)
 '''
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation "com.scylladb:java-driver-core:${scyllaDBVersion}"
+    implementation "com.scylladb:java-driver-query-builder:${scyllaDBVersion}"
+    implementation "com.scylladb:java-driver-mapper-runtime:${scyllaDBVersion}"
+    annotationProcessor "com.scylladb:java-driver-mapper-processor:${scyllaDBVersion}"
+
     implementation 'org.springframework.kafka:spring-kafka'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
