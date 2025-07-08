@@ -1,9 +1,9 @@
 package com.rihee.alerting.mockservice.simpleCall;
 
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.LOG_TYPE;
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
+import static com.rihee.alerting.common.constant.log.StructuredLogProperties.LOG_TYPE;
+import static com.rihee.alerting.common.constant.log.StructuredLogProperties.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.constant.log.StructuredLogProperties.SPAN_ID;
+import static com.rihee.alerting.common.constant.log.StructuredLogProperties.TRACE_ID;
 import static com.rihee.alerting.mockservice.constants.MockupHeaders.MOCK_AUTH_TOKEN_HEADER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,10 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.rihee.alerting.common.config.CommonInterceptorConfiguration;
-import com.rihee.alerting.common.log.StructuredLogger;
-import com.rihee.alerting.common.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.log.constant.LogType;
+import com.rihee.alerting.logbizcore.config.CommonInterceptorConfiguration;
+import com.rihee.alerting.logbizcore.log.StructuredLogger;
+import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
+import com.rihee.alerting.common.constant.log.LogType;
 import com.rihee.alerting.mockservice.configuration.MockHttpServletRequestConfig;
 import com.rihee.alerting.mockservice.log.MemoryAppender;
 import java.util.Comparator;

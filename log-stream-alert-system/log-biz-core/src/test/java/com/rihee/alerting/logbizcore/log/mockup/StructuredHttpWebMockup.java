@@ -1,4 +1,4 @@
-package com.rihee.alerting.mockservice.mockup;
+package com.rihee.alerting.logbizcore.log.mockup;
 
 import com.rihee.alerting.logbizcore.annotation.StructuredGetMapping;
 import com.rihee.alerting.logbizcore.log.StructuredLogger;

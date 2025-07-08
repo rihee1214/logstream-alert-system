@@ -1,8 +1,8 @@
 package com.rihee.alerting.mockservice.simpleCall;
 
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.SPAN_ID;
-import static com.rihee.alerting.common.log.constant.StructuredLogProperties.TRACE_ID;
+import static com.rihee.alerting.common.constant.log.StructuredLogProperties.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.constant.log.StructuredLogProperties.SPAN_ID;
+import static com.rihee.alerting.common.constant.log.StructuredLogProperties.TRACE_ID;
 import static com.rihee.alerting.mockservice.constants.MockupHeaders.MOCK_AUTH_TOKEN_HEADER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.rihee.alerting.common.config.CommonInterceptorConfiguration;
-import com.rihee.alerting.common.log.StructuredLogger;
-import com.rihee.alerting.common.log.StructuredLoggerFactory;
+import com.rihee.alerting.logbizcore.config.CommonInterceptorConfiguration;
+import com.rihee.alerting.logbizcore.log.StructuredLogger;
+import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
 import com.rihee.alerting.mockservice.configuration.MockHttpServletRequestConfig;
 import com.rihee.alerting.mockservice.log.MemoryAppender;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import org.springframework.test.web.servlet.MockMvc;
  *
  * <p>테스트는 공통 StructuredLogger와 커스텀 로그 인터셉터가 정상 동작하는지를 확인하기 위해 사용됩니다.
  *
- * @see com.rihee.alerting.common.log.StructuredLogger
+ * @see StructuredLogger
  * @see com.rihee.alerting.mockservice.log.MemoryAppender
  *
  * @author 리희

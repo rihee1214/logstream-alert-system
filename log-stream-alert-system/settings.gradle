@@ -1,5 +1,6 @@
 rootProject.name = 'log-stream-alert-system'
 
+include 'log-biz-core'
 include 'log-stream-common'
 include 'log-stream-mock-service'
 include 'log-stream-logging-service'

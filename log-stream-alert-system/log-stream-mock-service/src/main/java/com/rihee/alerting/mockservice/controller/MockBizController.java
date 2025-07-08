@@ -1,10 +1,10 @@
 package com.rihee.alerting.mockservice.controller;
 
-import com.rihee.alerting.common.annotation.StructuredGetMapping;
-import com.rihee.alerting.common.annotation.StructuredPostMapping;
-import com.rihee.alerting.common.log.StructuredLogger;
-import com.rihee.alerting.common.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.log.constant.LogType;
+import com.rihee.alerting.logbizcore.annotation.StructuredGetMapping;
+import com.rihee.alerting.logbizcore.annotation.StructuredPostMapping;
+import com.rihee.alerting.logbizcore.log.StructuredLogger;
+import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
+import com.rihee.alerting.common.constant.log.LogType;
 import com.rihee.alerting.mockservice.service.MockBizService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
