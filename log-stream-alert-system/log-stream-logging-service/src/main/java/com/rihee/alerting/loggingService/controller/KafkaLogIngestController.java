@@ -1,0 +1,33 @@
+package com.rihee.alerting.loggingService.controller;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rihee.alerting.loggingService.service.LogIngestService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class KafkaLogIngestController {
+
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private final Logger logger = LoggerFactory.getLogger(KafkaLogIngestController.class);
+  @Autowired
+  private LogIngestService logIngestServiceImpl;
+
+  @KafkaListener(topics = "${kafka.log.ingest.topic}")
+  public void receive(String message) {
+
+    try {
+      JsonNode node = MAPPER.readTree(message);
+
+    } catch (JsonProcessingException e) {
+      logger.warn("대상 로그를 파싱할 수 없습니다. : {}", message);
+    }
+
+  }
+
+}
