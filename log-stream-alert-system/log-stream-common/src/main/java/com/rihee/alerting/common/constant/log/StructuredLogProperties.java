@@ -1,10 +1,7 @@
 package com.rihee.alerting.common.constant.log;
 
-import com.rihee.alerting.logbizcore.interceptor.StructuredLogInterceptor;
-
 /**
  * {@code StructuredLogProperties}는
- * {@link StructuredLogInterceptor}에서 사용되는
  * 구조화 로그 필드 키들을 정의하며, 로그 시스템 전반에서 통일된 속성 명명 규칙을 제공합니다.
  *
  * <p>모든 필드는 Micrometer, Brave, Zipkin 등과의 연동을 고려하여 B3 Header 표준과 일치하도록 설계되었으며,

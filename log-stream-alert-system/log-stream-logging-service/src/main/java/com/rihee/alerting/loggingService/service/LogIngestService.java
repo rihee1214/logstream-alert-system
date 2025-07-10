@@ -1,8 +1,8 @@
 package com.rihee.alerting.loggingService.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Map;
 
 public interface LogIngestService {
 
-  void processingLog(JsonNode log);
+  void processingLog(Map<String, Object> log);
 }

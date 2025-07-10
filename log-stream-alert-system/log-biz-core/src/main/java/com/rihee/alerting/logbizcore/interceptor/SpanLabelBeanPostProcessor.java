@@ -1,11 +1,11 @@
 package com.rihee.alerting.logbizcore.interceptor;
 
-import com.rihee.alerting.common.annotation.StructuredDeleteMapping;
-import com.rihee.alerting.common.annotation.StructuredGetMapping;
-import com.rihee.alerting.common.annotation.StructuredPatchMapping;
-import com.rihee.alerting.common.annotation.StructuredPostMapping;
-import com.rihee.alerting.common.annotation.StructuredPutMapping;
-import com.rihee.alerting.common.annotation.StructuredRequestMapping;
+import com.rihee.alerting.logbizcore.annotation.StructuredDeleteMapping;
+import com.rihee.alerting.logbizcore.annotation.StructuredGetMapping;
+import com.rihee.alerting.logbizcore.annotation.StructuredPatchMapping;
+import com.rihee.alerting.logbizcore.annotation.StructuredPostMapping;
+import com.rihee.alerting.logbizcore.annotation.StructuredPutMapping;
+import com.rihee.alerting.logbizcore.annotation.StructuredRequestMapping;
 import io.micrometer.common.lang.NonNullApi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

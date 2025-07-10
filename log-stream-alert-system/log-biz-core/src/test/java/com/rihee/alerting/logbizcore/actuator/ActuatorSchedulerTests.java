@@ -12,8 +12,8 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rihee.alerting.common.CommonTestBootstrap;
-import com.rihee.alerting.common.log.appender.MemoryAppender;
+import com.rihee.alerting.logbizcore.LogBizCoreTestBootstrap;
+import com.rihee.alerting.logbizcore.log.appender.MemoryAppender;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * {@code ActuatorSchedulerTests}는 {@link ActuatorHealthMonitoringScheduler} 클래스의 동작을
@@ -37,14 +38,16 @@ import org.springframework.test.context.ActiveProfiles;
  * <p>로그는 커스텀 메모리 기반 Appender인 {@link MemoryAppender}를 통해 수집되며,
  * 로그 출력 내에 포함된 JSON 문자열을 파싱하여 메타 필드와 HTTP 상태 코드를 검증합니다.
  *
- * <p>테스트는 {@code test} profile로 실행되며, {@link CommonTestBootstrap}을 통해 공통 설정이 로딩됩니다.
+ * <p>테스트는 {@code test} profile로 실행되며, {@link LogBizCoreTestBootstrap}을 통해 공통 설정이 로딩됩니다.
  *
  * @author 리희
  * @since 1.0
  */
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = {CommonTestBootstrap.class})
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT,
+                classes = {LogBizCoreTestBootstrap.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@TestPropertySource(properties = "spring.profiles.active=dev")
 public class ActuatorSchedulerTests {
 
   /**

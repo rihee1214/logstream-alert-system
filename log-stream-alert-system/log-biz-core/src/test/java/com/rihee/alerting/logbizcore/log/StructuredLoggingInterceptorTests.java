@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.rihee.alerting.common.config.CommonInterceptorConfiguration;
-import com.rihee.alerting.common.configuration.MockHttpServletRequestConfig;
+import com.rihee.alerting.logbizcore.config.CommonInterceptorConfiguration;
+import com.rihee.alerting.logbizcore.configuration.MockHttpServletRequestConfig;
 import com.rihee.alerting.common.constant.B3Header;
 import com.rihee.alerting.logbizcore.log.appender.MemoryAppender;
 import org.junit.jupiter.api.AfterEach;

@@ -33,7 +33,7 @@ dependencies {
 // 테스트 코드 전용 java 옵션, 환경변수 세팅
 test {
 	useJUnitPlatform()
-	systemProperty "service.name", "common"
+	systemProperty "service.name", "logbizcore"
 	systemProperty "spring.profiles.active", "dev"
 	environment "HOST", "localhost"
 	environment "CONTAINER", "local-container"
