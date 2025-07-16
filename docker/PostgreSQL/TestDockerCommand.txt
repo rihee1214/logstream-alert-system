@@ -1,0 +1,18 @@
+-- 
+# 초기 기동 명령어
+
+```powershell
+docker run -d --name postgres-test `
+  -e POSTGRESQL_USERNAME=admin `
+  -e POSTGRESQL_PASSWORD=admin123 `
+  -e POSTGRESQL_DATABASE=logStorage `
+  -p 5432:5432 `
+  -v pgdata:/bitnami/postgresql `
+  bitnami/postgresql:17.5.0
+```
+---
+# client 접속 명령어
+
+```docker
+docker exec -it postgres-test psql -U admin -d logStorage
+```
