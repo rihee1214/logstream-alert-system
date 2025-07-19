@@ -12,6 +12,14 @@ ext {
     set('jakartaServletApiVersion', '6.0.0')
     set('checkStyleVersion', '10.3.1')
     set('scyllaDBVersion', '4.19.0.0')
+
+    // spring boot 를 사용하지 않는 서브 프로젝트에 대한 버전 관리
+    set('kafkaClientsVersion', '3.7.0')
+    set('postgresqlClientsVersion', '42.7.3')
+    set('hikariCpVersion', '5.1.0')
+    set('jacksonDatabindVersion', '2.17.1')
+    set('log4jVersion', '2.0.12')
+    set('logbackVersion', '1.4.12')
 }
 
 group = 'com.rihee.alerting'

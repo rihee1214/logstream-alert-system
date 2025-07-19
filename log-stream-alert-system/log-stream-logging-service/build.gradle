@@ -11,17 +11,10 @@ dependencies {
     // 전체 프로젝트에서 공통적으로 사용되는 로그 구조 같은 요소들을 모아넣은 project
     implementation project(':log-stream-common')
 
-    // PostgreSQL용 client 코드 필요
-//    implementation "com.scylladb:java-driver-core:${scyllaDBVersion}"
-//    implementation "com.scylladb:java-driver-query-builder:${scyllaDBVersion}"
-//    implementation "com.scylladb:java-driver-mapper-runtime:${scyllaDBVersion}"
-//    annotationProcessor "com.scylladb:java-driver-mapper-processor:${scyllaDBVersion}"
-
-    // 메시지 수신용 springboot와 연관 없는 kafka client 필요
-//    implementation 'org.springframework.kafka:spring-kafka'
-//
-//    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//    testImplementation 'org.springframework.kafka:spring-kafka-test'
-//
-//    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation "org.apache.kafka:kafka-clients:${kafkaClientsVersion}"
+    implementation "org.postgresql:postgresql:${postgresqlClientsVersion}"
+    implementation "com.zaxxer:HikariCP:${hikariCpVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
+    implementation "org.slf4j:slf4j-api:${log4jVersion}"
+    runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
 }
