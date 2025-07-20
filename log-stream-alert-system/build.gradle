@@ -65,7 +65,7 @@ subprojects {
     }
 
     dependencies {
-        if (project.name != "log-stream-common") {
+        if (project.name != "log-stream-common" && project.name != "log-stream-logging-service") {
             implementation 'org.springframework.boot:spring-boot-starter'
         }
 
