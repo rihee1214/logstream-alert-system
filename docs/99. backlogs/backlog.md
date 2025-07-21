@@ -13,6 +13,6 @@ kanban-plugin: board
 
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false],"show-checkboxes":true,"new-note-folder":"99. backlogs/backlogs-folder"}
+{"kanban-plugin":"board","list-collapse":[false],"show-checkboxes":true,"new-note-folder":"99. backlogs/backlogs-folder","new-note-template":"99. backlogs/template/kanban-card-template.md"}
 ```
 %%
