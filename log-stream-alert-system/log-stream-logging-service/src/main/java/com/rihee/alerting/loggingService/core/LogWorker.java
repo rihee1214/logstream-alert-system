@@ -1,14 +1,9 @@
 package com.rihee.alerting.loggingService.core;
 
-public class LoggingWorker implements Runnable {
-
-
+public class LogWorker implements Runnable {
 
   @Override
   public void run() {
 
-    while(true) {
-
-    }
   }
 }

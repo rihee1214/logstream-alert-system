@@ -1,6 +1,10 @@
 package com.rihee.alerting.loggingService.core;
 
-public interface SettingLoader {
+public class SettingLoader {
 
+  public LoggingRuntimeConfig loadRuntimeSetting() {
+
+    return null;
+  }
 
 }

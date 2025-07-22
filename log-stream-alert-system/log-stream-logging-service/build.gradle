@@ -16,5 +16,9 @@ dependencies {
     implementation "com.zaxxer:HikariCP:${hikariCpVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
     implementation "org.slf4j:slf4j-api:${log4jVersion}"
+
+    // annotation scan 후 적절한 class 찾아주는 용도
+    implementation "io.github.classgraph:classgraph:${classPathScannerVersion}"
+
     runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
 }

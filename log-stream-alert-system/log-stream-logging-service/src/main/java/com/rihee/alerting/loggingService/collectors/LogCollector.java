@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.collector;
+package com.rihee.alerting.loggingService.collectors;
 
 public interface LogCollector {
 
