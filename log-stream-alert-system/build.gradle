@@ -21,6 +21,7 @@ ext {
     set('log4jVersion', '2.0.12')
     set('logbackVersion', '1.4.12')
     set('classPathScannerVersion', '4.8.162')
+    set('commonsLangVersion', '3.18.0')
 }
 
 group = 'com.rihee.alerting'

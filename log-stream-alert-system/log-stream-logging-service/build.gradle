@@ -20,5 +20,8 @@ dependencies {
     // annotation scan 후 적절한 class 찾아주는 용도
     implementation "io.github.classgraph:classgraph:${classPathScannerVersion}"
 
+    // 자주 사용되는 유용한 유틸 클래스 모음
+    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+
     runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
 }
