@@ -1,51 +1,95 @@
 package com.rihee.alerting.loggingService.collectors;
 
+import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 
-/*
- * TODO [설정 기반 객체 생성 로직 개선]
- *  현재 코드는 단순히 조건에 맞는 클래스를 선택하는 수준임.
- *  아래 기능을 추가로 구현해야 함:
- *  1. Properties에 정의된 키-값 항목을 기반으로,
- *    해당 클래스의 필드 중 @CollectorProperty 등의 어노테이션이 붙은 항목에 자동 주입되도록 구현할 것.
- *    (필요 시 타입 변환 및 누락 필드에 대한 예외 처리도 포함)
- *  2. 객체 생성을 위한 팩토리 메서드를 별도로 만들 것.
- *    단, 절대로 싱글턴으로 만들어 모든 worker에서 공유되면 안 되며,
- *    각 worker별로 새로운 인스턴스가 생성되어야 함 (상태 공유 금지).
+/**
+ * {@code LogCollectorSpec}은 설정 정보를 기반으로 {@link LogCollector}의 구체 구현체를
+ * 동적으로 탐색하고, 해당 구현체의 Builder를 통해 인스턴스를 생성하는 책임을 갖는다.
+ *
+ * <p>Collector는 {@link CollectorType} 애노테이션으로 타입을 식별하며,
+ * {@code collector.type} 설정 값을 기준으로 일치하는 클래스를 탐색한다.
+ * 탐색된 클래스는 반드시 {@code public static builder()} 메서드를 제공해야 하며,
+ * 해당 메서드를 통해 {@link LogCollector.Builder} 인스턴스를 획득하여 설정을 주입하고 Collector를 생성한다.
+ *
+ * <p>이 클래스는 초기화 시 1회의 설정만 받고, 이후 Collector 인스턴스를 반복 생성할 수 있도록 설계되었다.
+ *
+ * @author 리희
+ * @since 1.0
  */
 public class LogCollectorSpec {
 
   private final Builder<? extends LogCollector> builder;
 
   private LogCollectorSpec(Properties setting) {
-    this.builder = null;
+    this.builder = resolveCollectorBuilder(setting.getProperty("collector.type"))
+                                  .withProperties(MapUtils.toMap(setting));
   }
 
+  /**
+   * {@code LogCollectorSpec}을 설정 정보를 기반으로 생성한다.
+   *
+   * <p>내부적으로 collector type에 따라 클래스 스캔을 수행하고, 해당 클래스의 builder 메서드를 호출하여
+   * Builder 인스턴스를 생성한 뒤 설정을 주입한다.
+   *
+   * @param setting 로그 수집기 생성을 위한 설정 정보 (Properties)
+   * @return 초기화된 {@code LogCollectorSpec} 인스턴스
+   * @throws IllegalArgumentException collector.type이 누락되었거나 잘못된 경우
+   * @throws IllegalStateException 해당 타입에 매칭되는 클래스가 없거나 builder 메서드가 static이 아닌 경우
+   */
   public static LogCollectorSpec from(Properties setting) {
     return new LogCollectorSpec(setting);
   }
 
+  /**
+   * 설정된 {@link Builder}를 기반으로 {@link LogCollector} 인스턴스를 생성한다.
+   *
+   * <p>각 호출 시마다 새로운 인스턴스를 반환하며, 내부적으로 builder.build()를 호출한다.
+   *
+   * @return 새로운 {@link LogCollector} 인스턴스
+   */
+  public LogCollector getCollectorInstance() {
+    return builder.build();
+  }
+
+  /**
+   * {@code collector.type} 값에 해당하는 {@link LogCollector} 구현체를 찾아
+   * 그 내부의 static {@code builder()} 메서드를 호출하여 Builder 인스턴스를 반환한다.
+   *
+   * <p>이 메서드는 클래스 스캔 및 reflection 기반이므로 예외 발생 가능성이 있다.
+   * 다만 AnnotationProcessor를 통해 그럴 가능성을 사전에 차단한다.
+   *
+   * @param collectorMode 설정 파일에서 정의된 collector type 값
+   * @return 해당 구현체의 {@link LogCollector.Builder} 인스턴스
+   * @throws IllegalArgumentException 설정 값이 null 또는 비어 있을 경우
+   * @throws IllegalStateException 매칭되는 클래스가 없거나 builder 메서드가 static이 아닐 경우
+   * @throws RuntimeException reflection 또는 builder 호출 중 예외가 발생한 경우
+   */
   @SuppressWarnings("unchecked")
-  public Class<? extends LogCollector> resolveCollector(String collectorMode) {
-    if(StringUtils.isEmpty(collectorMode)) {
+  private static LogCollector.Builder<?> resolveCollectorBuilder(String collectorMode) {
+    if (StringUtils.isEmpty(collectorMode)) {
       throw new IllegalArgumentException("Collector 설정이 존재하지 않습니다.");
     }
 
     try (ScanResult scanResult = new ClassGraph()
         .enableAllInfo()
-        .acceptPackages("com.rihee.alerting.loggingService.collectors.impl") // 스캔 범위 제한
+        .acceptPackages("com.rihee.alerting.loggingService.collectors.impl")
         .scan()) {
 
-      return scanResult.getClassesWithAnnotation(CollectorType.class.getName())
+      // CollectorType annotation과 일치하는 클래스 찾기
+      Class<? extends LogCollector> collectorClass = scanResult
+          .getClassesWithAnnotation(CollectorType.class.getName())
           .stream()
-          .map(ci -> {
+          .map(classInfo -> {
             try {
-              return (Class<?>) Class.forName(ci.getName());
+              return (Class<?>) Class.forName(classInfo.getName());
             } catch (ClassNotFoundException e) {
               throw new RuntimeException(e);
             }
@@ -56,13 +100,20 @@ public class LogCollectorSpec {
           })
           .map(clazz -> (Class<? extends LogCollector>) clazz)
           .findFirst()
-          .orElseThrow(()
-              -> new IllegalStateException("No collector found for target: " + collectorMode));
+          .orElseThrow(() ->
+              new IllegalStateException("해당 collectorMode에 맞는 클래스가 존재하지 않습니다: " + collectorMode));
+
+      // builder 메서드 확인 및 호출
+      Method builderMethod = collectorClass.getDeclaredMethod("builder");
+      if (!Modifier.isStatic(builderMethod.getModifiers())) {
+        throw new IllegalStateException("builder() 메서드는 static이어야 합니다.");
+      }
+
+      return (LogCollector.Builder<?>) builderMethod.invoke(null);
+
+    } catch (Exception e) {
+      throw new RuntimeException("Collector 빌더 생성 실패: " + collectorMode, e);
     }
   }
 
-
-  public LogCollector getCollectorInstance(){
-    return builder.build();
-  }
 }

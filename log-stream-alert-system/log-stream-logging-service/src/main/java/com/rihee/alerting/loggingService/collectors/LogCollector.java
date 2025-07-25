@@ -1,14 +1,72 @@
 package com.rihee.alerting.loggingService.collectors;
 
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
+/**
+ * {@code LogCollector}는 로그 데이터를 외부 소스로부터 수집하는 책임을 가지는 추상 베이스 클래스입니다.
+ *
+ * <p>모든 수집기 구현체는 이 클래스를 상속해야 하며, 수집 대상에 따라 적절한 형태로
+ * 로그를 가공한 후 {@code getLogDatas()} 메서드를 통해 수집된 로그 목록을 반환해야 합니다.
+ *
+ * <p>각 구현체는 내부에 정적 중첩 {@code Builder} 클래스를 정의하고,
+ * 해당 클래스는 {@link Builder} 인터페이스를 반드시 구현해야 합니다.
+ * 이 {@code Builder}는 설정 정보를 바탕으로 수집기 인스턴스를 생성하는 역할을 하며,
+ * 외부에서 {@code public static Builder builder()} 메서드를 통해 접근 가능해야 합니다.
+ *
+ * <p>{@link com.rihee.alerting.loggingService.annotations.CollectorType} 어노테이션과 함께 사용되며,
+ * 런타임 시 설정 기반으로 동적으로 수집기 인스턴스를 생성하는 데 사용됩니다.
+ *
+ * <p>이 추상 클래스를 기반으로 Kafka, HTTP 등 다양한 유형의 수집기를 구성할 수 있습니다.
+ *
+ * @see Builder
+ * @see com.rihee.alerting.loggingService.annotations.CollectorType
+ * @see com.rihee.alerting.loggingService.collectors.LogCollectorSpec
+ */
 public abstract class LogCollector {
 
+  /**
+   * 외부 소스(예: Kafka, HTTP 등)로부터 로그 데이터를 수집하여 반환합니다.
+   *
+   * <p>반환된 리스트는 구조화된 로그 또는 원시 로그 메시지일 수 있으며,
+   * 이후 Validator 및 Persistence 단계에서 처리됩니다.
+   *
+   * @return 수집된 로그 데이터 목록
+   */
   public abstract List<String> getLogDatas();
 
+  /**
+   * 로그 수집기의 인스턴스를 생성하기 위한 빌더 인터페이스입니다.
+   *
+   * <p>이 빌더는 수집기 설정(Map 형태)을 주입받고, 이를 기반으로 {@link LogCollector}의
+   * 하위 구현체를 생성하는 역할을 합니다.
+   *
+   * <p>각 수집기 클래스는 이 인터페이스를 구현한 중첩 Builder 클래스를 가지고 있어야 하며,
+   * 외부에서는 {@code public static Builder builder()} 메서드를 통해 이 빌더에 접근할 수 있어야 합니다.
+   *
+   * <p><b>중요:</b> 런타임 설정 기반 인스턴스 생성을 위해 다음 조건을 만족해야 합니다:
+   * <ul>
+   *   <li>중첩 {@code Builder} 클래스는 반드시 {@code LogCollector.Builder}를 구현할 것</li>
+   *   <li>{@code builder()} 메서드는 반드시 {@code public static}으로 선언할 것</li>
+   * </ul>
+   *
+   * @param <T> 생성 대상 수집기 타입
+   */
   public interface Builder<T extends LogCollector> {
-    Builder<T> withProperties(Properties setting);
+
+    /**
+     * 설정 정보를 바탕으로 빌더 내부 상태를 구성합니다.
+     *
+     * @param setting key-value 형태의 설정 정보
+     * @return 현재 빌더 인스턴스 (메서드 체이닝 가능)
+     */
+    Builder<T> withProperties(Map<String, String> setting);
+
+    /**
+     * 설정에 기반하여 수집기 인스턴스를 생성합니다.
+     *
+     * @return {@code LogCollector} 구현체 인스턴스
+     */
     T build();
   }
 }

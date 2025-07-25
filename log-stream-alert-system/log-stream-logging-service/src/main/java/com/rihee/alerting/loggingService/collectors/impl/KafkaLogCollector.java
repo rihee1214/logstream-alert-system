@@ -4,6 +4,7 @@ import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector;
 import com.rihee.alerting.loggingService.collectors.LogCollector.Builder;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -13,8 +14,12 @@ public final class KafkaLogCollector extends LogCollector {
 
   private Consumer<String, String> kafkaConsumer;
 
-  private KafkaLogCollector(){
+  private KafkaLogCollector() {
 
+  }
+
+  public static Builder builder() {
+    return new Builder();
   }
 
   @Override
@@ -31,11 +36,14 @@ public final class KafkaLogCollector extends LogCollector {
     }
   }
 
-  public static class Builder implements LogCollector.Builder<KafkaLogCollector> {
+  protected static class Builder implements LogCollector.Builder<KafkaLogCollector> {
+
+    private String uri;
 
     @Override
-    public Builder withProperties(Properties setting) {
-      return null;
+    public Builder withProperties(Map<String, String> setting) {
+      this.uri = setting.get("");
+      return this;
     }
 
     @Override
