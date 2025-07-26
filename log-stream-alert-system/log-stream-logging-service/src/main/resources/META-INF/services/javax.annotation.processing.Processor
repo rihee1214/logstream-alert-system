@@ -1,1 +1,3 @@
 com.rihee.alerting.loggingService.annotationprocessor.CollectorTypeProcessor
+com.rihee.alerting.loggingService.annotationprocessor.ValidatorTypeProcessor
+com.rihee.alerting.loggingService.annotationprocessor.PersistenceTypeProcessor

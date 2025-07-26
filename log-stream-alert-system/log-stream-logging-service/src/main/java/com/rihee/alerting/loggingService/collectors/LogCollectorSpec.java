@@ -55,7 +55,7 @@ public class LogCollectorSpec {
    *
    * @return 새로운 {@link LogCollector} 인스턴스
    */
-  public LogCollector getCollectorInstance() {
+  public LogCollector newCollectorInstance() {
     return builder.build();
   }
 

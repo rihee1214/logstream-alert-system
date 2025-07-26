@@ -1,29 +1,22 @@
 package com.rihee.alerting.loggingService.persistence;
 
+import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
+import com.rihee.alerting.loggingService.persistence.LogPersistence.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Properties;
+import org.apache.commons.lang3.StringUtils;
 
-/*
- * TODO [설정 기반 객체 생성 로직 개선]
- *  현재 코드는 단순히 조건에 맞는 클래스를 선택하는 수준임.
- *  아래 기능을 추가로 구현해야 함:
- *  1. Properties에 정의된 키-값 항목을 기반으로,
- *    해당 클래스의 필드 중 @CollectorProperty 등의 어노테이션이 붙은 항목에 자동 주입되도록 구현할 것.
- *    (필요 시 타입 변환 및 누락 필드에 대한 예외 처리도 포함)
- *  2. 객체 생성을 위한 팩토리 메서드를 별도로 만들 것.
- *    단, 절대로 싱글턴으로 만들어 모든 worker에서 공유되면 안 되며,
- *    각 worker별로 새로운 인스턴스가 생성되어야 함 (상태 공유 금지).
- */
 public class LogPersistenceSpec {
 
-  private final Properties setting;
-  private final Class<? extends LogPersistence> targetType;
+  private final Builder<?> builder;
 
   private LogPersistenceSpec(Properties setting) {
-    this.setting = setting;
-    this.targetType = resolvePersistence(setting.getProperty(""));
+    this.builder = resolvePersistenceBuilder(setting.getProperty(""))
+                            .withProperties(MapUtils.toMap(setting));
   }
 
   public static LogPersistenceSpec from(Properties setting) {
@@ -31,17 +24,23 @@ public class LogPersistenceSpec {
   }
 
   @SuppressWarnings("unchecked")
-  private static Class<? extends LogPersistence> resolvePersistence(String persistenceMode) {
+  private static LogPersistence.Builder<?> resolvePersistenceBuilder(String persistenceMode) {
+    if (StringUtils.isEmpty(persistenceMode)) {
+      throw new IllegalArgumentException("Persistence 설정이 존재하지 않습니다.");
+    }
+
     try (ScanResult scanResult = new ClassGraph()
         .enableAllInfo()
         .acceptPackages("com.rihee.alerting.loggingService.persistence.impl") // 스캔 범위 제한
         .scan()) {
 
-      return scanResult.getClassesWithAnnotation(PersistenceType.class.getName())
+      // PersistenceType annotation과 일치하는 클래스 찾기
+      Class<? extends LogPersistence> persistenceClass = scanResult
+          .getClassesWithAnnotation(PersistenceType.class.getName())
           .stream()
-          .map(ci -> {
+          .map(classInfo -> {
             try {
-              return (Class<?>) Class.forName(ci.getName());
+              return (Class<?>) Class.forName(classInfo.getName());
             } catch (ClassNotFoundException e) {
               throw new RuntimeException(e);
             }
@@ -52,8 +51,24 @@ public class LogPersistenceSpec {
           })
           .map(clazz -> (Class<? extends LogPersistence>) clazz)
           .findFirst()
-          .orElseThrow(()
-              -> new IllegalStateException("No collector found for target: " + persistenceMode));
+          .orElseThrow(() ->
+              new IllegalStateException("해당 persistenceMode에 맞는 클래스가 존재하지 않습니다: " + persistenceMode));
+
+      // static builder() 메서드 존재 여부 확인 및 호출
+      Method builderMethod = persistenceClass.getDeclaredMethod("builder");
+      if (!Modifier.isStatic(builderMethod.getModifiers())) {
+        throw new IllegalStateException("builder() 메서드는 static이어야 합니다.");
+      }
+
+      return (LogPersistence.Builder<?>) builderMethod.invoke(null);
+
+    } catch (Exception e) {
+      throw new RuntimeException("Persistence 빌더 생성 실패: " + persistenceMode, e);
     }
   }
+
+  public LogPersistence newPersistenceInstance() {
+    return this.builder.build();
+  }
+
 }
