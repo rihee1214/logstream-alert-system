@@ -1,25 +1,30 @@
 package com.rihee.alerting.loggingService.validators;
 
-import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
 import com.rihee.alerting.loggingService.validators.LogValidator.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Properties;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 public class LogValidatorSpec {
 
   private final Builder<?> builder;
+  private final String validatorType;
 
-  private LogValidatorSpec(Properties setting) {
-    this.builder = resolveValidatorBuilder(setting.getProperty("validator.type"))
-                                .withProperties(MapUtils.toMap(setting));
+  private LogValidatorSpec(Map<String, String> setting) {
+    this.validatorType = setting.get("validator.type");
+    if (StringUtils.isEmpty(this.validatorType)) {
+      throw new IllegalArgumentException("필수 설정 'validator.type' 이 존재하지 않습니다.");
+    }
+
+    this.builder = resolveValidatorBuilder(this.validatorType)
+                                .withProperties(setting);
   }
 
-  public static LogValidatorSpec from(Properties setting) {
+  public static LogValidatorSpec from(Map<String, String> setting) {
     return new LogValidatorSpec(setting);
   }
 
@@ -67,8 +72,11 @@ public class LogValidatorSpec {
     }
   }
 
-
   public LogValidator newValidatorInstance() {
     return builder.build();
+  }
+
+  public String getType() {
+    return this.validatorType;
   }
 }

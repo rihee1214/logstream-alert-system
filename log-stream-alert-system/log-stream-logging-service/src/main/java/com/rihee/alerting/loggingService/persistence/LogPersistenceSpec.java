@@ -1,25 +1,30 @@
 package com.rihee.alerting.loggingService.persistence;
 
-import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import com.rihee.alerting.loggingService.persistence.LogPersistence.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Properties;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 public class LogPersistenceSpec {
 
   private final Builder<?> builder;
+  private final String persistenceType;
 
-  private LogPersistenceSpec(Properties setting) {
-    this.builder = resolvePersistenceBuilder(setting.getProperty(""))
-                            .withProperties(MapUtils.toMap(setting));
+  private LogPersistenceSpec(Map<String, String> setting) {
+    this.persistenceType = setting.get("persistence.type");
+    if (StringUtils.isEmpty(this.persistenceType)) {
+      throw new IllegalArgumentException("필수 설정 'persistence.type' 이 존재하지 않습니다.");
+    }
+
+    this.builder = resolvePersistenceBuilder(this.persistenceType)
+                            .withProperties(setting);
   }
 
-  public static LogPersistenceSpec from(Properties setting) {
+  public static LogPersistenceSpec from(Map<String, String> setting) {
     return new LogPersistenceSpec(setting);
   }
 
@@ -71,4 +76,7 @@ public class LogPersistenceSpec {
     return this.builder.build();
   }
 
+  public String getType() {
+    return this.persistenceType;
+  }
 }

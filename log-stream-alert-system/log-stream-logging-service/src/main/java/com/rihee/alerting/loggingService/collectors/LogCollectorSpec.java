@@ -1,13 +1,12 @@
 package com.rihee.alerting.loggingService.collectors;
 
-import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Properties;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -27,10 +26,16 @@ import org.apache.commons.lang3.StringUtils;
 public class LogCollectorSpec {
 
   private final Builder<? extends LogCollector> builder;
+  private final String collectorType;
 
-  private LogCollectorSpec(Properties setting) {
-    this.builder = resolveCollectorBuilder(setting.getProperty("collector.type"))
-                                  .withProperties(MapUtils.toMap(setting));
+  private LogCollectorSpec(Map<String, String> setting) {
+    this.collectorType = setting.get("collector.type");
+    if (StringUtils.isEmpty(this.collectorType)) {
+      throw new IllegalArgumentException("필수 설정 'collector.type' 이 존재하지 않습니다.");
+    }
+
+    this.builder = resolveCollectorBuilder(collectorType)
+                                  .withProperties(setting);
   }
 
   /**
@@ -44,7 +49,7 @@ public class LogCollectorSpec {
    * @throws IllegalArgumentException collector.type이 누락되었거나 잘못된 경우
    * @throws IllegalStateException 해당 타입에 매칭되는 클래스가 없거나 builder 메서드가 static이 아닌 경우
    */
-  public static LogCollectorSpec from(Properties setting) {
+  public static LogCollectorSpec from(Map<String, String> setting) {
     return new LogCollectorSpec(setting);
   }
 
@@ -68,16 +73,11 @@ public class LogCollectorSpec {
    *
    * @param collectorMode 설정 파일에서 정의된 collector type 값
    * @return 해당 구현체의 {@link LogCollector.Builder} 인스턴스
-   * @throws IllegalArgumentException 설정 값이 null 또는 비어 있을 경우
    * @throws IllegalStateException 매칭되는 클래스가 없거나 builder 메서드가 static이 아닐 경우
    * @throws RuntimeException reflection 또는 builder 호출 중 예외가 발생한 경우
    */
   @SuppressWarnings("unchecked")
   private static LogCollector.Builder<?> resolveCollectorBuilder(String collectorMode) {
-    if (StringUtils.isEmpty(collectorMode)) {
-      throw new IllegalArgumentException("Collector 설정이 존재하지 않습니다.");
-    }
-
     try (ScanResult scanResult = new ClassGraph()
         .enableAllInfo()
         .acceptPackages("com.rihee.alerting.loggingService.collectors.impl")
@@ -116,4 +116,7 @@ public class LogCollectorSpec {
     }
   }
 
+  public String getType() {
+    return this.collectorType;
+  }
 }
