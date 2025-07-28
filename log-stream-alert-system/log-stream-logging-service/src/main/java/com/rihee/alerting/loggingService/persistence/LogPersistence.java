@@ -1,8 +1,9 @@
 package com.rihee.alerting.loggingService.persistence;
 
+import com.rihee.alerting.loggingService.core.LogProcessor;
 import java.util.Map;
 
-public abstract class LogPersistence {
+public abstract class LogPersistence implements LogProcessor {
 
 
 

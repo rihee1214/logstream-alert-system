@@ -56,16 +56,25 @@ import javax.tools.Diagnostic;
 public abstract class AbstractTypeProcessor extends AbstractProcessor {
 
   /** 검증 대상 로직들을 구성하는 리스트. 각 {@link ProcessorLogic}은 독립적으로 동작한다. */
-  protected List<ProcessorLogic> processorLogics = new ArrayList<>();
+  protected final List<ProcessorLogic> processorLogics;
 
   /**
    * 기본 생성자.
    *
+   * <p>이 생성자는 상속 클래스에서 호출되어야 하며, 기본적으로 공통 ProcessorLogic들을 등록합니다.
+   * 서브클래스에서 추가 로직이 필요한 경우, {@link #addValidationLogic(ProcessorLogic)} 메서드를 이용해야 하며,
+   * 생성자를 오버라이드하거나 {@code processorLogics}를 직접 수정하지 않아야 합니다.
+   * </p>
+   *
+   * <p>해당 생성자는 JDK의 {@code Processor} SPI 로딩 메커니즘에 의해 자동 호출되므로,
+   * 파라미터를 가지지 않아야 하며, 내부에서 필요한 모든 초기화를 수행해야 합니다.
+   *
    * <p>{@link NamedTypeConflictProcessor}와 {@link BuilderCheckProcessorLogic}를 기본 검증 로직으로 포함한다.
    */
   protected AbstractTypeProcessor() {
-    addValidationLogic(new NamedTypeConflictProcessor());
-    addValidationLogic(new BuilderCheckProcessorLogic());
+    processorLogics = new ArrayList<>();
+    processorLogics.add(new NamedTypeConflictProcessor());
+    processorLogics.add(new BuilderCheckProcessorLogic());
   }
 
   /**
@@ -94,6 +103,11 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
    *
    * <p>기본적으로 {@code processorLogics} 필드는 {@code protected}로 선언되어 있지만,
    * 외부에서 직접 수정하지 않고 본 메서드를 통해 추가하는 것을 권장합니다.
+   *
+   * @implSpec
+   *     이 메서드는 {@code null} 입력을 무시하며, 로직의 중복 삽입 여부나 실행 순서는 보장하지 않습니다.<br>
+   *     필요한 경우 서브클래스에서 중복 여부 확인이나 정렬 전략을 함께 관리해야 합니다.
+   *
    *
    * @param logic 추가할 {@link ProcessorLogic} 구현체
    */
@@ -125,15 +139,23 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
   }
 
   /**
-   * 대상 Element에서 지정된 애너테이션의 {@code value()} 속성 값을 추출합니다.
+   * 주어진 {@code Element}에 부여된 애너테이션 중 지정된 {@code targetType}에 대해,
+   * 해당 애너테이션의 {@code attributeName} 속성 값을 문자열로 추출합니다.
    *
-   * <p>AnnotationMirror를 사용하여 리플렉션 없이도 어노테이션 값을 가져올 수 있도록 구현되어 있습니다.
+   * <p>이 메서드는 리플렉션을 사용하지 않고, 컴파일 타임 모델인 {@link AnnotationMirror}를 통해
+   * 어노테이션의 메타 정보를 안전하게 조회할 수 있도록 설계되어 있습니다.
    *
-   * @param element 애너테이션이 부여된 엘리먼트
-   * @param targetType 추출할 애너테이션 타입
-   * @return {@code value()} 속성의 문자열 값, 없을 경우 {@code null}
+   * @param element         애너테이션이 부여된 대상 엘리먼트
+   * @param targetType      추출할 애너테이션 타입 (예: {@code CollectorType.class})
+   * @param attributeName   추출할 애너테이션 속성 이름 (예: {@code "value"})
+   * @return 해당 속성의 문자열 값, 존재하지 않을 경우 {@code null}
+   *
+   * @implNote {@link AnnotationMirror} 기반 처리로 인해, 런타임 리플렉션이 아닌 컴파일 타임 추론에 적합합니다.
    */
-  protected String extractAnnotationValue(Element element, Class<? extends Annotation> targetType) {
+  @SuppressWarnings({"SameParameterValue"})
+  protected final String extractAnnotationValue(Element element,
+                                                          Class<? extends Annotation> targetType,
+                                                          String attributeName) {
     for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
       if (!mirror.getAnnotationType().toString().equals(targetType.getName())) {
         continue;
@@ -141,7 +163,7 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
 
       for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
           mirror.getElementValues().entrySet()) {
-        if (entry.getKey().getSimpleName().toString().equals("value")) {
+        if (entry.getKey().getSimpleName().toString().equals(attributeName)) {
           return entry.getValue().getValue().toString();
         }
       }
@@ -183,9 +205,39 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
    * @see AbstractTypeProcessor
    * @see RoundEnvironment
    */
-  @FunctionalInterface
-  protected interface ProcessorLogic {
-    void process(RoundEnvironment roundEnv);
+  protected abstract static class ProcessorLogic {
+
+    protected abstract void process(RoundEnvironment roundEnv);
+
+    /**
+     * 두 ProcessorLogic 인스턴스가 같은 클래스 타입이면 동일한 객체로 간주합니다.
+     *
+     * <p>이 구현은 상태를 가지지 않는 로직 클래스에 적합하며, 동일한 역할을 수행하는
+     * 인스턴스가 여러 개 존재하더라도 중복되지 않도록 하기 위한 용도로 사용됩니다.
+     *
+     * <p>예를 들어 {@link java.util.Set}에서 중복 방지를 하거나,
+     * 특정 로직의 중복 삽입 여부를 확인할 때 유용합니다.
+     *
+     * @param obj 비교할 객체
+     * @return 동일한 클래스의 인스턴스라면 {@code true}, 그렇지 않으면 {@code false}
+     */
+    @Override
+    public boolean equals(Object obj) {
+      return obj != null && this.getClass() == obj.getClass();
+    }
+
+    /**
+     * 클래스 기반 해시코드 반환.
+     *
+     * <p>같은 클래스 타입의 모든 인스턴스가 동일한 해시코드를 가지므로,
+     * 상태가 없는 로직 객체들의 비교 및 중복 관리에 적합합니다.
+     *
+     * @return 클래스 기반 해시코드
+     */
+    @Override
+    public int hashCode() {
+      return this.getClass().hashCode();
+    }
   }
 
   /**
@@ -193,7 +245,7 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
    *
    * <p>동일한 식별자 값이 두 개 이상 존재하면 컴파일 오류를 발생시킵니다.
    */
-  protected class NamedTypeConflictProcessor implements ProcessorLogic {
+  protected final class NamedTypeConflictProcessor extends ProcessorLogic {
 
     @Override
     public void process(RoundEnvironment roundEnv) {
@@ -205,7 +257,7 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
           continue;
         }
 
-        String value = extractAnnotationValue(element, annotationType);
+        String value = extractAnnotationValue(element, annotationType, "value");
         String className = ((TypeElement) element).getQualifiedName().toString();
 
         if (value == null) {
@@ -237,7 +289,7 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
    *
    * <p>존재하지 않을 경우 컴파일 오류를 발생시킵니다.
    */
-  protected class BuilderCheckProcessorLogic implements ProcessorLogic {
+  protected final class BuilderCheckProcessorLogic extends ProcessorLogic {
 
     @Override
     public void process(RoundEnvironment roundEnv) {

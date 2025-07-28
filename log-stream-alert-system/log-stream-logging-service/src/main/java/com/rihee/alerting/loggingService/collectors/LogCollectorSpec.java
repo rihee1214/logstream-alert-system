@@ -2,6 +2,7 @@ package com.rihee.alerting.loggingService.collectors;
 
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector.Builder;
+import com.rihee.alerting.loggingService.core.LogProcessorSpec;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;
@@ -23,12 +24,12 @@ import org.apache.commons.lang3.StringUtils;
  * @author 리희
  * @since 1.0
  */
-public class LogCollectorSpec {
+public final class LogCollectorSpec implements LogProcessorSpec {
 
   private final Builder<? extends LogCollector> builder;
   private final String collectorType;
 
-  private LogCollectorSpec(Map<String, String> setting) {
+  public LogCollectorSpec(Map<String, String> setting) {
     this.collectorType = setting.get("collector.type");
     if (StringUtils.isEmpty(this.collectorType)) {
       throw new IllegalArgumentException("필수 설정 'collector.type' 이 존재하지 않습니다.");
@@ -38,29 +39,8 @@ public class LogCollectorSpec {
                                   .withProperties(setting);
   }
 
-  /**
-   * {@code LogCollectorSpec}을 설정 정보를 기반으로 생성한다.
-   *
-   * <p>내부적으로 collector type에 따라 클래스 스캔을 수행하고, 해당 클래스의 builder 메서드를 호출하여
-   * Builder 인스턴스를 생성한 뒤 설정을 주입한다.
-   *
-   * @param setting 로그 수집기 생성을 위한 설정 정보 (Properties)
-   * @return 초기화된 {@code LogCollectorSpec} 인스턴스
-   * @throws IllegalArgumentException collector.type이 누락되었거나 잘못된 경우
-   * @throws IllegalStateException 해당 타입에 매칭되는 클래스가 없거나 builder 메서드가 static이 아닌 경우
-   */
-  public static LogCollectorSpec from(Map<String, String> setting) {
-    return new LogCollectorSpec(setting);
-  }
-
-  /**
-   * 설정된 {@link Builder}를 기반으로 {@link LogCollector} 인스턴스를 생성한다.
-   *
-   * <p>각 호출 시마다 새로운 인스턴스를 반환하며, 내부적으로 builder.build()를 호출한다.
-   *
-   * @return 새로운 {@link LogCollector} 인스턴스
-   */
-  public LogCollector newCollectorInstance() {
+  @Override
+  public LogCollector newProcessorInstance() {
     return builder.build();
   }
 

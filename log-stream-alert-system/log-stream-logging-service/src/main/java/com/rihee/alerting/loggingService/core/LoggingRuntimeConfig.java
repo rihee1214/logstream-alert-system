@@ -59,9 +59,9 @@ public class LoggingRuntimeConfig {
       throw new IllegalArgumentException("'worker.thread.count'는 숫자여야 합니다: " + tempThreadCount);
     }
 
-    this.collectorSpec = LogCollectorSpec.from(MapUtils.toMap(setting));
-    this.validatorSpec = LogValidatorSpec.from(MapUtils.toMap(setting));
-    this.persistenceSpec = LogPersistenceSpec.from(MapUtils.toMap(setting));
+    this.collectorSpec = new LogCollectorSpec(MapUtils.toMap(setting));
+    this.validatorSpec = new LogValidatorSpec(MapUtils.toMap(setting));
+    this.persistenceSpec = new LogPersistenceSpec(MapUtils.toMap(setting));
   }
 
   /**
@@ -95,7 +95,7 @@ public class LoggingRuntimeConfig {
    * @return 로그 수집기 구현체 인스턴스
    */
   public LogCollector getCollectorInstance() {
-    return collectorSpec.newCollectorInstance();
+    return collectorSpec.newProcessorInstance();
   }
 
   /**
@@ -104,7 +104,7 @@ public class LoggingRuntimeConfig {
    * @return 유효성 검사기 구현체 인스턴스
    */
   public LogValidator getValidatorInstance() {
-    return validatorSpec.newValidatorInstance();
+    return validatorSpec.newProcessorInstance();
   }
 
   /**
@@ -113,7 +113,7 @@ public class LoggingRuntimeConfig {
    * @return 로그 저장소 구현체 인스턴스
    */
   public LogPersistence getPersistenceInstance() {
-    return persistenceSpec.newPersistenceInstance();
+    return persistenceSpec.newProcessorInstance();
   }
 
   /**

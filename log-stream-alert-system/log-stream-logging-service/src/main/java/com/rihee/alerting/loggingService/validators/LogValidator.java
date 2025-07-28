@@ -1,8 +1,9 @@
 package com.rihee.alerting.loggingService.validators;
 
+import com.rihee.alerting.loggingService.core.LogProcessor;
 import java.util.Map;
 
-public abstract class LogValidator {
+public abstract class LogValidator implements LogProcessor {
 
   public interface Builder<T extends LogValidator> {
 

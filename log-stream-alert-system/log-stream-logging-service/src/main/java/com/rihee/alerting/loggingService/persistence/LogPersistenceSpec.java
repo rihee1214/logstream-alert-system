@@ -1,6 +1,7 @@
 package com.rihee.alerting.loggingService.persistence;
 
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
+import com.rihee.alerting.loggingService.core.LogProcessorSpec;
 import com.rihee.alerting.loggingService.persistence.LogPersistence.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
@@ -9,12 +10,12 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
-public class LogPersistenceSpec {
+public class LogPersistenceSpec implements LogProcessorSpec {
 
   private final Builder<?> builder;
   private final String persistenceType;
 
-  private LogPersistenceSpec(Map<String, String> setting) {
+  public LogPersistenceSpec(Map<String, String> setting) {
     this.persistenceType = setting.get("persistence.type");
     if (StringUtils.isEmpty(this.persistenceType)) {
       throw new IllegalArgumentException("필수 설정 'persistence.type' 이 존재하지 않습니다.");
@@ -22,10 +23,6 @@ public class LogPersistenceSpec {
 
     this.builder = resolvePersistenceBuilder(this.persistenceType)
                             .withProperties(setting);
-  }
-
-  public static LogPersistenceSpec from(Map<String, String> setting) {
-    return new LogPersistenceSpec(setting);
   }
 
   @SuppressWarnings("unchecked")
@@ -72,7 +69,7 @@ public class LogPersistenceSpec {
     }
   }
 
-  public LogPersistence newPersistenceInstance() {
+  public LogPersistence newProcessorInstance() {
     return this.builder.build();
   }
 

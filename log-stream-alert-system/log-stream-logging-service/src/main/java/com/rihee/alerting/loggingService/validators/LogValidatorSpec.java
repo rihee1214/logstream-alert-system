@@ -1,6 +1,7 @@
 package com.rihee.alerting.loggingService.validators;
 
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
+import com.rihee.alerting.loggingService.core.LogProcessorSpec;
 import com.rihee.alerting.loggingService.validators.LogValidator.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
@@ -9,12 +10,12 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
-public class LogValidatorSpec {
+public class LogValidatorSpec implements LogProcessorSpec {
 
   private final Builder<?> builder;
   private final String validatorType;
 
-  private LogValidatorSpec(Map<String, String> setting) {
+  public LogValidatorSpec(Map<String, String> setting) {
     this.validatorType = setting.get("validator.type");
     if (StringUtils.isEmpty(this.validatorType)) {
       throw new IllegalArgumentException("필수 설정 'validator.type' 이 존재하지 않습니다.");
@@ -22,10 +23,6 @@ public class LogValidatorSpec {
 
     this.builder = resolveValidatorBuilder(this.validatorType)
                                 .withProperties(setting);
-  }
-
-  public static LogValidatorSpec from(Map<String, String> setting) {
-    return new LogValidatorSpec(setting);
   }
 
   @SuppressWarnings("unchecked")
@@ -72,7 +69,7 @@ public class LogValidatorSpec {
     }
   }
 
-  public LogValidator newValidatorInstance() {
+  public LogValidator newProcessorInstance() {
     return builder.build();
   }
 

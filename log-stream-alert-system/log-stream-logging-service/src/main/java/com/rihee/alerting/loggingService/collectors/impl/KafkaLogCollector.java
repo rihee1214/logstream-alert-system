@@ -23,7 +23,7 @@ public final class KafkaLogCollector extends LogCollector {
   }
 
   @Override
-  public List<String> getLogDatas() {
+  public List<String> process() {
 
     return null;
   }
