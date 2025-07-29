@@ -73,7 +73,7 @@ public class LogValidatorSpec implements LogProcessorSpec {
     return builder.build();
   }
 
-  public String getType() {
+  public String getProcessorType() {
     return this.validatorType;
   }
 }

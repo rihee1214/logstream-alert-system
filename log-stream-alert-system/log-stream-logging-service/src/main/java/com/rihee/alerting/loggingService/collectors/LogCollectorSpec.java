@@ -96,7 +96,7 @@ public final class LogCollectorSpec implements LogProcessorSpec {
     }
   }
 
-  public String getType() {
+  public String getProcessorType() {
     return this.collectorType;
   }
 }

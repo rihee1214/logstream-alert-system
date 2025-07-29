@@ -7,6 +7,9 @@ import com.rihee.alerting.loggingService.persistence.LogPersistence;
 import com.rihee.alerting.loggingService.persistence.LogPersistenceSpec;
 import com.rihee.alerting.loggingService.validators.LogValidator;
 import com.rihee.alerting.loggingService.validators.LogValidatorSpec;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,9 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 public class LoggingRuntimeConfig {
 
   private final int threadCount;
-  private final LogCollectorSpec collectorSpec;
-  private final LogValidatorSpec validatorSpec;
-  private final LogPersistenceSpec persistenceSpec;
+  private final List<LogProcessorSpec> logProcessorSpecs = new ArrayList<>();
 
   /**
    * 내부 생성자. 주어진 {@link Properties} 설정으로부터 필수 설정 값을 읽고
@@ -59,9 +60,18 @@ public class LoggingRuntimeConfig {
       throw new IllegalArgumentException("'worker.thread.count'는 숫자여야 합니다: " + tempThreadCount);
     }
 
-    this.collectorSpec = new LogCollectorSpec(MapUtils.toMap(setting));
-    this.validatorSpec = new LogValidatorSpec(MapUtils.toMap(setting));
-    this.persistenceSpec = new LogPersistenceSpec(MapUtils.toMap(setting));
+    // processorSpec 등록
+    String tempProcessors = setting.getProperty("worker.processors");
+    if (StringUtils.isEmpty(tempProcessors)) {
+      throw new IllegalArgumentException("필수 설정 'worker.processors' 가 존재하지 않습니다.");
+    }
+    String[] processors = tempProcessors.split(",");
+    for (String processorName : processors) {
+      LogProcessorSpecType processorSpecType = LogProcessorSpecType.fromKey(processorName);
+      Map<String, String> settingMap = MapUtils.toMap(setting);
+      LogProcessorSpec logProcessorSpec = processorSpecType.createSpecInstance(settingMap);
+      this.logProcessorSpecs.add(logProcessorSpec);
+    }
   }
 
   /**
@@ -87,33 +97,9 @@ public class LoggingRuntimeConfig {
     return this.threadCount;
   }
 
-  /**
-   * 구성된 로그 수집기({@link LogCollector}) 인스턴스를 반환합니다.
-   *
-   * <p>내부적으로는 {@link LogCollectorSpec}을 통해 실제 구현체를 리플렉션으로 생성합니다.
-   *
-   * @return 로그 수집기 구현체 인스턴스
-   */
-  public LogCollector getCollectorInstance() {
-    return collectorSpec.newProcessorInstance();
-  }
 
-  /**
-   * 구성된 로그 유효성 검사기({@link LogValidator}) 인스턴스를 반환합니다.
-   *
-   * @return 유효성 검사기 구현체 인스턴스
-   */
-  public LogValidator getValidatorInstance() {
-    return validatorSpec.newProcessorInstance();
-  }
-
-  /**
-   * 구성된 로그 저장소({@link LogPersistence}) 인스턴스를 반환합니다.
-   *
-   * @return 로그 저장소 구현체 인스턴스
-   */
-  public LogPersistence getPersistenceInstance() {
-    return persistenceSpec.newProcessorInstance();
+  public List<? extends LogProcessor> createProcessorChain() {
+    return logProcessorSpecs.stream().map(LogProcessorSpec::newProcessorInstance).toList();
   }
 
   /**
@@ -125,12 +111,17 @@ public class LoggingRuntimeConfig {
    */
   @Override
   public String toString() {
-    return String.format(
-        "LoggingRuntimeConfig{threadCount=%d, collector=%s, validator=%s, persistence=%s}",
-        threadCount,
-        collectorSpec.getType(),
-        validatorSpec.getType(),
-        persistenceSpec.getType()
-    );
+    String processorDescriptions
+        = logProcessorSpecs.stream()
+                        .map(logProcessorSpec -> {
+                          String className = logProcessorSpec.getClass().getSimpleName();
+                          String processorType = logProcessorSpec.getProcessorType();
+                          return className + "(" + processorType + ")";
+                        })
+                        .reduce((a, b) -> a + "->" + b)
+                        .orElse("no processors described");
+    return String.format("LoggingRuntimeConfig{threadCount=%d, processors=%s}",
+                        threadCount,
+                        processorDescriptions);
   }
 }

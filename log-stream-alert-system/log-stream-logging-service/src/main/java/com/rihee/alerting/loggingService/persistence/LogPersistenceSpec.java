@@ -73,7 +73,7 @@ public class LogPersistenceSpec implements LogProcessorSpec {
     return this.builder.build();
   }
 
-  public String getType() {
+  public String getProcessorType() {
     return this.persistenceType;
   }
 }
