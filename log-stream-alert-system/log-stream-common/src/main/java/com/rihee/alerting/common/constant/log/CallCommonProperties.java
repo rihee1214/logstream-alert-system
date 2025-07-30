@@ -15,7 +15,7 @@ package com.rihee.alerting.common.constant.log;
  * @author 리희
  * @since 1.0
  */
-public enum CallCommonProperties {
+public enum CallCommonProperties implements LogFieldKey {
 
   /**
    * 호출 방식(type)을 나타냅니다.
@@ -42,7 +42,7 @@ public enum CallCommonProperties {
    *
    * @return 구조화 로그에서 사용할 메타 키 이름
    */
-  public String getKey() {
+  public String getFieldName() {
     return this.key;
   }
 }

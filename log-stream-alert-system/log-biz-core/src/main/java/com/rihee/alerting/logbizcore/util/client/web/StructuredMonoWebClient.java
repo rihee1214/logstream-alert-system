@@ -166,9 +166,9 @@ public class StructuredMonoWebClient {
         .uri(uri)
         // 기본 요청 헤더 세팅
         .headers(httpHeaders -> {
-          String traceId = snapshot.get(TRACE_ID.getName());
-          String spanId = snapshot.get(SPAN_ID.getName());
-          String parentSpanId = snapshot.get(PARENT_SPAN_ID.getName());
+          String traceId = snapshot.get(TRACE_ID.getFieldName());
+          String spanId = snapshot.get(SPAN_ID.getFieldName());
+          String parentSpanId = snapshot.get(PARENT_SPAN_ID.getFieldName());
 
           httpHeaders.add(B3Header.TRACE_ID.getHeaderName(), traceId);
           httpHeaders.add(B3Header.SPAN_ID.getHeaderName(), spanId);
@@ -194,16 +194,16 @@ public class StructuredMonoWebClient {
                 : DefaultValues.UNKNOWN.getValue();
           }
 
-          MDC.put(TYPE.getKey(), HTTP.getType());
-          MDC.put(METHOD.getKey(), resp.request().getMethod().name());
-          MDC.put(URI.getKey(), uri);
-          MDC.put(STATUS_CODE.getKey(), String.valueOf(status.value()));
-          MDC.put(STATUS_MESSAGE.getKey(), statusMessage);
-          MDC.put(RESP_TRACE_ID.getKey(),
+          MDC.put(TYPE.getFieldName(), HTTP.getType());
+          MDC.put(METHOD.getFieldName(), resp.request().getMethod().name());
+          MDC.put(URI.getFieldName(), uri);
+          MDC.put(STATUS_CODE.getFieldName(), String.valueOf(status.value()));
+          MDC.put(STATUS_MESSAGE.getFieldName(), statusMessage);
+          MDC.put(RESP_TRACE_ID.getFieldName(),
               Objects.toString(resp.headers()
                                   .header(B3Header.TRACE_ID.getHeaderName()).getFirst(),
                                           DefaultValues.UNKNOWN.getValue()));
-          MDC.put(ELAPSED_MS.getKey(), String.valueOf(elapsed));
+          MDC.put(ELAPSED_MS.getFieldName(), String.valueOf(elapsed));
 
           logger.info(LogType.BIZ,
               "External call completed | uri={} | method={} | statusCode={} | elapsedMs={}ms | "
@@ -212,9 +212,9 @@ public class StructuredMonoWebClient {
               resp.request().getMethod(),
               status.value(),
               elapsed,
-              MDC.get(TRACE_ID.getName()),
-              MDC.get(SPAN_ID.getName()),
-              MDC.get(RESP_TRACE_ID.getKey())
+              MDC.get(TRACE_ID.getFieldName()),
+              MDC.get(SPAN_ID.getFieldName()),
+              MDC.get(RESP_TRACE_ID.getFieldName())
           );
 
           MDC.clear();
@@ -241,7 +241,7 @@ public class StructuredMonoWebClient {
           "MDC context is missing; required tracing keys not found."
       );
     }
-    if (!snapshot.containsKey(TRACE_ID.getName()) || !snapshot.containsKey(SPAN_ID.getName())) {
+    if (!snapshot.containsKey(TRACE_ID.getFieldName()) || !snapshot.containsKey(SPAN_ID.getFieldName())) {
       throw new IllegalStateException(
           "Missing required MDC keys: traceId and spanId must be present."
       );

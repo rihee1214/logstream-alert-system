@@ -124,7 +124,7 @@ public class BranchMockServiceCallTests {
         = memoryAppender.getLoggedEvents()
                         .stream()
                         .filter(event -> LogType.BIZ.getCode()
-                            .equals(event.getMDCPropertyMap().get(LOG_TYPE.getName()))
+                            .equals(event.getMDCPropertyMap().get(LOG_TYPE.getFieldName()))
                         )
                         .sorted(Comparator.comparing(ILoggingEvent::getTimeStamp))
                         .toList();
@@ -137,14 +137,14 @@ public class BranchMockServiceCallTests {
     Map<String, String> event4 = events.get(17).getMDCPropertyMap();
 
     // 전체의 TraceId 동일성 검증
-    assertThat(event1.get(TRACE_ID.getName())).isEqualTo(event2.get(TRACE_ID.getName()));
-    assertThat(event1.get(TRACE_ID.getName())).isEqualTo(event3.get(TRACE_ID.getName()));
-    assertThat(event1.get(TRACE_ID.getName())).isEqualTo(event4.get(TRACE_ID.getName()));
+    assertThat(event1.get(TRACE_ID.getFieldName())).isEqualTo(event2.get(TRACE_ID.getFieldName()));
+    assertThat(event1.get(TRACE_ID.getFieldName())).isEqualTo(event3.get(TRACE_ID.getFieldName()));
+    assertThat(event1.get(TRACE_ID.getFieldName())).isEqualTo(event4.get(TRACE_ID.getFieldName()));
 
     // 전체의 부모 spanId와 자식의 parentSpanId 정합성 검증
-    assertThat(event1.get(SPAN_ID.getName())).isEqualTo(event2.get(PARENT_SPAN_ID.getName()));
-    assertThat(event2.get(SPAN_ID.getName())).isEqualTo(event3.get(PARENT_SPAN_ID.getName()));
-    assertThat(event1.get(SPAN_ID.getName())).isEqualTo(event4.get(PARENT_SPAN_ID.getName()));
+    assertThat(event1.get(SPAN_ID.getFieldName())).isEqualTo(event2.get(PARENT_SPAN_ID.getFieldName()));
+    assertThat(event2.get(SPAN_ID.getFieldName())).isEqualTo(event3.get(PARENT_SPAN_ID.getFieldName()));
+    assertThat(event1.get(SPAN_ID.getFieldName())).isEqualTo(event4.get(PARENT_SPAN_ID.getFieldName()));
   }
 
   /* ▼ 호출 흐름 요약 (Stack 구조 기준)

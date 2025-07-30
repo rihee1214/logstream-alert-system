@@ -176,7 +176,7 @@ public class ActuatorHealthMonitoringScheduler {
   @Scheduled(fixedDelayString = "${monitoring.scheduler.interval.ms:10000}")
   public void scheduleActuatorLogs() {
     String uri = this.actuatorBaseUrl + "/health";
-    MDC.put(SERVICE.getName(), serviceName);
+    MDC.put(SERVICE.getFieldName(), serviceName);
 
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
@@ -222,12 +222,12 @@ public class ActuatorHealthMonitoringScheduler {
     return response.bodyToMono(String.class).flatMap(body -> {
       try {
         // 로깅 전 메타 정보 세팅
-        MDC.put(TYPE.getKey(), HTTP.getType());
-        MDC.put(METHOD.getKey(), response.request().getMethod().name());
-        MDC.put(URI.getKey(), uri);
-        MDC.put(STATUS_CODE.getKey(), String.valueOf(statusCode));
-        MDC.put(STATUS_MESSAGE.getKey(), statusMessage);
-        MDC.put(ELAPSED_MS.getKey(), String.valueOf(stopWatch.getTotalTimeMillis()));
+        MDC.put(TYPE.getFieldName(), HTTP.getType());
+        MDC.put(METHOD.getFieldKey(), response.request().getMethod().name());
+        MDC.put(URI.getFieldKey(), uri);
+        MDC.put(STATUS_CODE.getFieldKey(), String.valueOf(statusCode));
+        MDC.put(STATUS_MESSAGE.getFieldKey(), statusMessage);
+        MDC.put(ELAPSED_MS.getFieldName(), String.valueOf(stopWatch.getTotalTimeMillis()));
 
         if (response.statusCode().is2xxSuccessful()) {
           logger.info(ACT, body);
@@ -261,10 +261,10 @@ public class ActuatorHealthMonitoringScheduler {
     stopWatch.stop();
     Map<String, String> mdcSnapshot = MDC.getCopyOfContextMap();
     try {
-      MDC.put(TYPE.getKey(), HTTP.getType());
-      MDC.put(METHOD.getKey(), HttpMethod.GET.name());
-      MDC.put(URI.getKey(), uri);
-      MDC.put(ELAPSED_MS.getKey(), String.valueOf(stopWatch.getTotalTimeMillis()));
+      MDC.put(TYPE.getFieldName(), HTTP.getType());
+      MDC.put(METHOD.getFieldKey(), HttpMethod.GET.name());
+      MDC.put(URI.getFieldKey(), uri);
+      MDC.put(ELAPSED_MS.getFieldName(), String.valueOf(stopWatch.getTotalTimeMillis()));
       // 실질 로깅작업
       logger.warn(ACT, "During Actuator Call", ex);
     } finally {

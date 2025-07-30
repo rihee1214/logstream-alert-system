@@ -118,19 +118,19 @@ public class ActuatorSchedulerTests {
     // 3. JSON 파싱
     Map<String, String> mdcMap = log.map(ILoggingEvent::getMDCPropertyMap).orElse(new HashMap<>());
     Map<String, String> reqMap = Map.of(
-        TYPE.getKey(), mdcMap.get(TYPE.getKey()),
-        ELAPSED_MS.getKey(), mdcMap.get(ELAPSED_MS.getKey()),
-        METHOD.getKey(), mdcMap.get(METHOD.getKey()),
-        STATUS_CODE.getKey(), mdcMap.get(STATUS_CODE.getKey()),
-        STATUS_MESSAGE.getKey(), mdcMap.get(STATUS_MESSAGE.getKey()),
-        URI.getKey(), mdcMap.get(URI.getKey())
+        TYPE.getFieldName(), mdcMap.get(TYPE.getFieldName()),
+        ELAPSED_MS.getFieldName(), mdcMap.get(ELAPSED_MS.getFieldName()),
+        METHOD.getFieldName(), mdcMap.get(METHOD.getFieldName()),
+        STATUS_CODE.getFieldName(), mdcMap.get(STATUS_CODE.getFieldName()),
+        STATUS_MESSAGE.getFieldName(), mdcMap.get(STATUS_MESSAGE.getFieldName()),
+        URI.getFieldName(), mdcMap.get(URI.getFieldName())
     );
 
     for (String key : reqMap.keySet()) {
       assertThat(reqMap.get(key)).as(key + "| 의 값은 비어있으면 안됩니다.").isNotEmpty();
     }
 
-    int statusCode = Integer.parseInt(reqMap.get(STATUS_CODE.getKey()));
+    int statusCode = Integer.parseInt(reqMap.get(STATUS_CODE.getFieldName()));
     assertThat(statusCode).as("HTTP 상태 코드는 200이어야 합니다.")
                           .isEqualTo(200);
   }

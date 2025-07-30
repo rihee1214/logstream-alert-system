@@ -110,26 +110,26 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
     if (isNeedNewTraceId(traceId)) {
       traceId = generateTraceId();
     }
-    MDC.put(TRACE_ID.getName(), traceId);
-    MDC.put(SPAN_ID.getName(), generateSpanId());
+    MDC.put(TRACE_ID.getFieldName(), traceId);
+    MDC.put(SPAN_ID.getFieldName(), generateSpanId());
 
     // 헤더를 통해 들어온 SPAN_ID가 적절하면 PARENT_SPAN_ID로 사용
     String spanId = request.getHeader(B3Header.SPAN_ID.getHeaderName());
-    MDC.put(PARENT_SPAN_ID.getName(), spanId);
+    MDC.put(PARENT_SPAN_ID.getFieldName(), spanId);
 
     //
     if (handler instanceof HandlerMethod handlerMethod) {
       registry.findLabel(handlerMethod.getMethod())
-              .ifPresent(label -> MDC.put(NAME.getName(), label));
+              .ifPresent(label -> MDC.put(NAME.getFieldName(), label));
     }
 
     String sampled = request.getHeader(B3Header.SAMPLED.getHeaderName());
     String flags = request.getHeader(B3Header.FLAGS.getHeaderName());
 
-    MDC.put(SAMPLED.getName(), StringUtils.hasText(sampled) ? sampled
+    MDC.put(SAMPLED.getFieldName(), StringUtils.hasText(sampled) ? sampled
                                                           : B3HEADER_SAMPLED_DEFAULT.getValue());
     if (StringUtils.hasText(flags)) {
-      MDC.put(FLAGS.getName(), flags);
+      MDC.put(FLAGS.getFieldName(), flags);
     }
 
     // response에 현재 사용중인 TraceId를 넣어주어, 바뀌더라도 추적이 가능하도록 처리

@@ -68,10 +68,10 @@ public class CompositeStaticContextProvider extends AbstractJsonProvider<ILoggin
   @Override
   public void writeTo(JsonGenerator generator, ILoggingEvent event) throws IOException {
     Map<String, String> mdc = event.getMDCPropertyMap();
-    writeIfAbsentInMdc(mdc, generator, SERVICE.getName(), serviceName);
-    writeIfAbsentInMdc(mdc, generator, HOST.getName(), hostName);
-    writeIfAbsentInMdc(mdc, generator, CONTAINER.getName(), containerName);
-    writeIfAbsentInMdc(mdc, generator, LOG_TYPE.getName(), LogType.SYS.getCode());
+    writeIfAbsentInMdc(mdc, generator, SERVICE.getFieldName(), serviceName);
+    writeIfAbsentInMdc(mdc, generator, HOST.getFieldName(), hostName);
+    writeIfAbsentInMdc(mdc, generator, CONTAINER.getFieldName(), containerName);
+    writeIfAbsentInMdc(mdc, generator, LOG_TYPE.getFieldName(), LogType.SYS.getCode());
   }
 
   /**

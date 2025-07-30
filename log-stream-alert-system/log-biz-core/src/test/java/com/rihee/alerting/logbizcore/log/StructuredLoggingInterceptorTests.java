@@ -98,9 +98,9 @@ public class StructuredLoggingInterceptorTests {
 
     ILoggingEvent event1 = memoryAppender.getLoggedEvents().getFirst();
 
-    String traceId1 = event1.getMDCPropertyMap().get(TRACE_ID.getName());
-    String spanId1 = event1.getMDCPropertyMap().get(SPAN_ID.getName());
-    String parentSpanId1 = event1.getMDCPropertyMap().get(PARENT_SPAN_ID.getName());
+    String traceId1 = event1.getMDCPropertyMap().get(TRACE_ID.getFieldName());
+    String spanId1 = event1.getMDCPropertyMap().get(SPAN_ID.getFieldName());
+    String parentSpanId1 = event1.getMDCPropertyMap().get(PARENT_SPAN_ID.getFieldName());
 
     assertThat(StringUtils.hasText(traceId1)).isTrue();
     assertThat(StringUtils.hasText(spanId1)).isTrue();
@@ -116,9 +116,9 @@ public class StructuredLoggingInterceptorTests {
 
     ILoggingEvent event2 = memoryAppender.getLoggedEvents().getFirst();
 
-    String traceId2 = event2.getMDCPropertyMap().get(TRACE_ID.getName());
-    String spanId2 = event2.getMDCPropertyMap().get(SPAN_ID.getName());
-    String parentSpanId2 = event2.getMDCPropertyMap().get(PARENT_SPAN_ID.getName());
+    String traceId2 = event2.getMDCPropertyMap().get(TRACE_ID.getFieldName());
+    String spanId2 = event2.getMDCPropertyMap().get(SPAN_ID.getFieldName());
+    String parentSpanId2 = event2.getMDCPropertyMap().get(PARENT_SPAN_ID.getFieldName());
 
     assertThat(StringUtils.hasText(traceId2)).isTrue();
     assertThat(StringUtils.hasText(spanId2)).isTrue();

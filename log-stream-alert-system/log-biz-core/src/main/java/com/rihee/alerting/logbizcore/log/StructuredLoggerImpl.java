@@ -159,7 +159,7 @@ public class StructuredLoggerImpl implements StructuredLogger {
   private void logWithMdc(LogType logType, @NonNull Runnable runnable) {
     Map<String, String> contextSnapshot = MDC.getCopyOfContextMap();
     try {
-      MDC.put(LOG_TYPE.getName(), Objects.requireNonNullElse(logType, LogType.SYS).getCode());
+      MDC.put(LOG_TYPE.getFieldName(), Objects.requireNonNullElse(logType, LogType.SYS).getCode());
       runnable.run();
     } finally {
       if (contextSnapshot != null) {

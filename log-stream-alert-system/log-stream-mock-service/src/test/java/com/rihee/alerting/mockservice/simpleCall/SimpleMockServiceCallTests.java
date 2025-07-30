@@ -113,9 +113,9 @@ public class SimpleMockServiceCallTests {
 
     for (ILoggingEvent event : events) {
       Map<String, String> mdcPropertyMap = event.getMDCPropertyMap();
-      String tranId = mdcPropertyMap.get(TRACE_ID.getName());
-      String spanId = mdcPropertyMap.get(SPAN_ID.getName());
-      String parentSpanId = mdcPropertyMap.get(PARENT_SPAN_ID.getName());
+      String tranId = mdcPropertyMap.get(TRACE_ID.getFieldName());
+      String spanId = mdcPropertyMap.get(SPAN_ID.getFieldName());
+      String parentSpanId = mdcPropertyMap.get(PARENT_SPAN_ID.getFieldName());
 
       assertThat(tranId).isNotEmpty();
       assertThat(spanId).isNotEmpty();

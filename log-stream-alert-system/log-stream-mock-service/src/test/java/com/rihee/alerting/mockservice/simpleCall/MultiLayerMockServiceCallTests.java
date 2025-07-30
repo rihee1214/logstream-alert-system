@@ -110,7 +110,7 @@ public class MultiLayerMockServiceCallTests {
         = memoryAppender.getLoggedEvents()
                         .stream()
                         .filter(event -> LogType.BIZ.getCode()
-                            .equals(event.getMDCPropertyMap().get(LOG_TYPE.getName()))
+                            .equals(event.getMDCPropertyMap().get(LOG_TYPE.getFieldName()))
                         )
                         .sorted(Comparator.comparing(ILoggingEvent::getTimeStamp))
                         .toList();
@@ -121,22 +121,22 @@ public class MultiLayerMockServiceCallTests {
     Map<String, String> middle = events.get(3).getMDCPropertyMap();
     Map<String, String> last = events.get(6).getMDCPropertyMap();
 
-    assertThat(first.get(TRACE_ID.getName())).isEqualTo(middle.get(TRACE_ID.getName()));
-    assertThat(first.get(TRACE_ID.getName())).isEqualTo(last.get(TRACE_ID.getName()));
+    assertThat(first.get(TRACE_ID.getFieldName())).isEqualTo(middle.get(TRACE_ID.getFieldName()));
+    assertThat(first.get(TRACE_ID.getFieldName())).isEqualTo(last.get(TRACE_ID.getFieldName()));
 
-    assertThat(first.get(SPAN_ID.getName())).isEqualTo(middle.get(PARENT_SPAN_ID.getName()));
-    assertThat(middle.get(SPAN_ID.getName())).isEqualTo(last.get(PARENT_SPAN_ID.getName()));
+    assertThat(first.get(SPAN_ID.getFieldName())).isEqualTo(middle.get(PARENT_SPAN_ID.getFieldName()));
+    assertThat(middle.get(SPAN_ID.getFieldName())).isEqualTo(last.get(PARENT_SPAN_ID.getFieldName()));
 
     Map<String, String> firstResp = events.get(9).getMDCPropertyMap();
     Map<String, String> middleResp = events.get(12).getMDCPropertyMap();
     Map<String, String> lastResp = events.get(15).getMDCPropertyMap();
 
-    assertThat(firstResp.get(TRACE_ID.getName())).isEqualTo(middleResp.get(TRACE_ID.getName()));
-    assertThat(firstResp.get(TRACE_ID.getName())).isEqualTo(lastResp.get(TRACE_ID.getName()));
+    assertThat(firstResp.get(TRACE_ID.getFieldName())).isEqualTo(middleResp.get(TRACE_ID.getFieldName()));
+    assertThat(firstResp.get(TRACE_ID.getFieldName())).isEqualTo(lastResp.get(TRACE_ID.getFieldName()));
 
-    assertThat(middleResp.get(SPAN_ID.getName()))
-        .isEqualTo(firstResp.get(PARENT_SPAN_ID.getName()));
-    assertThat(lastResp.get(SPAN_ID.getName()))
-        .isEqualTo(middleResp.get(PARENT_SPAN_ID.getName()));
+    assertThat(middleResp.get(SPAN_ID.getFieldName()))
+        .isEqualTo(firstResp.get(PARENT_SPAN_ID.getFieldName()));
+    assertThat(lastResp.get(SPAN_ID.getFieldName()))
+        .isEqualTo(middleResp.get(PARENT_SPAN_ID.getFieldName()));
   }
 }

@@ -15,7 +15,7 @@ package com.rihee.alerting.common.constant.log;
  * @author 리희
  * @since 1.0
  */
-public enum HttpCallProperties {
+public enum HttpCallProperties implements LogFieldKey {
   /** 호출 메서드 (예: GET, POST, PUBLISH 등). */
   METHOD("call.method"),
 
@@ -38,11 +38,12 @@ public enum HttpCallProperties {
   }
 
   /**
-   * 로그 메타 필드의 키 문자열을 반환합니다.
+   * 로그 메타 필드 명의 문자열을 반환합니다.
    *
    * @return 구조화 로그에서 사용할 메타 키 이름
    */
-  public String getKey() {
+  @Override
+  public String getFieldName() {
     return this.key;
   }
 }

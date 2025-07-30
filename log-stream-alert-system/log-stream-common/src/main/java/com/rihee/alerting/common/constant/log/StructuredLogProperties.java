@@ -10,7 +10,7 @@ package com.rihee.alerting.common.constant.log;
  * <p>이 필드들은 MDC (Mapped Diagnostic Context)에 저장되며, 로그 백엔드(Kibana, Elasticsearch, Grafana 등)에서
  * 분석 가능하도록 JSON 기반 구조로 출력됩니다.
  */
-public enum StructuredLogProperties {
+public enum StructuredLogProperties implements LogFieldKey {
 
   /**
    * 로그 타입.<br>
@@ -120,7 +120,7 @@ public enum StructuredLogProperties {
     this.name = name;
   }
 
-  public String getName() {
+  public String getFieldName() {
     return this.name;
   }
 }
