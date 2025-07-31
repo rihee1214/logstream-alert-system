@@ -5,8 +5,6 @@ import java.util.Map;
 
 public abstract class LogPersistence implements LogProcessor {
 
-
-
   public interface Builder<T extends LogPersistence> {
 
     /**

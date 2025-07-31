@@ -1,7 +1,6 @@
 package com.rihee.alerting.loggingService.collectors;
 
 import com.rihee.alerting.loggingService.core.LogProcessor;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,16 +24,6 @@ import java.util.Map;
  * @see com.rihee.alerting.loggingService.collectors.LogCollectorSpec
  */
 public abstract class LogCollector implements LogProcessor {
-
-  /**
-   * 외부 소스(예: Kafka, HTTP 등)로부터 로그 데이터를 수집하여 반환합니다.
-   *
-   * <p>반환된 리스트는 구조화된 로그 또는 원시 로그 메시지일 수 있으며,
-   * 이후 Validator 및 Persistence 단계에서 처리됩니다.
-   *
-   * @return 수집된 로그 데이터 목록
-   */
-  public abstract List<String> process();
 
   /**
    * 로그 수집기의 인스턴스를 생성하기 위한 빌더 인터페이스입니다.

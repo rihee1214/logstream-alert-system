@@ -49,10 +49,10 @@ public interface LogFieldKey {
    * and is expected to match the JSON key used in log output or persistence.</p>
    *
    * @implSpec
-   *    구현체는 이 메서드가 반환하는 값이 실제 로그 출력 및 저장 시 사용되는
-   *    키 이름과 정확히 일치하도록 보장해야 합니다.
-   *    이 값은 고정된 계약 필드명으로 간주되며, 동적으로 변경되거나
-   *    중복되면 안 됩니다.
+   *     구현체는 이 메서드가 반환하는 값이 실제 로그 출력 및 저장 시 사용되는
+   *     키 이름과 정확히 일치하도록 보장해야 합니다.
+   *     이 값은 고정된 계약 필드명으로 간주되며, 동적으로 변경되거나
+   *     중복되면 안 됩니다.
    *
    * @return 로그 필드를 식별하는 문자열 키 (예: "traceId", "call.uri" 등)
    */

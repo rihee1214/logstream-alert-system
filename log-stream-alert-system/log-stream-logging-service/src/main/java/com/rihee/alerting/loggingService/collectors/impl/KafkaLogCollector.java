@@ -2,10 +2,9 @@ package com.rihee.alerting.loggingService.collectors.impl;
 
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector;
-import com.rihee.alerting.loggingService.collectors.LogCollector.Builder;
+import com.rihee.alerting.loggingService.core.LogMessage;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
 
@@ -23,12 +22,12 @@ public final class KafkaLogCollector extends LogCollector {
   }
 
   @Override
-  public List<String> process() {
+  public List<LogMessage> process(List<LogMessage> messages) {
 
     return null;
   }
 
-  public void commit(){
+  public void commit() {
     try {
       kafkaConsumer.commitSync();
     } catch (CommitFailedException e) {
