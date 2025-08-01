@@ -8,7 +8,6 @@ import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * {@code LogCollectorSpec}은 설정 정보를 기반으로 {@link LogCollector}의 구체 구현체를
@@ -31,7 +30,7 @@ public final class LogCollectorSpec implements LogProcessorSpec {
 
   public LogCollectorSpec(Map<String, String> setting) {
     this.collectorType = setting.get("collector.type");
-    if (StringUtils.isEmpty(this.collectorType)) {
+    if (this.collectorType == null || this.collectorType.isBlank()) {
       throw new IllegalArgumentException("필수 설정 'collector.type' 이 존재하지 않습니다.");
     }
 

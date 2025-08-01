@@ -8,7 +8,6 @@ import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 public class LogPersistenceSpec implements LogProcessorSpec {
 
@@ -17,7 +16,7 @@ public class LogPersistenceSpec implements LogProcessorSpec {
 
   public LogPersistenceSpec(Map<String, String> setting) {
     this.persistenceType = setting.get("persistence.type");
-    if (StringUtils.isEmpty(this.persistenceType)) {
+    if (this.persistenceType == null || this.persistenceType.isBlank()) {
       throw new IllegalArgumentException("필수 설정 'persistence.type' 이 존재하지 않습니다.");
     }
 
@@ -27,10 +26,6 @@ public class LogPersistenceSpec implements LogProcessorSpec {
 
   @SuppressWarnings("unchecked")
   private static LogPersistence.Builder<?> resolvePersistenceBuilder(String persistenceMode) {
-    if (StringUtils.isEmpty(persistenceMode)) {
-      throw new IllegalArgumentException("Persistence 설정이 존재하지 않습니다.");
-    }
-
     try (ScanResult scanResult = new ClassGraph()
         .enableAllInfo()
         .acceptPackages("com.rihee.alerting.loggingService.persistence.impl") // 스캔 범위 제한

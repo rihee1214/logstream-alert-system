@@ -16,12 +16,11 @@ dependencies {
     implementation "com.zaxxer:HikariCP:${hikariCpVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
     implementation "org.slf4j:slf4j-api:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
 
     // annotation scan 후 적절한 class 찾아주는 용도
     implementation "io.github.classgraph:classgraph:${classPathScannerVersion}"
-
-    // 자주 사용되는 유용한 유틸 클래스 모음
-    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 
     // 효율적으로 Map을 Json 메시지로 직렬화 시켜주는 라이브러리
     implementation "com.github.fmjsjx:libcommon-json-jsoniter:${jsoniterVersion}"

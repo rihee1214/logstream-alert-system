@@ -39,16 +39,15 @@ public class LogMessage {
     }
   }
 
+  /**
+   * 주어진 로그 맵을 structured / unstructured 로 분리하여 초기화합니다.
+   * 분리 기준은 {@link LogFieldKey}를 기반으로 합니다.
+   * 내부 분류 로직은 put(String, Object)에 위임됩니다.
+   */
   public LogMessage(Map<String, Object> allLogs) {
     this();
     for (Map.Entry<String, Object> entry : allLogs.entrySet()) {
-      String key = entry.getKey();
-      Object value = entry.getValue();
-      if (STRUCTURED_KEYS.contains(key)) {
-        this.structuredLogs.put(key, value);
-      } else {
-        this.unstructuredLogs.put(key, value);
-      }
+      this.put(entry.getKey(), entry.getValue());
     }
   }
 

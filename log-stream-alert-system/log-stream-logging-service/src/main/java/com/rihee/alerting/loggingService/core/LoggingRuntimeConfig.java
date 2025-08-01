@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * {@code LoggingRuntimeConfig}는 로그 수집 시스템의 런타임 구성 정보를 캡슐화한 설정 객체입니다.
@@ -51,7 +50,7 @@ public class LoggingRuntimeConfig {
    */
   private LoggingRuntimeConfig(Properties setting) {
     String tempThreadCount = setting.getProperty("worker.thread.count");
-    if (StringUtils.isEmpty(tempThreadCount)) {
+    if (tempThreadCount == null || tempThreadCount.isBlank()) {
       throw new IllegalArgumentException("필수 설정 'worker.thread.count' 가 존재하지 않습니다.");
     }
     try {
@@ -62,7 +61,7 @@ public class LoggingRuntimeConfig {
 
     // processorSpec 등록
     String tempProcessors = setting.getProperty("worker.processors");
-    if (StringUtils.isEmpty(tempProcessors)) {
+    if (tempProcessors == null || tempProcessors.isBlank()) {
       throw new IllegalArgumentException("필수 설정 'worker.processors' 가 존재하지 않습니다.");
     }
     String[] processors = tempProcessors.split(",");
