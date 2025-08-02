@@ -4,7 +4,9 @@ import com.jsoniter.JsonIterator;
 import com.jsoniter.spi.TypeLiteral;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector;
-import com.rihee.alerting.loggingService.core.LogMessage;
+import com.rihee.alerting.loggingService.core.message.LogMessage;
+import com.rihee.alerting.loggingService.core.message.LogNormalMessage;
+import com.rihee.alerting.loggingService.core.pipeline.CommitableLogProcessor;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -18,14 +20,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @CollectorType("kafka")
-public final class KafkaLogCollector extends LogCollector {
+public final class KafkaLogCollector extends LogCollector implements CommitableLogProcessor {
 
   private static Logger logger = LoggerFactory.getLogger(KafkaLogCollector.class);
 
-  private Consumer<String, String> kafkaConsumer;
+  private final Consumer<String, String> kafkaConsumer;
+  private final Duration kafkaTimeoutMillis;
 
-  private KafkaLogCollector(Map<String, Object> setting) {
+  private KafkaLogCollector(Map<String, Object> setting, int timeoutMillis) {
     this.kafkaConsumer = new KafkaConsumer<>(setting);
+    this.kafkaTimeoutMillis = Duration.ofMillis(timeoutMillis);
   }
 
   public static Builder builder() {
@@ -34,21 +38,24 @@ public final class KafkaLogCollector extends LogCollector {
 
   @Override
   public List<LogMessage> process(List<LogMessage> messages) {
-    // TODO Setting 에서 읽어서 몇초마다 한번씩 메시지를 가져올지 세팅하도록 해야함
-    ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
+    ConsumerRecords<String, String> records = kafkaConsumer.poll(this.kafkaTimeoutMillis);
 
-    // TODO 잘못된 메시지가 있으면 (값이 없다거나 등등) 없애버리는 역할 필요.
-    //  전반적으로 오류가 나더라도 생존의 여지를 높여야함.
     for (ConsumerRecord<String, String> record : records) {
-      Map<String, Object> logMessage
+      try {
+        Map<String, Object> logMessage
             = JsonIterator.deserialize(record.value(), new TypeLiteral<>(){});
-      messages.add(new LogMessage(logMessage));
+        messages.add(new LogNormalMessage(logMessage));
+      } catch (RuntimeException e) {
+        // TODO JSON 파싱 도중 문제가 발생한 경우, 여기에서 LogErrorMessage를 만들어서 넣도록 해야한다.
+      }
+
     }
 
     return messages;
   }
 
-  public void commitSync() {
+  @Override
+  public void commit() {
     try {
       kafkaConsumer.commitSync();
     } catch (CommitFailedException e) {
@@ -70,6 +77,7 @@ public final class KafkaLogCollector extends LogCollector {
     );
 
     private Map<String, Object> consumerSetting = new HashMap<>();
+    private int timeoutMillis = 1000;
 
     @Override
     public Builder withProperties(Map<String, String> setting) {
@@ -80,12 +88,13 @@ public final class KafkaLogCollector extends LogCollector {
         }
         consumerSetting.put(value, settingValue);
       });
+      this.timeoutMillis = Integer.parseInt(setting.getOrDefault("kafka.max.poll.timeout", "1000"));
       return this;
     }
 
     @Override
     public KafkaLogCollector build() {
-      return new KafkaLogCollector(consumerSetting);
+      return new KafkaLogCollector(consumerSetting, this.timeoutMillis);
     }
   }
 

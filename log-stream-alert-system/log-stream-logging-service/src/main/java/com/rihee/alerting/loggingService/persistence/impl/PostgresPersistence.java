@@ -1,7 +1,7 @@
 package com.rihee.alerting.loggingService.persistence.impl;
 
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
-import com.rihee.alerting.loggingService.core.LogMessage;
+import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.persistence.LogPersistence;
 import java.util.List;
 import java.util.Map;

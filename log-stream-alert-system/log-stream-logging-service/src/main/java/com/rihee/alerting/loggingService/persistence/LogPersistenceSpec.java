@@ -1,7 +1,7 @@
 package com.rihee.alerting.loggingService.persistence;
 
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
-import com.rihee.alerting.loggingService.core.LogProcessorSpec;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpec;
 import com.rihee.alerting.loggingService.persistence.LogPersistence.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;

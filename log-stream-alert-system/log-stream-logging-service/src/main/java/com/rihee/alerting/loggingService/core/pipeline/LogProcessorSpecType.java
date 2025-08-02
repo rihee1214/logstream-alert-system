@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.core;
+package com.rihee.alerting.loggingService.core.pipeline;
 
 import com.rihee.alerting.loggingService.collectors.LogCollectorSpec;
 import com.rihee.alerting.loggingService.persistence.LogPersistenceSpec;

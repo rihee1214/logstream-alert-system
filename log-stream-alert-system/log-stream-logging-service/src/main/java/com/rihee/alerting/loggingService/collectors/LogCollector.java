@@ -1,6 +1,6 @@
 package com.rihee.alerting.loggingService.collectors;
 
-import com.rihee.alerting.loggingService.core.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
 import java.util.Map;
 
 /**

@@ -1,7 +1,7 @@
 package com.rihee.alerting.loggingService.validators;
 
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
-import com.rihee.alerting.loggingService.core.LogProcessorSpec;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpec;
 import com.rihee.alerting.loggingService.validators.LogValidator.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;

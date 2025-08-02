@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.core;
+package com.rihee.alerting.loggingService.core.message;
 
 import com.jsoniter.output.JsonStream;
 import com.rihee.alerting.common.constant.log.LogFieldKey;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class LogMessage {
+public class LogNormalMessage implements LogMessage {
 
   private static final Set<String> STRUCTURED_KEYS;
 
@@ -44,25 +44,27 @@ public class LogMessage {
    * 분리 기준은 {@link LogFieldKey}를 기반으로 합니다.
    * 내부 분류 로직은 put(String, Object)에 위임됩니다.
    */
-  public LogMessage(Map<String, Object> allLogs) {
+  public LogNormalMessage(Map<String, Object> allLogs) {
     this();
     for (Map.Entry<String, Object> entry : allLogs.entrySet()) {
       this.put(entry.getKey(), entry.getValue());
     }
   }
 
-  private LogMessage() {
+  private LogNormalMessage() {
 
   }
 
   public static LogMessage emptyMessage() {
-    return new LogMessage();
+    return new LogNormalMessage();
   }
 
-  public Object get(LogFieldKey key) {
-    return structuredLogs.get(key.getFieldName());
+  @Override
+  public boolean isError() {
+    return false;
   }
 
+  @Override
   public Object get(String key) {
     if (STRUCTURED_KEYS.contains(key)) {
       return structuredLogs.get(key);
@@ -71,6 +73,7 @@ public class LogMessage {
     }
   }
 
+  @Override
   public void put(String key, Object value) {
     if (STRUCTURED_KEYS.contains(key)) {
       structuredLogs.put(key, value);
@@ -79,6 +82,7 @@ public class LogMessage {
     }
   }
 
+  @Override
   public Map<String, Object> toPersistenceMap() {
     Map<String, Object> result = new HashMap<>(structuredLogs);
     result.put("meta", JsonStream.serialize(unstructuredLogs));

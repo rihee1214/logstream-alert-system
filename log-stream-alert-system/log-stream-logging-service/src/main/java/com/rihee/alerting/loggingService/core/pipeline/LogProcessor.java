@@ -1,5 +1,7 @@
-package com.rihee.alerting.loggingService.core;
+package com.rihee.alerting.loggingService.core.pipeline;
 
+import com.rihee.alerting.loggingService.core.message.LogMessage;
+import com.rihee.alerting.loggingService.core.runtime.LogWorker;
 import java.util.List;
 
 /**
@@ -30,7 +32,7 @@ import java.util.List;
  *      </ul>
  *
  * @see LogMessage
- * @see com.rihee.alerting.loggingService.core.LogWorker
+ * @see LogWorker
  * @see com.rihee.alerting.loggingService.collectors.LogCollector
  * @see com.rihee.alerting.loggingService.validators.LogValidator
  * @see com.rihee.alerting.loggingService.persistence.LogPersistence

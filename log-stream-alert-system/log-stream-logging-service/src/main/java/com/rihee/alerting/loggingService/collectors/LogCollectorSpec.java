@@ -2,7 +2,7 @@ package com.rihee.alerting.loggingService.collectors;
 
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector.Builder;
-import com.rihee.alerting.loggingService.core.LogProcessorSpec;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpec;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;

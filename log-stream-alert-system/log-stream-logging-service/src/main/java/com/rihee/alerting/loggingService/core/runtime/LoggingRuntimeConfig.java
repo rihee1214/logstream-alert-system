@@ -1,8 +1,11 @@
-package com.rihee.alerting.loggingService.core;
+package com.rihee.alerting.loggingService.core.runtime;
 
 import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.collectors.LogCollector;
 import com.rihee.alerting.loggingService.collectors.LogCollectorSpec;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpec;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpecType;
 import com.rihee.alerting.loggingService.persistence.LogPersistence;
 import com.rihee.alerting.loggingService.persistence.LogPersistenceSpec;
 import com.rihee.alerting.loggingService.validators.LogValidator;

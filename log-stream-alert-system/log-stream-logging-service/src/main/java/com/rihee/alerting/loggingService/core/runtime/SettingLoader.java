@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.core;
+package com.rihee.alerting.loggingService.core.runtime;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

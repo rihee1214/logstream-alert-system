@@ -1,8 +1,8 @@
 package com.rihee.alerting.loggingService;
 
-import com.rihee.alerting.loggingService.core.LogWorker;
-import com.rihee.alerting.loggingService.core.LoggingRuntimeConfig;
-import com.rihee.alerting.loggingService.core.SettingLoader;
+import com.rihee.alerting.loggingService.core.runtime.LogWorker;
+import com.rihee.alerting.loggingService.core.runtime.LoggingRuntimeConfig;
+import com.rihee.alerting.loggingService.core.runtime.SettingLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
