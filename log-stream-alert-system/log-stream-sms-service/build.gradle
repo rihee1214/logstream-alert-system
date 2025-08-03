@@ -9,6 +9,12 @@ Delivers alert messages to users via SMS
 (Kafka에서 수신한 로그를 문자(SMS)로 전송하는 서비스)
 '''
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.3"
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.kafka:spring-kafka'

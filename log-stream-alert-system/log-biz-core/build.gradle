@@ -8,6 +8,12 @@ Defines business-specific log standardization policies and structures
 (비즈니스 전용 로그 표준화 정책 및 구조 정의 모듈)
 '''
 
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.3"
+	}
+}
+
 dependencies {
 	// 전체 프로젝트에서 공통적으로 사용되는 로그 구조 같은 요소들을 모아넣은 project
 	implementation project(':log-stream-common')

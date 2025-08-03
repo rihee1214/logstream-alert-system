@@ -1,5 +1,7 @@
 package com.rihee.alerting.common.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -13,6 +15,8 @@ import java.util.stream.Collectors;
  * @since 1.0
  */
 public final class MapUtils {
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private MapUtils() {}
 
@@ -32,5 +36,34 @@ public final class MapUtils {
             e -> String.valueOf(e.getKey()),
             e -> String.valueOf(e.getValue())
         ));
+  }
+
+  /**
+   * JSON 형식의 문자열을 {@link Map} 형태로 변환합니다.
+   *
+   * <p>주어진 JSON 문자열을 {@code Map<String, Object>} 형태로 역직렬화하여,
+   * 구조화된 데이터로 접근할 수 있도록 합니다. 내부적으로 공유된 {@code ObjectMapper}
+   * 인스턴스를 사용하며, 입력된 문자열이 올바른 JSON 형식이 아닐 경우
+   * {@link IllegalArgumentException}을 발생시킵니다.
+   * </p>
+   *
+   * @param json 변환할 JSON 문자열
+   * @return 변환된 {@code Map<String, Object>} 객체
+   * @throws IllegalArgumentException JSON 파싱에 실패한 경우 발생
+   */
+  public static Map<String, Object> fromJson(String json) {
+    try {
+      return OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>() {});
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid JSON input: " + json, e);
+    }
+  }
+
+  public static String toJsonString(Map<String, Object> target) {
+    try {
+      return OBJECT_MAPPER.writeValueAsString(target);
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid input: " + target, e);
+    }
   }
 }

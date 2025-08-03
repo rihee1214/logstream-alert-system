@@ -25,38 +25,5 @@ import java.util.Map;
  */
 public abstract class LogCollector implements LogProcessor {
 
-  /**
-   * 로그 수집기의 인스턴스를 생성하기 위한 빌더 인터페이스입니다.
-   *
-   * <p>이 빌더는 수집기 설정(Map 형태)을 주입받고, 이를 기반으로 {@link LogCollector}의
-   * 하위 구현체를 생성하는 역할을 합니다.
-   *
-   * <p>각 수집기 클래스는 이 인터페이스를 구현한 중첩 Builder 클래스를 가지고 있어야 하며,
-   * 외부에서는 {@code public static Builder builder()} 메서드를 통해 이 빌더에 접근할 수 있어야 합니다.
-   *
-   * <p><b>중요:</b> 런타임 설정 기반 인스턴스 생성을 위해 다음 조건을 만족해야 합니다:
-   * <ul>
-   *   <li>중첩 {@code Builder} 클래스는 반드시 {@code LogCollector.Builder}를 구현할 것</li>
-   *   <li>{@code builder()} 메서드는 반드시 {@code public static}으로 선언할 것</li>
-   * </ul>
-   *
-   * @param <T> 생성 대상 수집기 타입
-   */
-  public interface Builder<T extends LogCollector> {
 
-    /**
-     * 설정 정보를 바탕으로 빌더 내부 상태를 구성합니다.
-     *
-     * @param setting key-value 형태의 설정 정보
-     * @return 현재 빌더 인스턴스 (메서드 체이닝 가능)
-     */
-    Builder<T> withProperties(Map<String, String> setting);
-
-    /**
-     * 설정에 기반하여 수집기 인스턴스를 생성합니다.
-     *
-     * @return {@code LogCollector} 구현체 인스턴스
-     */
-    T build();
-  }
 }

@@ -15,14 +15,14 @@ ext {
 
     // spring boot 를 사용하지 않는 서브 프로젝트에 대한 버전 관리
     set('kafkaClientsVersion', '3.7.0')
-    set('postgresqlClientsVersion', '42.7.3')
-    set('hikariCpVersion', '5.1.0')
+    set('postgresqlClientsVersion', '42.7.7')
+    set('hikariCpVersion', '6.3.2')
     set('jacksonDatabindVersion', '2.17.1')
-    set('log4jVersion', '2.0.12')
+    set('log4jVersion', '2.0.17')
+    set('log4jImplVersion', '2.24.3')
     set('logbackVersion', '1.4.12')
     set('classPathScannerVersion', '4.8.162')
     set('commonsLangVersion', '3.18.0')
-    set('jsoniterVersion', '3.14.0')
 }
 
 group = 'com.rihee.alerting'
@@ -53,12 +53,6 @@ subprojects {
         }
     }
 
-    dependencyManagement {
-        imports {
-            mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.3"
-        }
-    }
-
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
     }
@@ -70,10 +64,9 @@ subprojects {
     dependencies {
         if (project.name != "log-stream-common" && project.name != "log-stream-logging-service") {
             implementation 'org.springframework.boot:spring-boot-starter'
+            testImplementation 'org.springframework.boot:spring-boot-starter-test'
+            testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
         }
-
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
     checkstyle {

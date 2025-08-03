@@ -1,7 +1,6 @@
 package com.rihee.alerting.loggingService.collectors.impl;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.spi.TypeLiteral;
+import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector;
 import com.rihee.alerting.loggingService.core.message.LogMessage;
@@ -42,8 +41,7 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
 
     for (ConsumerRecord<String, String> record : records) {
       try {
-        Map<String, Object> logMessage
-            = JsonIterator.deserialize(record.value(), new TypeLiteral<>(){});
+        Map<String, Object> logMessage = MapUtils.fromJson(record.value());
         messages.add(new LogNormalMessage(logMessage));
       } catch (RuntimeException e) {
         // TODO JSON 파싱 도중 문제가 발생한 경우, 여기에서 LogErrorMessage를 만들어서 넣도록 해야한다.
@@ -63,7 +61,7 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
     }
   }
 
-  protected static class Builder implements LogCollector.Builder<KafkaLogCollector> {
+  public static class Builder implements LogCollector.Builder<KafkaLogCollector> {
 
     private static final Map<String, String> KEY_MAPPING = Map.of(
         "kafka.bootstrap.servers", "kafka.bootstrap.servers",

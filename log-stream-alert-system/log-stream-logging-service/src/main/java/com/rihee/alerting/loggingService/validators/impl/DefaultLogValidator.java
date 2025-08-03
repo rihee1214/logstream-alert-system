@@ -6,8 +6,17 @@ import com.rihee.alerting.loggingService.validators.LogValidator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DefaultLogValidator extends LogValidator {
+
+  private DefaultLogValidator() {
+
+  }
+
+  public static LogValidator.Builder<?> builder() {
+    return new Builder();
+  }
 
   @Override
   public List<LogMessage> process(List<LogMessage> messages) {
@@ -24,5 +33,18 @@ public class DefaultLogValidator extends LogValidator {
     }
 
     return resultMessages;
+  }
+
+  public static class Builder implements LogValidator.Builder<DefaultLogValidator> {
+
+    @Override
+    public LogValidator.Builder<DefaultLogValidator> withProperties(Map<String, String> setting) {
+      return this;
+    }
+
+    @Override
+    public DefaultLogValidator build() {
+      return new DefaultLogValidator();
+    }
   }
 }

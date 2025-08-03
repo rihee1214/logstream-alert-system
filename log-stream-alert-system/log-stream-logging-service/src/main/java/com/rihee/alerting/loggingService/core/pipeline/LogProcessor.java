@@ -3,6 +3,7 @@ package com.rihee.alerting.loggingService.core.pipeline;
 import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.core.runtime.LogWorker;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 로그 처리 파이프라인에서 각 단계별 처리기를 나타내는 최상위 인터페이스입니다.
@@ -46,4 +47,12 @@ public interface LogProcessor {
    * @return 처리 결과 로그 메시지 리스트
    */
   List<LogMessage> process(List<LogMessage> messages);
+
+
+  interface Builder<T extends LogProcessor> {
+
+    LogProcessor.Builder<T> withProperties(Map<String, String> setting);
+
+    T build();
+  }
 }

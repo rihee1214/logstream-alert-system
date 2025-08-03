@@ -1,8 +1,9 @@
 package com.rihee.alerting.loggingService.persistence;
 
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessor.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpec;
-import com.rihee.alerting.loggingService.persistence.LogPersistence.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;
@@ -64,7 +65,7 @@ public class LogPersistenceSpec implements LogProcessorSpec {
     }
   }
 
-  public LogPersistence newProcessorInstance() {
+  public LogProcessor newProcessorInstance() {
     return this.builder.build();
   }
 

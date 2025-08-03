@@ -1,7 +1,8 @@
 package com.rihee.alerting.loggingService.collectors;
 
 import com.rihee.alerting.loggingService.annotations.CollectorType;
-import com.rihee.alerting.loggingService.collectors.LogCollector.Builder;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessor.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpec;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
@@ -16,7 +17,8 @@ import java.util.Map;
  * <p>Collector는 {@link CollectorType} 애노테이션으로 타입을 식별하며,
  * {@code collector.type} 설정 값을 기준으로 일치하는 클래스를 탐색한다.
  * 탐색된 클래스는 반드시 {@code public static builder()} 메서드를 제공해야 하며,
- * 해당 메서드를 통해 {@link LogCollector.Builder} 인스턴스를 획득하여 설정을 주입하고 Collector를 생성한다.
+ * 해당 메서드를 통해 {@link com.rihee.alerting.loggingService.core.pipeline.LogProcessor.Builder} 인스턴스를
+ * 획득하여 설정을 주입하고 Collector를 생성한다.
  *
  * <p>이 클래스는 초기화 시 1회의 설정만 받고, 이후 Collector 인스턴스를 반복 생성할 수 있도록 설계되었다.
  *
@@ -25,7 +27,7 @@ import java.util.Map;
  */
 public final class LogCollectorSpec implements LogProcessorSpec {
 
-  private final Builder<? extends LogCollector> builder;
+  private final Builder<?> builder;
   private final String collectorType;
 
   public LogCollectorSpec(Map<String, String> setting) {
@@ -39,7 +41,7 @@ public final class LogCollectorSpec implements LogProcessorSpec {
   }
 
   @Override
-  public LogCollector newProcessorInstance() {
+  public LogProcessor newProcessorInstance() {
     return builder.build();
   }
 
@@ -56,7 +58,7 @@ public final class LogCollectorSpec implements LogProcessorSpec {
    * @throws RuntimeException reflection 또는 builder 호출 중 예외가 발생한 경우
    */
   @SuppressWarnings("unchecked")
-  private static LogCollector.Builder<?> resolveCollectorBuilder(String collectorMode) {
+  private static LogProcessor.Builder<?> resolveCollectorBuilder(String collectorMode) {
     try (ScanResult scanResult = new ClassGraph()
         .enableAllInfo()
         .acceptPackages("com.rihee.alerting.loggingService.collectors.impl")

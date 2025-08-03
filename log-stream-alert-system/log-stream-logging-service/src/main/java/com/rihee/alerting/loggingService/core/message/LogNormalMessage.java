@@ -1,7 +1,7 @@
 package com.rihee.alerting.loggingService.core.message;
 
-import com.jsoniter.output.JsonStream;
 import com.rihee.alerting.common.constant.log.LogFieldKey;
+import com.rihee.alerting.common.util.MapUtils;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
@@ -84,8 +84,8 @@ public class LogNormalMessage implements LogMessage {
 
   @Override
   public Map<String, Object> toPersistenceMap() {
-    Map<String, Object> result = new HashMap<>(structuredLogs);
-    result.put("meta", JsonStream.serialize(unstructuredLogs));
+    Map<String, Object> result = new HashMap<>(this.structuredLogs);
+    result.put("meta", MapUtils.toJsonString(this.unstructuredLogs));
     return result;
   }
 }

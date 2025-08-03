@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 description = '''\
@@ -9,31 +8,10 @@ Shared utility and base components for alerting system. Includes DTOs, constants
 '''
 
 dependencies {
-    // prometheus를 이용하여 application health를 체크하기 위한 dependency
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    // log를 찍을때, json 형식으로 찍히도록 처리하는 dependency
-    implementation "net.logstash.logback:logstash-logback-encoder:${logstashEncoderVersion}"
-    // AOP 전용 모듈
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
-    // Web core (tomcat 없이 web 기능만)
-    implementation 'org.springframework:spring-webmvc'
-    // http servlet용
-    implementation "jakarta.servlet:jakarta.servlet-api:${jakartaServletApiVersion}"
-    // WebClient 전용 (Actuator 기반 health, metric 정보 수집용)
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    // Actuator 접근을 localhost 에서만 가능하도록 제어하기 위한 dependency
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    // 테스트에서만 Spring Boot Web 서버 환경 사용
-    testImplementation 'org.springframework.boot:spring-boot-starter-web'
-}
 
-// 테스트 코드 전용 java 옵션, 환경변수 세팅
-test {
-    useJUnitPlatform()
-    systemProperty "service.name", "common"
-    systemProperty "spring.profiles.active", "dev"
-    environment "HOST", "localhost"
-    environment "CONTAINER", "local-container"
-    environment "monitoring.token", "test-token"
-    jvmArgs += ["-XX:+EnableDynamicAgentLoading"]
+    // Json 메시지를 파싱하거나 만들 때 사용하는 라이브러리
+    implementation "com.fasterxml.jackson.core:jackson-core:${jacksonDatabindVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
+    // 주석에 들어가는 MDC에 대한 내용을 넣어주기 위한 용도
+    implementation "org.slf4j:slf4j-api:${log4jVersion}"
 }

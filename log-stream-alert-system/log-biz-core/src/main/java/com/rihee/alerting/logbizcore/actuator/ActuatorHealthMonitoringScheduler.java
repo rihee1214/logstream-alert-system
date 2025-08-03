@@ -223,10 +223,10 @@ public class ActuatorHealthMonitoringScheduler {
       try {
         // 로깅 전 메타 정보 세팅
         MDC.put(TYPE.getFieldName(), HTTP.getType());
-        MDC.put(METHOD.getFieldKey(), response.request().getMethod().name());
-        MDC.put(URI.getFieldKey(), uri);
-        MDC.put(STATUS_CODE.getFieldKey(), String.valueOf(statusCode));
-        MDC.put(STATUS_MESSAGE.getFieldKey(), statusMessage);
+        MDC.put(METHOD.getFieldName(), response.request().getMethod().name());
+        MDC.put(URI.getFieldName(), uri);
+        MDC.put(STATUS_CODE.getFieldName(), String.valueOf(statusCode));
+        MDC.put(STATUS_MESSAGE.getFieldName(), statusMessage);
         MDC.put(ELAPSED_MS.getFieldName(), String.valueOf(stopWatch.getTotalTimeMillis()));
 
         if (response.statusCode().is2xxSuccessful()) {
@@ -262,8 +262,8 @@ public class ActuatorHealthMonitoringScheduler {
     Map<String, String> mdcSnapshot = MDC.getCopyOfContextMap();
     try {
       MDC.put(TYPE.getFieldName(), HTTP.getType());
-      MDC.put(METHOD.getFieldKey(), HttpMethod.GET.name());
-      MDC.put(URI.getFieldKey(), uri);
+      MDC.put(METHOD.getFieldName(), HttpMethod.GET.name());
+      MDC.put(URI.getFieldName(), uri);
       MDC.put(ELAPSED_MS.getFieldName(), String.valueOf(stopWatch.getTotalTimeMillis()));
       // 실질 로깅작업
       logger.warn(ACT, "During Actuator Call", ex);

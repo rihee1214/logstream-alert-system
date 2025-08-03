@@ -9,6 +9,12 @@ Mock service that simulates log-generating applications for testing the distribu
 (Mock 서비스를 위한 로그 발생기)
 '''
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.3"
+    }
+}
+
 dependencies {
     // 전체 프로젝트에서 공통적으로 사용되는 로그 구조 같은 요소들을 모아넣은 project
     implementation project(':log-stream-common')

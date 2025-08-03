@@ -1,8 +1,9 @@
 package com.rihee.alerting.loggingService.validators;
 
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessor.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpec;
-import com.rihee.alerting.loggingService.validators.LogValidator.Builder;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;
@@ -64,7 +65,7 @@ public class LogValidatorSpec implements LogProcessorSpec {
     }
   }
 
-  public LogValidator newProcessorInstance() {
+  public LogProcessor newProcessorInstance() {
     return builder.build();
   }
 
