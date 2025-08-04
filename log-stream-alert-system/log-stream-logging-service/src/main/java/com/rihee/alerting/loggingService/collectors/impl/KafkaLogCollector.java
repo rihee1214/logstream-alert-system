@@ -3,12 +3,11 @@ package com.rihee.alerting.loggingService.collectors.impl;
 import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector;
-import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.core.message.LogNormalMessage;
 import com.rihee.alerting.loggingService.core.pipeline.CommitableLogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -36,13 +35,13 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
   }
 
   @Override
-  public List<LogMessage> process(List<LogMessage> messages) {
+  public LogProcessingContext process(LogProcessingContext messages) {
     ConsumerRecords<String, String> records = kafkaConsumer.poll(this.kafkaTimeoutMillis);
 
     for (ConsumerRecord<String, String> record : records) {
       try {
         Map<String, Object> logMessage = MapUtils.fromJson(record.value());
-        messages.add(new LogNormalMessage(logMessage));
+        messages.stackingLogMessage(new LogNormalMessage(logMessage));
       } catch (RuntimeException e) {
         // TODO JSON 파싱 도중 문제가 발생한 경우, 여기에서 LogErrorMessage를 만들어서 넣도록 해야한다.
       }

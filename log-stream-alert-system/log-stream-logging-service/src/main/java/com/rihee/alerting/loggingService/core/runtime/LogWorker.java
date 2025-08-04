@@ -1,8 +1,10 @@
 package com.rihee.alerting.loggingService.core.runtime;
 
 import com.rihee.alerting.loggingService.core.pipeline.CommitableLogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
 import com.rihee.alerting.loggingService.core.message.LogMessage;
+import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +25,7 @@ public class LogWorker implements Runnable {
   @Override
   public void run() {
     // TODO 기본 로직은 완성이지만, 로깅처리와 에러 핸들링에 대한 문제를 추가적으로 처리해야한다.
-    List<LogMessage> messages = new ArrayList<>();
+    LogProcessingContext messages = new DefaultLogProcessingContext();
     for (LogProcessor processor : logProcessors) {
       messages = processor.process(messages);
     }

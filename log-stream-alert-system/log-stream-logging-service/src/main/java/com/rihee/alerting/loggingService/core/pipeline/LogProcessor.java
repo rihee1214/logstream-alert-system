@@ -2,7 +2,6 @@ package com.rihee.alerting.loggingService.core.pipeline;
 
 import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.core.runtime.LogWorker;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,13 +39,7 @@ import java.util.Map;
  */
 public interface LogProcessor {
 
-  /**
-   * 로그 메시지를 처리하고 다음 단계로 넘길 메시지를 반환합니다.
-   *
-   * @param messages 처리 대상 로그 메시지 리스트
-   * @return 처리 결과 로그 메시지 리스트
-   */
-  List<LogMessage> process(List<LogMessage> messages);
+  LogProcessingContext process(LogProcessingContext processingContext);
 
 
   interface Builder<T extends LogProcessor> {
