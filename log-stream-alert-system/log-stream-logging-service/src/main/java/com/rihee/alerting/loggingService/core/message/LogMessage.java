@@ -4,6 +4,8 @@ import java.util.Map;
 
 public interface LogMessage {
 
+  String getMessageKey();
+
   boolean isError();
 
   Object get(String key);

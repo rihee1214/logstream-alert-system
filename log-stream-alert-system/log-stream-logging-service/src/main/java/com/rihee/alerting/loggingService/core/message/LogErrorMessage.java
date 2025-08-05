@@ -6,14 +6,20 @@ import java.util.Map;
 public class LogErrorMessage implements LogMessage {
 
   private final Map<String, Object> allLogs;
+  private final String messageKey;
 
-  public LogErrorMessage(Map<String, Object> allLogs) {
-    this();
+  public LogErrorMessage(Map<String, Object> allLogs, String messageKey) {
+    this(messageKey);
     this.allLogs.putAll(allLogs);
   }
 
-  private LogErrorMessage() {
+  private LogErrorMessage(String messageKey) {
     this.allLogs = new HashMap<>();
+    this.messageKey = messageKey;
+  }
+
+  public static LogErrorMessage fromNormalMessage(LogMessage message) {
+    return new LogErrorMessage(message.toPersistenceMap(), message.getMessageKey());
   }
 
   @Override
@@ -34,5 +40,10 @@ public class LogErrorMessage implements LogMessage {
   @Override
   public Map<String, Object> toPersistenceMap() {
     return new HashMap<>(this.allLogs);
+  }
+
+  @Override
+  public String getMessageKey() {
+    return messageKey;
   }
 }

@@ -41,7 +41,7 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
     for (ConsumerRecord<String, String> record : records) {
       try {
         Map<String, Object> logMessage = MapUtils.fromJson(record.value());
-        messages.stackingLogMessage(new LogNormalMessage(logMessage));
+        messages.stackingLogMessage(new LogNormalMessage(logMessage, record.key()));
       } catch (RuntimeException e) {
         // TODO JSON 파싱 도중 문제가 발생한 경우, 여기에서 LogErrorMessage를 만들어서 넣도록 해야한다.
       }

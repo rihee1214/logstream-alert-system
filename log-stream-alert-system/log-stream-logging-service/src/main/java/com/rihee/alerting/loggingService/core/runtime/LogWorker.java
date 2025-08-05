@@ -3,9 +3,7 @@ package com.rihee.alerting.loggingService.core.runtime;
 import com.rihee.alerting.loggingService.core.pipeline.CommitableLogProcessor;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
-import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

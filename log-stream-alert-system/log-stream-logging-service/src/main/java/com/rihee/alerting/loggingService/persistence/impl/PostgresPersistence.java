@@ -2,25 +2,75 @@ package com.rihee.alerting.loggingService.persistence.impl;
 
 import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
+import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
 import com.rihee.alerting.loggingService.persistence.LogPersistence;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.util.Iterator;
 import java.util.Map;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.PreparedBatch;
 
 @PersistenceType("postgres")
 public final class PostgresPersistence extends LogPersistence {
 
-  private final HikariDataSource dataSource;
+  private static final String NORMAL_INSERT_QUERY = """
+      INSERT INTO logs (trace_id, level, message, timestamp)
+            VALUES (:traceId, :level, :message, :timestamp)
+            ON CONFLICT(trace_id, )
+            DO NOTHING
+      """;
+  private static final String ERROR_INSERT_QUERY = """
+      INSERT INTO err_logs (trace_id, level, message, timestamp)
+            VALUES (:traceId, :level, :message, :timestamp)
+            ON CONFLICT(trace_id)
+            DO NOTHING
+      """;
 
-  private PostgresPersistence(HikariDataSource dataSource) {
-    this.dataSource = dataSource;
+  private final Jdbi jdbi;
+
+  private PostgresPersistence(Jdbi jdbi) {
+    this.jdbi = jdbi;
   }
 
   @Override
   public LogProcessingContext process(LogProcessingContext messages) {
-    return messages;
+    LogProcessingContext result = new DefaultLogProcessingContext();
+    jdbi.useHandle(handle -> {
+      handle.createBatch();
+
+      PreparedBatch normalBatch = handle.prepareBatch(NORMAL_INSERT_QUERY);
+      PreparedBatch errorBatch = handle.prepareBatch(ERROR_INSERT_QUERY);
+
+      for (Iterator<LogMessage> it = messages.iterator(); it.hasNext();) {
+        LogMessage message = it.next();
+
+        if (message.isError()) {
+          normalBatch
+              .bind("traceId", message.get(""))
+              .bind("level", message.get(""))
+              .bind("message", message.get(""))
+              .bind("timestamp", message.get(""))
+              .add();
+        } else {
+          errorBatch
+              .bind("traceId", message.get(""))
+              .bind("level", message.get(""))
+              .bind("message", message.get(""))
+              .bind("timestamp", message.get(""))
+              .add();
+        }
+
+        result.stackingLogMessage(message);
+      }
+
+      normalBatch.execute();
+      errorBatch.execute();
+    });
+    return result;
   }
 
   public static LogProcessor.Builder<?> builder() {
@@ -29,18 +79,22 @@ public final class PostgresPersistence extends LogPersistence {
 
   public static class Builder implements LogProcessor.Builder<PostgresPersistence> {
 
-
     private static volatile HikariDataSource dataSource;
+    private static volatile Jdbi jdbi;
 
     @Override
     public LogProcessor.Builder<PostgresPersistence>
                                             withProperties(Map<String, String> setting) {
 
-      if (dataSource == null) {
+      if (jdbi == null) {
         synchronized (Builder.class) {
-          if (dataSource == null) {
+          if (jdbi == null) {
             HikariConfig config = getHikariConfigFromSetting(setting);
             dataSource = new HikariDataSource(config);
+            jdbi = Jdbi.create(dataSource);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+              dataSource.close();
+            }));
           }
         }
       }
@@ -83,16 +137,14 @@ public final class PostgresPersistence extends LogPersistence {
         throw new IllegalArgumentException("커넥션 풀 세팅 중 문제가 발생하였습니다.", e);
       }
 
-      // PostgreSQL에서 권장하는 드라이버 설정
+      // Postgres 에서 권장하는 드라이버 설정
       config.setDriverClassName("org.postgresql.Driver");
       return config;
     }
 
-
-
     @Override
     public PostgresPersistence build() {
-      return new PostgresPersistence(dataSource);
+      return new PostgresPersistence(jdbi);
     }
   }
 }

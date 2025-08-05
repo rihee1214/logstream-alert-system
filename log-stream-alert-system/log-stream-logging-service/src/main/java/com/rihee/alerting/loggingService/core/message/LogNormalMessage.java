@@ -15,8 +15,9 @@ public class LogNormalMessage implements LogMessage {
 
   private static final Set<String> STRUCTURED_KEYS;
 
-  private Map<String, Object> structuredLogs = new HashMap<>();
-  private Map<String, Object> unstructuredLogs = new HashMap<>();
+  private final String messageKey;
+  private final Map<String, Object> structuredLogs = new HashMap<>();
+  private final Map<String, Object> unstructuredLogs = new HashMap<>();
 
   static {
     try (ScanResult scanResult = new ClassGraph()
@@ -44,19 +45,15 @@ public class LogNormalMessage implements LogMessage {
    * 분리 기준은 {@link LogFieldKey}를 기반으로 합니다.
    * 내부 분류 로직은 put(String, Object)에 위임됩니다.
    */
-  public LogNormalMessage(Map<String, Object> allLogs) {
-    this();
+  public LogNormalMessage(Map<String, Object> allLogs, String messageKey) {
+    this(messageKey);
     for (Map.Entry<String, Object> entry : allLogs.entrySet()) {
       this.put(entry.getKey(), entry.getValue());
     }
   }
 
-  private LogNormalMessage() {
-
-  }
-
-  public static LogMessage emptyMessage() {
-    return new LogNormalMessage();
+  private LogNormalMessage(String messageKey) {
+    this.messageKey = messageKey;
   }
 
   @Override
@@ -87,5 +84,10 @@ public class LogNormalMessage implements LogMessage {
     Map<String, Object> result = new HashMap<>(this.structuredLogs);
     result.put("meta", MapUtils.toJsonString(this.unstructuredLogs));
     return result;
+  }
+
+  @Override
+  public String getMessageKey() {
+    return this.messageKey;
   }
 }
