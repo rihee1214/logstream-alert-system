@@ -3,10 +3,14 @@ package com.rihee.alerting.loggingService.collectors.impl;
 import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector;
+import com.rihee.alerting.loggingService.core.message.LogErrorMessage;
+import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.core.message.LogNormalMessage;
 import com.rihee.alerting.loggingService.core.pipeline.CommitableLogProcessor;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
+import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.CommitFailedException;
@@ -20,14 +24,20 @@ import org.slf4j.LoggerFactory;
 @CollectorType("kafka")
 public final class KafkaLogCollector extends LogCollector implements CommitableLogProcessor {
 
-  private static Logger logger = LoggerFactory.getLogger(KafkaLogCollector.class);
+  private static final Logger logger
+      = LoggerFactory.getLogger(KafkaLogCollector.class);
 
   private final Consumer<String, String> kafkaConsumer;
   private final Duration kafkaTimeoutMillis;
 
-  private KafkaLogCollector(Map<String, Object> setting, int timeoutMillis) {
-    this.kafkaConsumer = new KafkaConsumer<>(setting);
+  private KafkaLogCollector(KafkaConsumer<String, String> kafkaConsumer, int timeoutMillis) {
+    this.kafkaConsumer = kafkaConsumer;
     this.kafkaTimeoutMillis = Duration.ofMillis(timeoutMillis);
+
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      kafkaConsumer.wakeup();
+      kafkaConsumer.close();
+    }));
   }
 
   public static Builder builder() {
@@ -35,20 +45,29 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
   }
 
   @Override
-  public LogProcessingContext process(LogProcessingContext messages) {
+  public ProcessResult process(LogProcessingContext contextMessage) {
     ConsumerRecords<String, String> records = kafkaConsumer.poll(this.kafkaTimeoutMillis);
 
     for (ConsumerRecord<String, String> record : records) {
+      String messageKey = record.key();
+      String logMessage = record.value();
+      LogMessage newMessage = null;
       try {
-        Map<String, Object> logMessage = MapUtils.fromJson(record.value());
-        messages.stackingLogMessage(new LogNormalMessage(logMessage, record.key()));
+        Map<String, Object> allLogs = MapUtils.fromJson(logMessage);
+        newMessage = LogNormalMessage.fromOriginMessage(allLogs, messageKey);
       } catch (RuntimeException e) {
-        // TODO JSON 파싱 도중 문제가 발생한 경우, 여기에서 LogErrorMessage를 만들어서 넣도록 해야한다.
+        logger.debug("로그 메시지 [key : {}]를 파싱할 수 없어 에러 로그로 처리합니다.", messageKey);
+        newMessage = LogErrorMessage.fromOriginMessage(logMessage, messageKey);
       }
-
+      contextMessage.stackingLogMessage(newMessage);
     }
 
-    return messages;
+    if (contextMessage.isEmpty()) {
+      return ProcessResult.error(contextMessage,
+          String.format("[%s] Collect 과정에서 수신받은 데이터가 없습니다.", this.getClass().getSimpleName()));
+    }
+
+    return ProcessResult.success(contextMessage);
   }
 
   @Override
@@ -73,7 +92,7 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
         "kafka.value.deserializer", "value.deserializer"
     );
 
-    private Map<String, Object> consumerSetting = new HashMap<>();
+    private Map<String, String> consumerSetting = new HashMap<>();
     private int timeoutMillis = 1000;
 
     @Override
@@ -91,7 +110,10 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
 
     @Override
     public KafkaLogCollector build() {
-      return new KafkaLogCollector(consumerSetting, this.timeoutMillis);
+      KafkaConsumer<String, String> kafkaConsumer
+          = new KafkaConsumer<>(new HashMap<>(consumerSetting));
+      kafkaConsumer.subscribe(Arrays.asList(consumerSetting.get("kafka.topic").split(",")));
+      return new KafkaLogCollector(kafkaConsumer, this.timeoutMillis);
     }
   }
 

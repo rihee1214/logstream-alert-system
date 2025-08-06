@@ -6,6 +6,7 @@ import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
+import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import com.rihee.alerting.loggingService.persistence.LogPersistence;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -24,9 +25,9 @@ public final class PostgresPersistence extends LogPersistence {
             DO NOTHING
       """;
   private static final String ERROR_INSERT_QUERY = """
-      INSERT INTO err_logs (trace_id, level, message, timestamp)
-            VALUES (:traceId, :level, :message, :timestamp)
-            ON CONFLICT(trace_id)
+      INSERT INTO err_logs (message_id, origin_log)
+            VALUES (:messageId, :originLog)
+            ON CONFLICT(message_id)
             DO NOTHING
       """;
 
@@ -37,7 +38,7 @@ public final class PostgresPersistence extends LogPersistence {
   }
 
   @Override
-  public LogProcessingContext process(LogProcessingContext messages) {
+  public ProcessResult process(LogProcessingContext messages) {
     LogProcessingContext result = new DefaultLogProcessingContext();
     jdbi.useHandle(handle -> {
       handle.createBatch();
@@ -57,10 +58,8 @@ public final class PostgresPersistence extends LogPersistence {
               .add();
         } else {
           errorBatch
-              .bind("traceId", message.get(""))
-              .bind("level", message.get(""))
-              .bind("message", message.get(""))
-              .bind("timestamp", message.get(""))
+              .bind("messageId", message.get("messageId"))
+              .bind("originLog", message.get("originLog"))
               .add();
         }
 
@@ -70,7 +69,7 @@ public final class PostgresPersistence extends LogPersistence {
       normalBatch.execute();
       errorBatch.execute();
     });
-    return result;
+    return ProcessResult.success(result);
   }
 
   public static LogProcessor.Builder<?> builder() {
@@ -85,7 +84,6 @@ public final class PostgresPersistence extends LogPersistence {
     @Override
     public LogProcessor.Builder<PostgresPersistence>
                                             withProperties(Map<String, String> setting) {
-
       if (jdbi == null) {
         synchronized (Builder.class) {
           if (jdbi == null) {

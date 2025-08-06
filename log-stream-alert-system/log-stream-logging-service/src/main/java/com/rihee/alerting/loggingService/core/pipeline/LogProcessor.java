@@ -1,6 +1,7 @@
 package com.rihee.alerting.loggingService.core.pipeline;
 
 import com.rihee.alerting.loggingService.core.message.LogMessage;
+import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import java.util.Map;
 
 /**
@@ -34,29 +35,15 @@ public interface LogProcessor {
    * 주어진 로그 처리 컨텍스트를 기반으로 단일 단계의 처리를 수행합니다.
    *
    * @param processingContext 현재 처리 대상이 되는 로그 메시지 및 상태 정보
-   * @return 처리 결과를 반영한 새로운 {@link LogProcessingContext} 객체 (절대 null 아님)
+   * @return 로그 처리 결과 및 흐름 제어 정보를 담은 {@link ProcessResult} 객체.
+   *         컨텍스트 상태뿐 아니라, 처리 지속 여부 및 커밋 가능 여부를 포함합니다.
    *
    * @implSpec
-   *     구현체는 다음의 두 가지 실패 유형을 구분하여 처리해야 합니다:
-   *     <ul>
-   *         <li>
-   *             <strong>① 로그 자체의 문제 (복구 가능, 유효성 오류 등):</strong><br>
-   *             포맷 오류, 필수 필드 누락, 비즈니스 규칙 위반 등의 경우
-   *             {@link com.rihee.alerting.loggingService.core.message.LogErrorMessage}를 생성하고
-   *             {@code processingContext}에 포함하여 반환해야 합니다. 예외를 던져서는 안 되며,
-   *             다음 처리 단계에서 적절히 무시하거나 DLQ로 분기할 수 있도록 실패 정보를 컨텍스트에 담아야 합니다.
-   *         </li>
-   *         <li>
-   *             <strong>② 시스템적 문제 또는 저장 실패 (복구 불가능):</strong><br>
-   *             DB 제약조건 위반, 연결 실패, 라이브러리 내부 오류, 리소스 부족 등 시스템 신뢰성에 영향을 주는 경우,
-   *             {@link IllegalStateException} 등의 런타임 예외를 발생시켜야 합니다.<br>
-   *             이 경우 로그 자체는 유효하다고 판단되었으므로, 저장 실패는 시스템 오류로 간주합니다.
-   *         </li>
-   *     </ul>
-   *     이 메서드는 항상 새로운 {@code LogProcessingContext} 인스턴스를 반환해야 하며,
-   *     입력 파라미터를 직접 수정해서는 안 됩니다. 반환값은 {@code null}이 될 수 없습니다.
+   *     반환되는 {@link ProcessResult}는 로그 처리의 성공/실패뿐 아니라,
+   *     다음 단계로의 진행 여부, 커밋 가능 여부를 함께 전달하기 위한 목적입니다.
+   *     그 구체적인 의미와 구조는 {@link ProcessResult} 문서를 참고하십시오.
    */
-  LogProcessingContext process(LogProcessingContext processingContext);
+  ProcessResult process(LogProcessingContext processingContext);
 
   /**
    * {@link LogProcessor} 구현체 생성을 위한 빌더 인터페이스입니다.

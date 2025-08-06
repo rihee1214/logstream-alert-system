@@ -8,4 +8,6 @@ public interface LogProcessingContext {
   void stackingLogMessage(LogMessage message);
 
   Iterator<LogMessage> iterator();
+
+  boolean isEmpty();
 }

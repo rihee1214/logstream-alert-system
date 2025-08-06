@@ -7,6 +7,7 @@ import com.rihee.alerting.loggingService.core.message.LogErrorMessage;
 import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
+import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import com.rihee.alerting.loggingService.validators.LogValidator;
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -53,7 +54,7 @@ public class DefaultLogValidator extends LogValidator {
   }
 
   @Override
-  public LogProcessingContext process(LogProcessingContext messages) {
+  public ProcessResult process(LogProcessingContext messages) {
     LogProcessingContext resultMessages = new DefaultLogProcessingContext();
     for (Iterator<LogMessage> it = messages.iterator(); it.hasNext();) {
       LogMessage message = it.next();
@@ -64,7 +65,7 @@ public class DefaultLogValidator extends LogValidator {
       log.debug("Validate Success! : {}", message.getMessageKey());
       resultMessages.stackingLogMessage(message);
     }
-    return resultMessages;
+    return ProcessResult.success(resultMessages);
   }
 
   public boolean isValidationFailed(LogMessage message) {

@@ -19,4 +19,9 @@ public class DefaultLogProcessingContext implements LogProcessingContext {
   public Iterator<LogMessage> iterator() {
     return logMessages.iterator();
   }
+
+  @Override
+  public boolean isEmpty() {
+    return logMessages.isEmpty();
+  }
 }

@@ -13,9 +13,10 @@ public class LoggingServiceBootstrap {
     LoggingRuntimeConfig config = SettingLoader.loadRuntimeSettingFromClasspath();
 
     int threadCount = config.getWorkerThreadCount();
-    ExecutorService service = Executors.newFixedThreadPool(threadCount);
-    for(int i = 0; i < threadCount; i++) {
-      service.execute(new LogWorker(config));
+    try (ExecutorService service = Executors.newFixedThreadPool(threadCount);) {
+      for (int i = 0; i < threadCount; i++) {
+        service.execute(new LogWorker(config));
+      }
     }
   }
 

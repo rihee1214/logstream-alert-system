@@ -45,15 +45,15 @@ public class LogNormalMessage implements LogMessage {
    * 분리 기준은 {@link LogFieldKey}를 기반으로 합니다.
    * 내부 분류 로직은 put(String, Object)에 위임됩니다.
    */
-  public LogNormalMessage(Map<String, Object> allLogs, String messageKey) {
-    this(messageKey);
+  private LogNormalMessage(Map<String, Object> allLogs, String messageKey) {
+    this.messageKey = messageKey;
     for (Map.Entry<String, Object> entry : allLogs.entrySet()) {
       this.put(entry.getKey(), entry.getValue());
     }
   }
 
-  private LogNormalMessage(String messageKey) {
-    this.messageKey = messageKey;
+  public static LogNormalMessage fromOriginMessage(Map<String, Object> allLogs, String messageKey) {
+    return new LogNormalMessage(allLogs, messageKey);
   }
 
   @Override
