@@ -1,7 +1,9 @@
-package com.rihee.alerting.common.constant.log;
+package com.rihee.alerting.common.constant.message;
 
 /**
  * {@code LogType}은 로그의 유형을 구분하기 위한 열거형입니다.
+ * 전체 스키마 설계 및 공통 정의에 대해서는
+ * {@link com.rihee.alerting.common.constant.message package 설명}을 참고하세요.
  *
  * <p>각 로그 타입은 시스템, 비즈니스, 액추에이터 로그로 구분되며,
  * 로그 백엔드(Appender) 또는 로그 분석 도구에서의 분류 필드로 활용됩니다.

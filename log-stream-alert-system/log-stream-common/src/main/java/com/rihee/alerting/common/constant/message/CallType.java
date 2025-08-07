@@ -1,7 +1,9 @@
-package com.rihee.alerting.common.constant.log;
+package com.rihee.alerting.common.constant.message;
 
 /**
  * {@code CallType}은 시스템 간 통신이나 외부 자원 접근과 같은 호출(Invocation)의 유형을 정의하는 열거형입니다.
+ * 전체 스키마 설계 및 공통 정의에 대해서는
+ * {@link com.rihee.alerting.common.constant.message package 설명}을 참고하세요.
  *
  * <p>이 값은 구조화 로그에서 {@code call.type} 필드로 사용되며, 호출의 성격을 명확하게 구분하기 위한 기준으로 활용됩니다.
  * 현재는 HTTP 요청만을 나타내는 {@code HTTP} 타입만 정의되어 있으나,

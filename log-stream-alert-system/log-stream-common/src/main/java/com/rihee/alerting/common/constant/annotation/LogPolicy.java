@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * TIME_STAMP("timestamp"),
  * }</pre>
  *
- * @see com.rihee.alerting.common.constant.log.StructuredLogProperties
+ * @see com.rihee.alerting.common.constant.message.StructuredLogProperties
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

@@ -25,8 +25,8 @@ public final class PostgresPersistence extends LogPersistence {
             DO NOTHING
       """;
   private static final String ERROR_INSERT_QUERY = """
-      INSERT INTO err_logs (message_id, origin_log)
-            VALUES (:messageId, :originLog)
+      INSERT INTO err_logs (message_id, origin_log, reason)
+            VALUES (:messageId, :originLog, :reason)
             ON CONFLICT(message_id)
             DO NOTHING
       """;
@@ -60,6 +60,7 @@ public final class PostgresPersistence extends LogPersistence {
           errorBatch
               .bind("messageId", message.get("messageId"))
               .bind("originLog", message.get("originLog"))
+              .bind("reason", message.get("reason"))
               .add();
         }
 

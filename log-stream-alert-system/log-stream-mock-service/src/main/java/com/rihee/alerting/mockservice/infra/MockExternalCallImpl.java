@@ -2,7 +2,7 @@ package com.rihee.alerting.mockservice.infra;
 
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.constant.log.LogType;
+import com.rihee.alerting.common.constant.message.LogType;
 import com.rihee.alerting.logbizcore.util.client.web.StructuredMonoWebClient;
 import com.rihee.alerting.logbizcore.util.client.web.response.WebClientCallResult;
 import java.util.Map;

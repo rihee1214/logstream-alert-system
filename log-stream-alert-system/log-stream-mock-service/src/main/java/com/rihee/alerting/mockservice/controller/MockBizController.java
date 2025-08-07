@@ -4,7 +4,7 @@ import com.rihee.alerting.logbizcore.annotation.StructuredGetMapping;
 import com.rihee.alerting.logbizcore.annotation.StructuredPostMapping;
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.constant.log.LogType;
+import com.rihee.alerting.common.constant.message.LogType;
 import com.rihee.alerting.mockservice.service.MockBizService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;

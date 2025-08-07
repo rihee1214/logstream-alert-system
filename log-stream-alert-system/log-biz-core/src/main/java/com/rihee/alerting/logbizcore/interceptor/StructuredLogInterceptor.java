@@ -1,15 +1,15 @@
 package com.rihee.alerting.logbizcore.interceptor;
 
 import static com.rihee.alerting.common.constant.DefaultValues.B3HEADER_SAMPLED_DEFAULT;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.FLAGS;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.NAME;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.SAMPLED;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.SPAN_ID;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.TRACE_ID;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.FLAGS;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.NAME;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.SAMPLED;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.SPAN_ID;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.TRACE_ID;
 
 import com.rihee.alerting.common.constant.B3Header;
-import com.rihee.alerting.common.constant.log.LogType;
+import com.rihee.alerting.common.constant.message.LogType;
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
 import jakarta.servlet.http.HttpServletRequest;

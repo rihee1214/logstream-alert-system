@@ -1,6 +1,6 @@
 package com.rihee.alerting.loggingService.core.message;
 
-import com.rihee.alerting.common.constant.log.LogFieldKey;
+import com.rihee.alerting.common.constant.message.LogFieldKey;
 import com.rihee.alerting.common.util.MapUtils;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;

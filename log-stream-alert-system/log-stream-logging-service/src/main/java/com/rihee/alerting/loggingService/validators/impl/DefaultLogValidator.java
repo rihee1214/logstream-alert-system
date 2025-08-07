@@ -1,7 +1,7 @@
 package com.rihee.alerting.loggingService.validators.impl;
 
 import com.rihee.alerting.common.constant.annotation.LogPolicy;
-import com.rihee.alerting.common.constant.log.StructuredLogProperties;
+import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.core.message.LogErrorMessage;
 import com.rihee.alerting.loggingService.core.message.LogMessage;

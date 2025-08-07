@@ -1,7 +1,9 @@
-package com.rihee.alerting.common.constant.log;
+package com.rihee.alerting.common.constant.message;
 
 /**
  * 로그 필드 키를 추상화하는 공통 인터페이스입니다.
+ * 전체 스키마 설계 및 공통 정의에 대해서는
+ * {@link com.rihee.alerting.common.constant.message package 설명}을 참고하세요.
  *
  * <p>이 인터페이스는 {@code LogMessage} 내부 구조에서 사용되는
  * 모든 로그 필드 명세(Enum 기반)를 통합하기 위한 기준 타입입니다.

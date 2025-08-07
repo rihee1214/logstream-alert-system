@@ -3,7 +3,7 @@ package com.rihee.alerting.mockservice.mockup;
 import com.rihee.alerting.logbizcore.annotation.StructuredGetMapping;
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.constant.log.LogType;
+import com.rihee.alerting.common.constant.message.LogType;
 import org.springframework.web.bind.annotation.RestController;
 
 /**

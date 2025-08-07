@@ -1,13 +1,13 @@
 package com.rihee.alerting.logbizcore.log.provider;
 
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.CONTAINER;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.HOST;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.LOG_TYPE;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.SERVICE;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.CONTAINER;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.HOST;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.LOG_TYPE;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.SERVICE;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.rihee.alerting.common.constant.log.LogType;
+import com.rihee.alerting.common.constant.message.LogType;
 import java.io.IOException;
 import java.util.Map;
 import net.logstash.logback.composite.AbstractJsonProvider;

@@ -1,7 +1,7 @@
 package com.rihee.alerting.logbizcore.config;
 
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.SPAN_ID;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.TRACE_ID;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.SPAN_ID;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.TRACE_ID;
 
 import com.rihee.alerting.logbizcore.interceptor.SpanLabelBeanPostProcessor;
 import com.rihee.alerting.logbizcore.interceptor.SpanLabelRegistry;
@@ -9,7 +9,7 @@ import com.rihee.alerting.logbizcore.interceptor.StructuredLogInterceptor;
 import com.rihee.alerting.logbizcore.annotation.StructuredRequestMapping;
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.constant.log.LogType;
+import com.rihee.alerting.common.constant.message.LogType;
 import io.micrometer.common.lang.NonNullApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;

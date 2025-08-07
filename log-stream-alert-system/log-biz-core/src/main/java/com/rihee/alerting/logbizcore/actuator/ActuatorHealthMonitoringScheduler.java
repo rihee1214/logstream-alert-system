@@ -1,15 +1,15 @@
 package com.rihee.alerting.logbizcore.actuator;
 
-import static com.rihee.alerting.common.constant.log.CallCommonProperties.ELAPSED_MS;
-import static com.rihee.alerting.common.constant.log.CallCommonProperties.TYPE;
-import static com.rihee.alerting.common.constant.log.CallType.HTTP;
-import static com.rihee.alerting.common.constant.log.HttpCallProperties.METHOD;
-import static com.rihee.alerting.common.constant.log.HttpCallProperties.STATUS_CODE;
-import static com.rihee.alerting.common.constant.log.HttpCallProperties.STATUS_MESSAGE;
-import static com.rihee.alerting.common.constant.log.HttpCallProperties.URI;
-import static com.rihee.alerting.common.constant.log.LogType.ACT;
-import static com.rihee.alerting.common.constant.log.LogType.SYS;
-import static com.rihee.alerting.common.constant.log.StructuredLogProperties.SERVICE;
+import static com.rihee.alerting.common.constant.message.CallCommonProperties.ELAPSED_MS;
+import static com.rihee.alerting.common.constant.message.CallCommonProperties.TYPE;
+import static com.rihee.alerting.common.constant.message.CallType.HTTP;
+import static com.rihee.alerting.common.constant.message.HttpCallProperties.METHOD;
+import static com.rihee.alerting.common.constant.message.HttpCallProperties.STATUS_CODE;
+import static com.rihee.alerting.common.constant.message.HttpCallProperties.STATUS_MESSAGE;
+import static com.rihee.alerting.common.constant.message.HttpCallProperties.URI;
+import static com.rihee.alerting.common.constant.message.LogType.ACT;
+import static com.rihee.alerting.common.constant.message.LogType.SYS;
+import static com.rihee.alerting.common.constant.message.StructuredLogProperties.SERVICE;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 
 import com.rihee.alerting.common.constant.DefaultValues;

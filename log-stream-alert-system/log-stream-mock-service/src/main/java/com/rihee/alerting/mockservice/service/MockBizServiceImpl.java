@@ -2,7 +2,7 @@ package com.rihee.alerting.mockservice.service;
 
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.constant.log.LogType;
+import com.rihee.alerting.common.constant.message.LogType;
 import com.rihee.alerting.mockservice.dao.MockSearchDatabase;
 import com.rihee.alerting.mockservice.infra.MockExternalCall;
 import org.springframework.stereotype.Service;
