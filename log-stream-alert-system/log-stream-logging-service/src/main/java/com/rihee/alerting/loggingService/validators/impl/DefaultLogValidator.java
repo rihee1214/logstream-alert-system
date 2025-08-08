@@ -11,8 +11,8 @@ import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import com.rihee.alerting.loggingService.validators.LogValidator;
 import java.lang.reflect.Field;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 import org.slf4j.Logger;
@@ -27,20 +27,18 @@ public class DefaultLogValidator extends LogValidator {
   private static final Map<String, Predicate<Object>> REQUIRED_FIELDS;
 
   static {
-    Map<String, Predicate<Object>> predicateMap = new HashMap<>();
-    for (Field logField : StructuredLogProperties.class.getFields()) {
-      LogPolicy policy = logField.getAnnotation(LogPolicy.class);
-      if (policy != null && policy.isEssential()) {
-        try {
-          // enum 상수 인스턴스를 리플렉션으로 얻어옵니다.
-          // StructuredLogProperties는 public enum 이므로 접근 제약이 없지만,
-          // get(null)은 반드시 IllegalAccessException을 선언하게 되어 있어 예외를 처리해야 합니다.
-          StructuredLogProperties enumConstant = (StructuredLogProperties) logField.get(null);
-          predicateMap.put(enumConstant.getFieldName(), IS_VALID_STRING);
-        } catch (IllegalAccessException e) {
-          // 이 예외는 발생 가능성이 매우 낮지만, Java 문법상 반드시 처리해야 하므로 RuntimeException으로 감쌉니다.
-          throw new RuntimeException("Failed to access enum constant: " + logField.getName(), e);
+    Map<String, Predicate<Object>> predicateMap = new LinkedHashMap<>();
+    for (StructuredLogProperties c : StructuredLogProperties.values()) {
+      try {
+        Field f = StructuredLogProperties.class.getField(c.name());      // enum 상수 필드
+        // 필수적으로 검증해야한다는 것을 알리는 Annotation이 존재한다면 정책 추가
+        LogPolicy policy = f.getAnnotation(LogPolicy.class);
+        if (policy != null && policy.isEssential()) {
+          predicateMap.put(c.getFieldName(), IS_VALID_STRING);
         }
+      } catch (NoSuchFieldException e) {
+        // values()에서 온 name은 반드시 필드가 존재해야 함. 실제론 발생 X.
+        throw new IllegalStateException("Enum constant field not found: " + c.name(), e);
       }
     }
     REQUIRED_FIELDS = Collections.unmodifiableMap(predicateMap);
@@ -58,8 +56,10 @@ public class DefaultLogValidator extends LogValidator {
     LogProcessingContext resultMessages = new DefaultLogProcessingContext();
     for (Iterator<LogMessage> it = messages.iterator(); it.hasNext();) {
       LogMessage message = it.next();
-      if (isValidationFailed(message)) {
-        resultMessages.stackingLogMessage(LogErrorMessage.fromNormalMessage(message));
+      String reason = validateMessage(message);
+      if (reason != null) {
+        log.warn(reason);
+        resultMessages.stackingLogMessage(LogErrorMessage.fromNormalMessage(message, reason));
         continue;
       }
       log.debug("Validate Success! : {}", message.getMessageKey());
@@ -68,18 +68,17 @@ public class DefaultLogValidator extends LogValidator {
     return ProcessResult.success(resultMessages);
   }
 
-  public boolean isValidationFailed(LogMessage message) {
+  public String validateMessage(LogMessage message) {
     for (Map.Entry<String, Predicate<Object>> entry : REQUIRED_FIELDS.entrySet()) {
       String key = entry.getKey();
       Predicate<Object> validate = entry.getValue();
       Object messageValue = message.get(key);
       if (!validate.test(messageValue)) {
-        log.info("Validate Failed! : {} in {} field [value : {}]",
-                          message.getMessageKey(), key, messageValue);
-        return true;
+        return String.format("Validate Failed! : [%s] field [value : %s]",
+                                                  key, String.valueOf(messageValue));
       }
     }
-    return false;
+    return null;
   }
 
   public static class Builder implements LogValidator.Builder<DefaultLogValidator> {

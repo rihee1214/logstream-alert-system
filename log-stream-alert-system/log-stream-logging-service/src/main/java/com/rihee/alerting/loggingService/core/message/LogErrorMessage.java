@@ -11,27 +11,33 @@ import java.util.Map;
 //   3. reason field가 늘어남에 따라 그것을 주입받는 생성자 필요함 (모든 생성 위치에 추가하도록 해야함)
 public class LogErrorMessage implements LogMessage {
 
-  private final String messageKey;
   private final Map<String, Object> errorLogs;
 
-  private LogErrorMessage(Map<String, Object> errorLogs, String messageKey) {
+  private LogErrorMessage(Map<String, Object> errorLogs) {
     this.errorLogs = new HashMap<>(errorLogs);
-    this.messageKey = messageKey;
   }
 
-  public static LogErrorMessage fromOriginMessage(String originLog, String messageKey) {
-    Map<String, Object> errorLogs = buildErrorLogs(originLog, messageKey);
-    return new LogErrorMessage(errorLogs, messageKey);
+  public static LogErrorMessage fromOriginMessage(String originLog,
+                                                          String messageKey,
+                                                          String reason) {
+    Map<String, Object> errorLogs = buildErrorLogs(originLog, messageKey, reason);
+    return new LogErrorMessage(errorLogs);
   }
 
-  public static LogErrorMessage fromNormalMessage(LogMessage message) {
+  public static LogErrorMessage fromNormalMessage(LogMessage message, String reason) {
     String messageKey = message.getMessageKey();
     String originLog = MapUtils.toJsonString(message.toPersistenceMap());
-    Map<String, Object> errorLogs = buildErrorLogs(originLog, messageKey);
-    return new LogErrorMessage(errorLogs, messageKey);
+    Map<String, Object> errorLogs = buildErrorLogs(originLog, messageKey, reason);
+    return new LogErrorMessage(errorLogs);
   }
 
-  private static Map<String, Object> buildErrorLogs(String originLog, String messageKey) {
+  private static Map<String, Object> buildErrorLogs(String originLog,
+                                                            String messageKey,
+                                                            String reason) {
+    if (messageKey == null || messageKey.isBlank()) {
+      throw new IllegalArgumentException("messageKey가 제대로 존재하지 않습니다.");
+    }
+
     Map<String, Object> errorLogs = new HashMap<>();
     errorLogs.put(ErrorLogSchema.MESSAGE_ID.getSchemaName(), messageKey);
     errorLogs.put(ErrorLogSchema.ORIGIN_LOG.getSchemaName(), originLog);
@@ -60,6 +66,6 @@ public class LogErrorMessage implements LogMessage {
 
   @Override
   public String getMessageKey() {
-    return messageKey;
+    return this.errorLogs.get(ErrorLogSchema.MESSAGE_ID.getSchemaName()).toString();
   }
 }

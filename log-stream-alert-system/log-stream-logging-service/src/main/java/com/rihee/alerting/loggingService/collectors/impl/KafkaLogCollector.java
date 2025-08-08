@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -56,8 +57,9 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
         Map<String, Object> allLogs = MapUtils.fromJson(logMessage);
         newMessage = LogNormalMessage.fromOriginMessage(allLogs, messageKey);
       } catch (RuntimeException e) {
-        logger.debug("로그 메시지 [key : {}]를 파싱할 수 없어 에러 로그로 처리합니다.", messageKey);
-        newMessage = LogErrorMessage.fromOriginMessage(logMessage, messageKey);
+        String reason = String.format("로그 메시지 [key : %s]를 파싱할 수 없어 에러 로그로 처리합니다.", messageKey);
+        logger.debug(reason);
+        newMessage = LogErrorMessage.fromOriginMessage(logMessage, messageKey, reason);
       }
       contextMessage.stackingLogMessage(newMessage);
     }
@@ -82,18 +84,18 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
   public static class Builder implements LogCollector.Builder<KafkaLogCollector> {
 
     private static final Map<String, String> KEY_MAPPING = Map.of(
-        "kafka.bootstrap.servers", "kafka.bootstrap.servers",
-        "kafka.topic", "kafka.topic",
-        "kafka.group.id", "kafka.group.id",
-        "kafka.enable.auto.commit", "enable.auto.commit",
-        "kafka.auto.offset.reset", "auto.offset.reset",
-        "kafka.max.poll.records", "max.poll.records",
-        "kafka.key.deserializer", "key.deserializer",
-        "kafka.value.deserializer", "value.deserializer"
+        "kafka.bootstrap.servers",  ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+        "kafka.group.id",           ConsumerConfig.GROUP_ID_CONFIG,
+        "kafka.enable.auto.commit", ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
+        "kafka.auto.offset.reset",  ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
+        "kafka.max.poll.records",   ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
+        "kafka.key.deserializer",   ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+        "kafka.value.deserializer", ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG
     );
 
     private Map<String, String> consumerSetting = new HashMap<>();
     private int timeoutMillis = 1000;
+    private String kafkaTopic;
 
     @Override
     public Builder withProperties(Map<String, String> setting) {
@@ -104,15 +106,26 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
         }
         consumerSetting.put(value, settingValue);
       });
+
+      this.kafkaTopic = setting.get("kafka.topic");
       this.timeoutMillis = Integer.parseInt(setting.getOrDefault("kafka.max.poll.timeout", "1000"));
       return this;
     }
 
     @Override
     public KafkaLogCollector build() {
+      if (this.kafkaTopic == null || this.kafkaTopic.isBlank()) {
+        throw new IllegalArgumentException("kafka Topic[kafka.topic]이 세팅되어있지 않습니다.");
+      }
+
       KafkaConsumer<String, String> kafkaConsumer
           = new KafkaConsumer<>(new HashMap<>(consumerSetting));
-      kafkaConsumer.subscribe(Arrays.asList(consumerSetting.get("kafka.topic").split(",")));
+      kafkaConsumer.subscribe(
+          Arrays.stream(kafkaTopic.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList()
+      );
       return new KafkaLogCollector(kafkaConsumer, this.timeoutMillis);
     }
   }

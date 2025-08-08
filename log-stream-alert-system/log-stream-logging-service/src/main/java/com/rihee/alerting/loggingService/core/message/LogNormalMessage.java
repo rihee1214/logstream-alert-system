@@ -22,7 +22,7 @@ public class LogNormalMessage implements LogMessage {
   static {
     try (ScanResult scanResult = new ClassGraph()
         .enableClassInfo()
-        .acceptPackages("com.rihee.alerting.common.log.fields") // 💡 특정 패키지만 스캔
+        .acceptPackages(LogFieldKey.class.getPackageName()) // 특정 패키지만 스캔
         .scan()) {
 
       STRUCTURED_KEYS = scanResult.getClassesImplementing(LogFieldKey.class.getName())
