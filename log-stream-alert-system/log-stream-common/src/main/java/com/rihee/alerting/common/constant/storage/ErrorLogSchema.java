@@ -6,7 +6,7 @@ public enum ErrorLogSchema {
   ORIGIN_LOG("origin_log"),
   REASON("reason"),
   OCCURRED_AT("occurred_at"),
-  LOG_VERSION("log_version");
+  LOG_VERSION_MAJOR("log_version_major");
 
   private final String schemaName;
 

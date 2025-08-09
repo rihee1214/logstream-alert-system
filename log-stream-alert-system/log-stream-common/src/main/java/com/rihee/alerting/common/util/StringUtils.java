@@ -14,15 +14,29 @@ public final class StringUtils {
   }
 
   /**
-   * 주어진 문자열이 유효한지 검사합니다.
+   * 주어진 문자열이 비어 있지 않은지 검사합니다.
    *
-   * <p>문자열이 {@code null}이 아니고, 공백이 아닌 문자를 하나 이상 포함하는 경우 {@code true}를 반환합니다.
-   * 즉, 의미 있는 입력값으로 간주될 수 있는 문자열인지 확인합니다.
+   * <p>문자열이 {@code null}이 아니고, 공백이 아닌 문자를 하나 이상 포함하면
+   * {@code true}를 반환합니다. 즉, 의미 있는 값이 포함된 경우를 판별합니다.</p>
    *
    * @param validateTarget 검사할 문자열
    * @return 유효한 문자열이면 {@code true}, {@code null}이거나 공백 문자열이면 {@code false}
    */
   public static boolean isNotBlank(String validateTarget) {
     return validateTarget != null && !validateTarget.isBlank();
+  }
+
+  /**
+   * 주어진 문자열이 비어 있는지 검사합니다.
+   *
+   * <p>문자열이 {@code null}이거나, 길이가 0이거나,
+   * 공백 문자만으로 구성된 경우 {@code true}를 반환합니다.
+   * 즉, 의미 있는 값이 없는 경우를 판별합니다.</p>
+   *
+   * @param validateTarget 검사할 문자열
+   * @return 비어 있거나 공백 문자열이면 {@code true}, 그렇지 않으면 {@code false}
+   */
+  public static boolean isBlank(String validateTarget) {
+    return validateTarget == null || validateTarget.isBlank();
   }
 }

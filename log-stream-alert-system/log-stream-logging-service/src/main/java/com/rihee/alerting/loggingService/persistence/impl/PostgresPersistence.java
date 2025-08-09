@@ -1,5 +1,6 @@
 package com.rihee.alerting.loggingService.persistence.impl;
 
+import com.rihee.alerting.common.constant.storage.ErrorLogSchema;
 import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import com.rihee.alerting.loggingService.core.message.LogMessage;
@@ -25,8 +26,8 @@ public final class PostgresPersistence extends LogPersistence {
             DO NOTHING
       """;
   private static final String ERROR_INSERT_QUERY = """
-      INSERT INTO err_logs (message_id, origin_log, reason)
-            VALUES (:messageId, :originLog, :reason)
+      INSERT INTO err_logs (message_id, origin_log, reason, log_version_major)
+            VALUES (:messageId, :originLog, :reason, :log_version_major)
             ON CONFLICT(message_id)
             DO NOTHING
       """;
@@ -58,9 +59,9 @@ public final class PostgresPersistence extends LogPersistence {
               .add();
         } else {
           errorBatch
-              .bind("messageId", message.get("messageId"))
-              .bind("originLog", message.get("originLog"))
-              .bind("reason", message.get("reason"))
+              .bind("messageId", message.get(ErrorLogSchema.MESSAGE_ID.getSchemaName()))
+              .bind("originLog", message.get(ErrorLogSchema.ORIGIN_LOG.getSchemaName()))
+              .bind("reason", message.get(ErrorLogSchema.REASON.getSchemaName()))
               .add();
         }
 
