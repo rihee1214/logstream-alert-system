@@ -1,6 +1,8 @@
 package com.rihee.alerting.loggingService.collectors.impl;
 
+import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.util.MapUtils;
+import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.collectors.LogCollector;
 import com.rihee.alerting.loggingService.core.message.LogErrorMessage;
@@ -13,6 +15,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -24,6 +27,9 @@ import org.slf4j.LoggerFactory;
 
 @CollectorType("kafka")
 public final class KafkaLogCollector extends LogCollector implements CommitableLogProcessor {
+
+  private static final String LOG_MSG_VERSION = "K1";
+  private static final String KEY_UUID_VERSION = "4";
 
   private static final Logger logger
       = LoggerFactory.getLogger(KafkaLogCollector.class);
@@ -54,13 +60,22 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
       String logMessage = record.value();
       LogMessage newMessage = null;
       try {
-        Map<String, Object> allLogs = MapUtils.fromJson(logMessage);
-        newMessage = LogNormalMessage.fromOriginMessage(allLogs, messageKey);
+        Map<String, Object> allLogComponents = MapUtils.fromJson(logMessage);
+        if (StringUtils.isBlank(messageKey)) {
+          messageKey = generateKey(allLogComponents);
+        }
+        newMessage = LogNormalMessage.fromOriginMessage(allLogComponents, messageKey);
       } catch (RuntimeException e) {
         String reason = String.format("로그 메시지 [key : %s]를 파싱할 수 없어 에러 로그로 처리합니다.", messageKey);
         logger.debug(reason);
         newMessage = LogErrorMessage.fromOriginMessage(logMessage, messageKey, reason);
+
+        if (StringUtils.isBlank(messageKey)) {
+          logger.warn("메시지 key가 없는 message입니다. : {}", logMessage);
+          continue;
+        }
       }
+
       contextMessage.stackingLogMessage(newMessage);
     }
 
@@ -79,6 +94,23 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
     } catch (CommitFailedException e) {
       logger.warn("Commit failed", e);
     }
+  }
+
+  private String generateKey(Map<String, Object> originLog) {
+    String serviceName = String.valueOf(
+                            originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
+    String hostName = String.valueOf(
+                            originLog.get(StructuredLogProperties.HOST.getFieldName()));
+    String containerName = String.valueOf(
+                            originLog.get(StructuredLogProperties.CONTAINER.getFieldName()));
+
+    return String.format("%s:%s/%s/%s@%s:%s",
+                          LOG_MSG_VERSION,
+                          serviceName,
+                          hostName,
+                          containerName,
+                          KEY_UUID_VERSION,
+                          UUID.randomUUID());
   }
 
   public static class Builder implements LogCollector.Builder<KafkaLogCollector> {

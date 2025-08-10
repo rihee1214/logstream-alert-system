@@ -8,6 +8,8 @@ import java.util.Map;
 
 public class LogErrorMessage implements LogMessage {
 
+  private static final int LOG_MAJOR_VERSION = 1;
+
   private final Map<String, Object> errorLogs;
 
   private LogErrorMessage(Map<String, Object> errorLogs) {
@@ -43,7 +45,7 @@ public class LogErrorMessage implements LogMessage {
     errorLogs.put(ErrorLogSchema.MESSAGE_ID.getSchemaName(), messageKey);
     errorLogs.put(ErrorLogSchema.ORIGIN_LOG.getSchemaName(), originLog);
     errorLogs.put(ErrorLogSchema.REASON.getSchemaName(), reason);
-    errorLogs.put(ErrorLogSchema.LOG_VERSION_MAJOR.getSchemaName(), 1);
+    errorLogs.put(ErrorLogSchema.LOG_VERSION_MAJOR.getSchemaName(), LOG_MAJOR_VERSION);
     return errorLogs;
   }
 

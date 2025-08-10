@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class LogNormalMessage implements LogMessage {
 
   private static final Set<String> STRUCTURED_KEYS;
+  private static final int LOG_VERSION_MAJOR = 1;
 
   private final String messageKey;
   private final Map<String, Object> structuredLogs = new HashMap<>();
@@ -50,6 +51,7 @@ public class LogNormalMessage implements LogMessage {
     for (Map.Entry<String, Object> entry : allLogs.entrySet()) {
       this.put(entry.getKey(), entry.getValue());
     }
+    structuredLogs.put("log_version_major", LOG_VERSION_MAJOR);
   }
 
   public static LogNormalMessage fromOriginMessage(Map<String, Object> allLogs, String messageKey) {

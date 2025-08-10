@@ -39,4 +39,22 @@ public final class StringUtils {
   public static boolean isBlank(String validateTarget) {
     return validateTarget == null || validateTarget.isBlank();
   }
+
+  /**
+   * 주어진 문자열이 {@code null}이거나 공백(whitespace)만 포함할 경우
+   * {@link IllegalArgumentException}을 발생시킵니다.
+   *
+   * <p>이 메서드는 호출자가 제공한 문자열이 비어 있지 않음을 보장하기 위해 사용됩니다.
+   * 필수 입력값 검증에 적합하며, 검증에 실패하면 {@code IllegalArgumentException}이 발생합니다.
+   *
+   * @param value 검증할 문자열
+   * @return 공백이 아닌 원본 문자열
+   * @throws IllegalArgumentException 주어진 값이 {@code null}이거나 공백 문자열인 경우
+   */
+  public static String requireNonBlank(String value) {
+    if (value == null || value.isBlank()) {
+      throw new IllegalArgumentException("value must not be blank or null");
+    }
+    return value;
+  }
 }
