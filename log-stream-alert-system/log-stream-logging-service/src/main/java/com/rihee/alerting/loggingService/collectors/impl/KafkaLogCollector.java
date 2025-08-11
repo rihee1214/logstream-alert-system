@@ -1,6 +1,7 @@
 package com.rihee.alerting.loggingService.collectors.impl;
 
 import com.rihee.alerting.common.constant.message.StructuredLogProperties;
+import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
 import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
@@ -15,7 +16,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -27,9 +27,6 @@ import org.slf4j.LoggerFactory;
 
 @CollectorType("kafka")
 public final class KafkaLogCollector extends LogCollector implements CommitableLogProcessor {
-
-  private static final String LOG_MSG_VERSION = "K1";
-  private static final String KEY_UUID_VERSION = "4";
 
   private static final Logger logger
       = LoggerFactory.getLogger(KafkaLogCollector.class);
@@ -104,13 +101,7 @@ public final class KafkaLogCollector extends LogCollector implements CommitableL
     String containerName = String.valueOf(
                             originLog.get(StructuredLogProperties.CONTAINER.getFieldName()));
 
-    return String.format("%s:%s/%s/%s@%s:%s",
-                          LOG_MSG_VERSION,
-                          serviceName,
-                          hostName,
-                          containerName,
-                          KEY_UUID_VERSION,
-                          UUID.randomUUID());
+    return LogMessageKeyGenerator.generate(serviceName, hostName, containerName);
   }
 
   public static class Builder implements LogCollector.Builder<KafkaLogCollector> {
