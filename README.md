@@ -1,38 +1,47 @@
-# 🚨 Distributed Event-Driven Alerting System
+# 📊 Distributed Centralized Logging & Monitoring Platform
 
-> Private MSA project for scalable, observable alerting system in distributed environments  
-> Kafka 기반 비동기 이벤트 시스템으로 로그 수집 및 알림 전송을 담당하는 분산 아키텍처 프로젝트
+> MSA 환경에서 다수의 서비스가 생성하는 로그와 메트릭을 **중앙에서 수집·저장·분석·알림**까지 처리하는 확장 가능한 플랫폼  
+> Biz 서비스의 로그·메트릭을 안전하고 일관된 방식으로 수집하고, 분석과 모니터링을 통해 운영 가시성을 극대화합니다.
 
 ---
 
-## 📌 프로젝트 목적
+## 🎯 프로그램 목적
 
-본 프로젝트는 다양한 마이크로서비스에서 발생하는 로그를 Kafka 기반으로 수집하고,  
-로그 레벨에 따라 알림을 비동기로 전송하며,  
-장애 상황에 대한 복구 및 상태 모니터링까지 포함한 **확장 가능한 통합 알림 시스템**을 구축합니다.
+이 플랫폼의 목표는 **서비스 운영의 투명성과 안정성을 보장**하는 것입니다.  
+단일 서비스 수준의 로깅을 넘어, **조직 전체 MSA 환경**에서 발생하는 모든 로그·메트릭을 중앙집중화하여 다음을 실현합니다:
 
-- 비지니스 서비스의 로그를 일관된 방식으로 수집 (Filebeat)  
-- 경고 이상 레벨 로그에 대한 비동기 알림 (SMS, Email) 전송  
-- 전송 실패에 대한 재시도 및 실패 이력 관리  
-- 로그 저장 및 분석 (Elasticsearch, Filebeat, Kibana, Grafana, Zipkin)  
-- 전체 시스템 상태 감시 (Prometheus, Alertmanager)
+1. **표준화된 로그 수집**
+   - Biz Component(라이브러리/정책)를 통해 각 서비스가 동일 포맷으로 로그를 생성
+   - Interceptor, MDC 전파, 필터링 규칙 등 사전 처리 내장
+
+2. **유연한 데이터 수집 경로**
+   - Fluent Bit + Lua 스크립트를 통한 컨테이너 로그 수집 및 전처리
+   - Collector/Validator/Transformer/Persistence 구조로 구성 요소 교체 가능
+
+3. **안정적인 중앙 저장소**
+   - 메시지 브로커(Kafka)와 영속 저장소(PostgreSQL 기본)
+   - 메시지 키 일원화(LogMessageKeyGenerator)로 중복 방지
+
+4. **운영 가시성 확보**
+   - 메트릭 수집(Prometheus)과 대시보드(Monitoring Service)로 실시간 상태 확인
+   - 로그 검색·조회 인터페이스 제공
+
+5. **능동적인 알림 체계**
+   - 규칙 기반 Alerting Service를 통해 이상 징후를 Slack/Email 등으로 즉시 전달
 
 ---
 
 ## 🛠 기술 스택
 
-| 영역            | 사용 기술                               			              | 기술 설명									                  						                                                                                              |
-|---------------|------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| Language      | Java 21                              			             | 최신 LTS 버전의 Java를 기반으로 클라우드 및 컨테이너 환경에 최적화된 JVM 사용 						                                                                            |
-| Framework     | Spring Boot 3.4.4                    			             | REST API 제공, Kafka 통신, 설정 분리 등 서비스 전반을 구성하는 핵심 프레임워크						                                                                          |
-| Messaging     | Apache Kafka                         			             | 이벤트 기반 로그 처리 및 알림 트리거를 위한 메시지 브로커			          						                                                                                |
-| Database      | PostgreSQL<br> Redis                 			             | 사원/부서 정보를 저장하는 영속 저장소<br>알림 대상 정보 캐싱을 통한 성능 개선 및 트래픽 분산		 		                                                                        |
-| Log Forwarder | Filebeat                                             | Mock 서비스에서 출력되는 stdout 로그를 수집하여 Kafka로 전달. 로그 포워딩을 위한 경량 수집기로, 설정이 간단하고 보안 관리가 용이함                                                  |
-| Log Storage   | Elasticsearch                        			             | 업무 및 시스템 로그 저장, kibana 연동을 통한 검색 및 조회 기능 제공							   	                                                                              |
-| Monitoring    | Prometheus<br>Alertmanager<br>Grafana<br>Kibana      | 애플리케이션 상태(Memory, CPU, Health 등) 및 요청 지표 수집을 위한 모니터링 시스템<br>이상 상태 감지 시 알림 전송(Slack, 메일 등 연동 가능)<br>그래프 기반 대시보드 시각화<br>상세 로그 검색 및 분석 |
-| Build Tool    | Gradle (Groovy DSL)<br>Checkstyle                			 | 멀티 모듈 환경에서 효율적인 의존성 및 빌드 관리<br>Checkstyle을 통해 빌드 타임에 코드 스타일 검사 수행												                                                       |
-| Deployment    | Docker Compose<br>Kubernetes         			             | 로컬 테스트용 경량 환경 구성<br>운영 환경에서 안정적이고 확장 가능한 MSA 배포를 위한 클러스터 			                                                                        |
-| CI/CD         | GitHub Actions (예정)                 			              | 코드 변경 사항 자동 빌드 및 배포 자동화를 위한 워크플로											                                                                                         |
+| 영역         | 사용 기술                                    | 설명                              |
+|------------|------------------------------------------|---------------------------------|
+| Language   | Java 21                                  | 최신 LTS 버전의 JVM                  |
+| Framework  | Spring Boot 3.4.x                        | REST API, Kafka Consumer, 설정 관리 |
+| Messaging  | Apache Kafka                             | 로그 전달용 메시지 브로커                  |
+| Database   | PostgreSQL                               | 로그 영속 저장소                       |
+| Build Tool | Gradle (Groovy DSL)                      | 멀티 모듈 빌드 관리                     |
+| Monitoring | Spring Boot Actuator, Prometheus (기본 설정) | 헬스 체크 및 기본 지표 수집                |
+| Deployment | Docker Compose                           | 로컬 개발 및 테스트 환경 구성               |
 
 ---
 
@@ -47,100 +56,58 @@
 ---
 
 
-## 🏗 아키텍처 구성도
+## 🏗 현재 아키텍처 구성도
 
-![Architecture](./docs/architecture/MsaLogHandleProjects.drawio.png)
+![Logging Service Architecture](./docs/01.%20architecture/MsaLogHandleProjects.drawio.svg)
 
----
-
-## 📦 주요 컴포넌트 설명
-
-### 🔹 Mock Service
-- 실제 서비스처럼 로그 이벤트를 발생시키는 테스트용 서비스입니다.
-- 모든 로그는 Filebeat가 수집하여 Kafka의 all-log-topic으로 전송됩니다.
-- 로그는 단일 Appender(CONSOLE)를 통해 출력되며, 로그 타입 구분은 MDC의 logtype 필드를 기반으로 이뤄집니다.
-- 로그의 타입별 분기, 필드 필터링 및 저장은 logging-service가 담당합니다.
-- **⚠ 개발시 주의사항**
-  - [공통 컴포넌트 가이드 문서 참조](./docs/guide/development/common-component.md)
-  - [mockup 가이드 문서 참조](./docs/guide/development/biz-services.md)
-- **⚙ 기동시 주의사항**
-  - [비지니스 및 mockup 서비스 기동 가이드 문서 참조](./docs/guide/startup/start-mockup-service-guide.md)
-
-### 🔹 Logging Service
-- Kafka에서 모든 로그를 수신하여 처리
-- Elasticsearch의 `${logtype}-log-%{+YYYY.MM.dd}`에 저장
-  - 로그 내의 logtype제거 후 저장
-  - 어느 로그도 저장되지 않은 default는 logtype 그대로 저장
-- WARN, ERROR 이상 로그는 Notification Service로 라우팅
-  - notification-topic
-
-### 🔹 Notification Services (SMS, Email)
-- Kafka 토픽(`notification-topic`)에서 메시지 수신
-- 수신자 정보는 Redis → PostgreSQL 순으로 조회
-- 전송 실패 시 Kafka의 `error-topic`으로 메시지 이동
-
-### 🔹 Error Handler
-- Kafka 토픽(`error-topic`)으로 전달된 실패 메시지를 수신
-- 최대 5회까지 재시도, 이후에도 실패 시 Elasticsearch의 `fail-log-%{+YYYY.MM.dd}`에 저장  
-- 실패 사유는 리스트 형태로 기록 (e.g. timeout, connection refused 등)
-
-### 🔹 Alertmanager
-- Prometheus가 Actuator를 호출해 수집한 오류 상태 로그를 직접 수신
-- 설정된 조건에 따라 오류로 판단시, Slack을 통해 즉시 알림 전송
 
 ---
 
-### 📦 EFK 구성 (System/Biz Log 공통 저장)
-- 로그 수집 (비지니스 컴포넌트에 한함)
-  - 로그는 각 컨테이너의 Filebeat가 Kafka로 로그 전송
-  - Console, File 어느 방법이든 로그를 쌓기만 하면 Filebeat가 전송 가능
-- 로그 저장(Elasticsearch)
-  - 인덱스 분리
-    - biz-log-{YYYY.MM.DD} → 비즈니스 로그
-    - sys-log-{YYYY.MM.DD} → 시스템 로그
-    - act-log-{YYYY.MM.DD} → 서비스 매트릭, health 상태 등 actuator 기반 로그 저장
-- 로그 조회
-  - Kibana: 상세 검색
-  - Grafana: 시스템 추이 시각화
-  - Zipkin: 요청 추적
+## 📦 모듈 구성 개요
 
-### 🧠 시스템 상태 감시 및 알림
-- Prometheus: 모든 서비스의 상태를 Actuator endpoint 기반으로 수집 (PostgreSQL제외)
-- Alertmanager:
-  - Slack 등으로 자동 알림 발송
-  - 알림 조건 및 정책은 README.md에 명시됨
-  <!-- - 알림 조건 및 정책은 [Alert 정책 문서](#🧾-로그-처리-및-상태-감시-방식) 참고-->
+본 플랫폼은 운영 환경에서 **로그 수집 → 모니터링 → 알림** 흐름을 지원하며,  
+각 단계별로 모듈을 독립적으로 설계하여 확장성과 유지보수성을 높였습니다.
+
+| 모듈 | 역할 | 상태 |
+|------|------|------|
+| **로그 수집기 (Logging Collector)** | Biz 서비스 로그를 표준 포맷으로 수집·저장 | MVP 구현 완료 |
+| **모니터링 (Monitoring)** | 서비스 및 로그 상태를 실시간으로 관찰·시각화 | 개발 예정 |
+| **알림 (Alerting)** | 규칙 기반으로 이상 징후를 감지·전파 | 개발 예정 |
 
 ---
 
-## ⚙️ 아키텍처 특징 요약
+## 1️⃣ 로그 수집기 (Logging Collector)
 
-- ✅ Kafka pub/sub 메시징 → 비동기 알림 구조  
-- ✅ Partition Key: `hash(serviceId)` → 순서 보장 및 부하 분산  
-- ✅ Redis + PostgreSQL 사용자 정보 조회 최적화  
-- ✅ DLQ 구조 (send-error-topic)로 실패 메시지 분리  
-- ✅ Elasticsearch 로그 저장 및 Kibana 검색  
-- ✅ Prometheus 기반 서비스 상태 모니터링  
-- ✅ Alertmanager를 통한 Slack 알림  
+### 구성 요소
+- **Biz Component**  
+  Biz 서비스에서 로그를 생성·전송하기 위한 라이브러리/정책 모듈(framework).  
+  Interceptor, MDC 전파, 필드 필터링 규칙 등을 포함.
+- **Fluent Bit**  
+  컨테이너 로그 수집기. 필요 시 Lua 스크립트를 통해 전처리 수행.
+- **Kafka**  
+  로그 전송을 위한 메시지 브로커.
+- **Logging Service**  
+  Collector → Validator → Transformer → Persistence 구조의 파이프라인을 통해 로그를 가공·저장.
+  `LogMessageKeyGenerator`를 이용해 메시지 중복 방지.
+- **PostgreSQL**  
+  영속 저장소.
+
+### 동작 흐름
+1. Biz Component가 지정된 포맷의 로그를 출력
+2. Fluent Bit이 로그를 수집하고 Kafka로 전달
+3. Logging Service가 Kafka 메시지를 받아 파이프라인 처리
+4. 가공된 로그를 PostgreSQL에 저장
+
+---
+
+## 2️⃣ 모니터링 (Monitoring) *(개발 예정)*
+
+> 모듈 구성 및 상세 내용은 개발 완료 후 업데이트 예정입니다.
 
 ---
 
-## 📂 Docker & K8s 구성
-- 로컬 테스트 환경: `docker-compose.yaml`
-- 클러스터 배포 환경: `Kubernetes` 설정 YAML
-  → 모든 설정 파일들은 `docker/` 디렉토리에 포함되어 있습니다.
+## 3️⃣ 알림 (Alerting) *(개발 예정)*
+
+> 모듈 구성 및 상세 내용은 개발 완료 후 업데이트 예정입니다.
 
 ---
-
-## 📚 포트폴리오 활용 포인트
-
-- MSA 환경에서 확장 가능한 알림 시스템 구축 경험  
-- Kafka 기반 비동기 메시징 구조 설계 및 구현  
-- 로그 수집 파이프라인 구성  
-- Prometheus + Alertmanager 상태 감시 시스템 연동  
-- 장애 처리(DLQ, 재시도, Slack 알림) 전략 적용 경험  
-
----
-## 📄 별첨 문서
-- [작업 진행 이력(workflow.md)](./docs/workflow-plan.md)
-- [아키텍처 정의 및 변경 이력](./docs/architecture/architecture.md)
