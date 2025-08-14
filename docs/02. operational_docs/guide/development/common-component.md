@@ -71,4 +71,4 @@ Scheduler, @Async, Reactor 등의 다른 비동기 컨텍스트에서도 동일�
 - [🗂 structured-logging.md](structured-logging.md)  
 - [🧩 logging-interceptor.md](logging-interceptor.md)  
 - [🩺 actuator-logging.md](actuator-logging.md)  
-- [⚙️ common-config-reference.md](common-config.md)
+- [⚙️ common-config-reference.md](log-biz-standardizer-config.md)
