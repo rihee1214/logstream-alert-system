@@ -19,7 +19,7 @@ dependencies {
     // 전체 프로젝트에서 공통적으로 사용되는 로그 구조 같은 요소들을 모아넣은 project
     implementation project(':log-stream-common')
     // biz 로직을 수행하는 요소에 들어가서 로그 수집을 위한 정책 및 기반이 되어주는 project
-    implementation project(':log-biz-standardizer')
+    implementation project(':log-stream-biz-standardizer')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
 

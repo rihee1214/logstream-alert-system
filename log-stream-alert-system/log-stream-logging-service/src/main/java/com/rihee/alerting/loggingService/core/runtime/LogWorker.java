@@ -26,7 +26,23 @@ public class LogWorker implements Runnable {
 
   @Override
   public void run() {
-    // TODO 기본 로직은 완성이지만, 로깅처리와 에러 핸들링에 대한 문제를 추가적으로 처리해야한다.
+    // TODO 동작 처리 및 로그 처리 관련 고민 필요
+    try {
+      while (true) {
+        try {
+          process();
+        } catch (RuntimeException e) {
+          // TODO 실패한 건들에 대해서 어떻게 처리할지 고민할 것
+          log.warn("", e);
+        }
+      }
+    } catch (Exception e) {
+
+      log.error("", e);
+    }
+  }
+
+  private void process() {
     LogProcessingContext context = new DefaultLogProcessingContext();
 
     boolean commitPermitted = true;
