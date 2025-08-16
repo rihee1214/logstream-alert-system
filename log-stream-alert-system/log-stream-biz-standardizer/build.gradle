@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+    id 'eclipse'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -7,6 +8,10 @@ description = '''\
 Defines business-specific log standardization policies and structures 
 (비즈니스 전용 로그 표준화 정책 및 구조 정의 모듈)
 '''
+
+repositories {
+    mavenCentral()
+}
 
 dependencyManagement {
 	imports {

@@ -1,0 +1,20 @@
+plugins {
+    id 'groovy-gradle-plugin'   // 스크립트 플러그인 작성용
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    // 단위 테스트용 모듈
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+
+    // 아키텍처 피트니스용 모듈
+    testImplementation "com.tngtech.archunit:archunit:${archUnitVersion}"
+    // JUNIT과 연동하여 자동 CI테스트 되도록 하는 모듈
+    testImplementation "com.tngtech.archunit:archunit-junit5:${archUnitVersion}"
+
+    // (선택) 단언 라이브러리
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
+}
+
+tasks.withType(Test).configureEach { useJUnitPlatform() }
