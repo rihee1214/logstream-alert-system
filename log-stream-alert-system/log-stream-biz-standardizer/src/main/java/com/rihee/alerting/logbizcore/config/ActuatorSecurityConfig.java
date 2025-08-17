@@ -29,7 +29,6 @@ import org.springframework.util.StringUtils;
  * @since 1.0
  */
 @Configuration
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ActuatorSecurityConfig {
 
   private static final String MONITORING_TOKEN_HEADER = "X-Monitoring-Token";

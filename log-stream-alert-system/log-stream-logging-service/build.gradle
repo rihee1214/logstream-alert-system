@@ -31,3 +31,18 @@ dependencies {
 
     runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
 }
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+
+    // 환경 변수 설정
+//    environment "VALIDATOR_MODE", "strict"
+    environment "POSTGRES_CONNECT_PASSWORD", "password"
+
+    // 시스템 프로퍼티 설정
+//    systemProperty "spring.profiles.active", "test"
+//    systemProperty "service.name", "logbizcore"
+
+    // JVM 옵션
+    jvmArgs += ["-XX:+EnableDynamicAgentLoading"]
+}

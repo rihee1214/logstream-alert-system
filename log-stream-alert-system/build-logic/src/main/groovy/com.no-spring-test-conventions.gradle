@@ -1,0 +1,31 @@
+plugins {
+    id 'java'   // 스크립트 플러그인 작성용
+}
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+repositories { mavenCentral() }
+
+/* JUnit4 엔진이 끌려오면 전역에서 차단 */
+configurations.configureEach {
+    exclude group: "org.junit.vintage", module: "junit-vintage-engine"
+}
+
+dependencies {
+    // ✅ JUnit 5를 네 프로퍼티 버전으로 '정렬'
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testRuntimeOnly  "org.junit.platform:junit-platform-launcher"
+
+    // ✅ ArchUnit: junit5 연동 모듈만 (코어는 제거)
+    testImplementation("com.tngtech.archunit:archunit-junit5:${archUnitVersion}") {
+        exclude group: "org.slf4j"  // 필요시만 유지
+    }
+
+    // (선택) AssertJ
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
+}
+
+tasks.withType(Test).configureEach { useJUnitPlatform() }

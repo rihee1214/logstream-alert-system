@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'eclipse'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'io.spring.dependency-management' version '1.1.7' apply false
     // 컴파일시 규칙 위반을 잡기 위한 도구
     id 'checkstyle'
 }
@@ -22,11 +22,10 @@ tasks.named('check').configure {
     dependsOn 'checkstyleTest'
 }
 
-subprojects {
+subprojects { Project it ->
     apply plugin: 'java'
     apply plugin: 'eclipse'
     apply plugin: 'checkstyle'
-    apply plugin: 'io.spring.dependency-management'
 
     java {
         toolchain {
@@ -42,14 +41,6 @@ subprojects {
         mavenCentral()
     }
 
-    dependencies {
-        if (project.name != "log-stream-common" && project.name != "log-stream-logging-service") {
-            implementation 'org.springframework.boot:spring-boot-starter'
-            testImplementation 'org.springframework.boot:spring-boot-starter-test'
-            testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-        }
-    }
-
     checkstyle {
         toolVersion = "${checkStyleVersion}"
         configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
@@ -62,11 +53,6 @@ subprojects {
 
     afterEvaluate {
         checkstyle.sourceSets = [sourceSets.main, sourceSets.test]
-    }
-
-    tasks.named('test', Test).configure {
-        test.useJUnitPlatform()
-        jvmArgs += "-XX:+EnableDynamicAgentLoading"
     }
 
     tasks.named('check').configure {

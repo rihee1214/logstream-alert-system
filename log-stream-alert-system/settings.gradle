@@ -1,6 +1,21 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories { mavenCentral() }
+}
+
+includeBuild("build-logic")
+
 rootProject.name = 'log-stream-alert-system'
 
-include 'log-stream-biz-standardizer'
-include 'log-stream-common'
-include 'log-stream-mock-service'
-include 'log-stream-logging-service'
+include(
+    "log-stream-biz-standardizer",
+    "log-stream-common",
+    "log-stream-mock-service",
+    "log-stream-logging-service"
+)

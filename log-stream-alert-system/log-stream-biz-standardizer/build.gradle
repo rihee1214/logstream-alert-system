@@ -1,5 +1,6 @@
 plugins {
-	id 'java'
+    // 해당 프로젝트는 비니지스 대상 프로젝트에 노출되는 요소이기 때문에 java-library 플러그인 사용
+	id 'java-library'
     id 'eclipse'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -21,8 +22,9 @@ dependencyManagement {
 
 dependencies {
 	// 전체 프로젝트에서 공통적으로 사용되는 로그 구조 같은 요소들을 모아넣은 project
-	implementation project(':log-stream-common')
+	api project(':log-stream-common')
 
+    implementation 'org.springframework.boot:spring-boot-starter'
 	// prometheus를 이용하여 application health를 체크하기 위한 dependency
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	// log를 찍을때, json 형식으로 찍히도록 처리하는 dependency
@@ -37,8 +39,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	// Actuator 접근을 localhost 에서만 가능하도록 제어하기 위한 dependency
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
 	// 테스트에서만 Spring Boot Web 서버 환경 사용
-	testImplementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 // 테스트 코드 전용 java 옵션, 환경변수 세팅

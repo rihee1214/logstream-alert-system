@@ -1,0 +1,10 @@
+plugins {
+    id 'groovy-gradle-plugin'   // precompiled script plugin용
+}
+repositories { mavenCentral() }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}

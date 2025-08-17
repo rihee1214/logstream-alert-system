@@ -3,6 +3,7 @@ package com.rihee.alerting.loggingService.validators.impl;
 import com.rihee.alerting.common.constant.annotation.LogPolicy;
 import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.util.StringUtils;
+import com.rihee.alerting.loggingService.annotations.ValidatorType;
 import com.rihee.alerting.loggingService.core.message.LogErrorMessage;
 import com.rihee.alerting.loggingService.core.message.LogMessage;
 import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @see LogErrorMessage
  * @see LogValidator
  */
+@ValidatorType("default")
 public class DefaultLogValidator extends LogValidator {
 
   private static final Logger log = LoggerFactory.getLogger(DefaultLogValidator.class);
