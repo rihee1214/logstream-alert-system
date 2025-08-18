@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * {@code LoggingRuntimeConfig}는 로그 수집 시스템의 런타임 구성 정보를 캡슐화한 설정 객체입니다.
@@ -42,7 +43,8 @@ import java.util.Properties;
 public class LoggingRuntimeConfig {
 
   private final int threadCount;
-  private final List<LogProcessorSpec> logProcessorSpecs = new ArrayList<>();
+  private final List<LogProcessorSpec> logProcessorSpecs;
+  private final long spendInitTime;
 
   /**
    * 내부 생성자. 주어진 {@link Properties} 설정으로부터 필수 설정 값을 읽고
@@ -51,13 +53,17 @@ public class LoggingRuntimeConfig {
    * @param setting 로그 시스템 설정 프로퍼티
    * @throws IllegalArgumentException 설정 누락 또는 형식 오류 발생 시
    */
+  // startTime, endTime 시간 재는데 간격때문에 발생하는 style경고 무시.
+  @SuppressWarnings("checkstyle:VariableDeclarationUsageDistance")
   private LoggingRuntimeConfig(Properties setting) {
+    long startTime = System.nanoTime();
+
     String tempThreadCount = setting.getProperty("worker.thread.count");
     if (tempThreadCount == null || tempThreadCount.isBlank()) {
       throw new IllegalArgumentException("필수 설정 'worker.thread.count' 가 존재하지 않습니다.");
     }
     try {
-      threadCount = Integer.parseInt(tempThreadCount);
+      threadCount = Integer.parseInt(tempThreadCount.trim());
     } catch (NumberFormatException e) {
       throw new IllegalArgumentException("'worker.thread.count'는 숫자여야 합니다: " + tempThreadCount);
     }
@@ -67,13 +73,21 @@ public class LoggingRuntimeConfig {
     if (tempProcessors == null || tempProcessors.isBlank()) {
       throw new IllegalArgumentException("필수 설정 'worker.processors' 가 존재하지 않습니다.");
     }
-    String[] processors = tempProcessors.split(",");
-    for (String processorName : processors) {
-      LogProcessorSpecType processorSpecType = LogProcessorSpecType.fromKey(processorName);
-      Map<String, String> settingMap = MapUtils.toMap(setting);
+
+    Map<String, String> settingMap = Map.copyOf(MapUtils.toMap(setting));
+    List<LogProcessorSpec> specs = new ArrayList<>();
+    for (String processorName : tempProcessors.split(",")) {
+      String key = processorName.trim();
+      LogProcessorSpecType processorSpecType = LogProcessorSpecType.fromKey(key);
       LogProcessorSpec logProcessorSpec = processorSpecType.createSpecInstance(settingMap);
-      this.logProcessorSpecs.add(logProcessorSpec);
+      specs.add(logProcessorSpec);
     }
+    if (specs.isEmpty()) {
+      throw new IllegalStateException("no processors described");
+    }
+    this.logProcessorSpecs = List.copyOf(specs);
+
+    this.spendInitTime = (System.nanoTime() - startTime) / 1_000_000L;
   }
 
   /**
@@ -135,10 +149,10 @@ public class LoggingRuntimeConfig {
                           String processorType = logProcessorSpec.getProcessorType();
                           return className + "(" + processorType + ")";
                         })
-                        .reduce((a, b) -> a + "->" + b)
-                        .orElse("no processors described");
-    return String.format("LoggingRuntimeConfig{threadCount=%d, processors=%s}",
+                        .collect(Collectors.joining("->"));
+    return String.format("LoggingRuntimeConfig{threadCount=%d, processors=%s, initTime=%s ms}",
                         threadCount,
-                        processorDescriptions);
+                        processorDescriptions,
+                        spendInitTime);
   }
 }

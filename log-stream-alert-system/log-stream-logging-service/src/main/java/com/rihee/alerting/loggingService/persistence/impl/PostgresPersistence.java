@@ -86,6 +86,12 @@ public final class PostgresPersistence extends LogPersistence {
     @Override
     public LogProcessor.Builder<PostgresPersistence>
                                             withProperties(Map<String, String> setting) {
+      // 테스트 모드일 경우 setting만 확인하고 넘어가도록 처리
+      if (isDevOrTestMode()) {
+        getHikariConfigFromSetting(setting);
+        return this;
+      }
+
       if (jdbi == null) {
         synchronized (Builder.class) {
           if (jdbi == null) {
@@ -100,6 +106,16 @@ public final class PostgresPersistence extends LogPersistence {
       }
 
       return this;
+    }
+
+    private static boolean isDevOrTestMode() {
+      String programMode = System.getProperty("PROGRAM_MODE");
+      if (programMode == null) {
+        programMode = System.getenv("PROGRAM_MODE");
+      }
+      return programMode != null
+          && (programMode.equalsIgnoreCase("dev")
+          || programMode.equalsIgnoreCase("test"));
     }
 
     private HikariConfig getHikariConfigFromSetting(Map<String, String> setting) {
