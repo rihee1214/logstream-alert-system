@@ -1,8 +1,8 @@
 package com.rihee.alerting.loggingService.core.runtime;
 
-import com.rihee.alerting.loggingService.core.pipeline.CommitableLogProcessor;
-import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
-import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.api.CommitableLogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import java.util.List;

@@ -1,11 +1,12 @@
 package com.rihee.alerting.loggingService.core.pipeline.result;
 
-import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 
 /**
  * 로그 처리 단계의 결과를 표현하는 불변 데이터 객체입니다.
  *
- * <p>이 객체는 로그 처리 파이프라인 내에서 각 {@link com.rihee.alerting.loggingService.core.pipeline.LogProcessor}
+ * <p>이 객체는 로그 처리 파이프라인 내에서 각 {@link LogProcessor}
  * 가 처리 결과를 명시적으로 반환하기 위해 사용되며, 다음 단계로의 진행 여부 및 커밋 가능 여부를 함께 포함합니다.
  *
  * <p>예외를 직접 던지지 않고 처리 흐름을 제어하고자 할 때 사용됩니다.
@@ -17,7 +18,7 @@ import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
  * @param shouldCommit    현재 로그 배치를 커밋(ack)해도 되는지 여부
  * @param reason          처리 흐름 제어의 사유 설명 (예: 스킵/에러 원인)
  *
- * @see com.rihee.alerting.loggingService.core.pipeline.LogProcessor
+ * @see LogProcessor
  * @see LogProcessingContext
  */
 public record ProcessResult(LogProcessingContext context,

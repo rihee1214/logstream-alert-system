@@ -1,7 +1,6 @@
 package com.rihee.alerting.loggingService.core.pipeline.context;
 
-import com.rihee.alerting.loggingService.core.message.LogMessage;
-import com.rihee.alerting.loggingService.core.pipeline.LogProcessingContext;
+import com.rihee.alerting.loggingService.core.model.LogMessage;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

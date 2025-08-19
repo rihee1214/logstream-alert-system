@@ -1,15 +1,15 @@
 package com.rihee.alerting.loggingService.core.runtime;
 
 import com.rihee.alerting.common.util.MapUtils;
-import com.rihee.alerting.loggingService.collectors.LogCollector;
-import com.rihee.alerting.loggingService.collectors.LogCollectorSpec;
-import com.rihee.alerting.loggingService.core.pipeline.LogProcessor;
-import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpec;
-import com.rihee.alerting.loggingService.core.pipeline.LogProcessorSpecType;
-import com.rihee.alerting.loggingService.persistence.LogPersistence;
-import com.rihee.alerting.loggingService.persistence.LogPersistenceSpec;
-import com.rihee.alerting.loggingService.validators.LogValidator;
-import com.rihee.alerting.loggingService.validators.LogValidatorSpec;
+import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
+import com.rihee.alerting.loggingService.core.plugin.LogCollectorPlugin;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
+import com.rihee.alerting.loggingService.core.plugin.LogProcessorPlugin;
+import com.rihee.alerting.loggingService.core.plan.LogProcessorPluginPlanner;
+import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort;
+import com.rihee.alerting.loggingService.core.plugin.LogPersistencePlugin;
+import com.rihee.alerting.loggingService.core.pipeline.port.rule.LogValidatorPort;
+import com.rihee.alerting.loggingService.core.plugin.LogValidatorPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
  * <p>이 클래스는 {@link Properties} 기반 설정 정보를 파싱하여, 로그 수집에 필요한
  * 세 가지 핵심 컴포넌트의 구현체를 지정하고 동적으로 인스턴스를 생성합니다:
  * <ul>
- *   <li>{@link LogCollector} 수집기</li>
- *   <li>{@link LogValidator} 유효성 검사기</li>
- *   <li>{@link LogPersistence} 로그 저장소</li>
+ *   <li>{@link LogCollectorPort} 수집기</li>
+ *   <li>{@link LogValidatorPort} 유효성 검사기</li>
+ *   <li>{@link LogPersistencePort} 로그 저장소</li>
  * </ul>
  *
  * <p>설정은 다음 키 값을 기반으로 구성됩니다:
@@ -36,14 +36,14 @@ import java.util.stream.Collectors;
  *
  * <p>클래스 내부적으로는 {@code Spec} 객체를 통해 각 구현체를 리플렉션 기반으로 생성합니다.
  *
- * @see LogCollectorSpec
- * @see LogValidatorSpec
- * @see LogPersistenceSpec
+ * @see LogCollectorPlugin
+ * @see LogValidatorPlugin
+ * @see LogPersistencePlugin
  */
 public class LoggingRuntimeConfig {
 
   private final int threadCount;
-  private final List<LogProcessorSpec> logProcessorSpecs;
+  private final List<LogProcessorPlugin> logProcessorPlugins;
   private final long spendInitTime;
 
   /**
@@ -75,17 +75,17 @@ public class LoggingRuntimeConfig {
     }
 
     Map<String, String> settingMap = Map.copyOf(MapUtils.toMap(setting));
-    List<LogProcessorSpec> specs = new ArrayList<>();
+    List<LogProcessorPlugin> specs = new ArrayList<>();
     for (String processorName : tempProcessors.split(",")) {
       String key = processorName.trim();
-      LogProcessorSpecType processorSpecType = LogProcessorSpecType.fromKey(key);
-      LogProcessorSpec logProcessorSpec = processorSpecType.createSpecInstance(settingMap);
-      specs.add(logProcessorSpec);
+      LogProcessorPluginPlanner processorSpecType = LogProcessorPluginPlanner.fromKey(key);
+      LogProcessorPlugin logProcessorPlugin = processorSpecType.createSpecInstance(settingMap);
+      specs.add(logProcessorPlugin);
     }
     if (specs.isEmpty()) {
       throw new IllegalStateException("no processors described");
     }
-    this.logProcessorSpecs = List.copyOf(specs);
+    this.logProcessorPlugins = List.copyOf(specs);
 
     this.spendInitTime = (System.nanoTime() - startTime) / 1_000_000L;
   }
@@ -116,21 +116,21 @@ public class LoggingRuntimeConfig {
   /**
    * 로그 처리 파이프라인을 구성하기 위한 {@link LogProcessor} 인스턴스 목록을 생성합니다.
    *
-   * <p>등록된 {@link LogProcessorSpec} 목록을 기반으로 각 스펙에 정의된 프로세서 구현체를
+   * <p>등록된 {@link LogProcessorPlugin} 목록을 기반으로 각 스펙에 정의된 프로세서 구현체를
    * 순차적으로 인스턴스화하여 파이프라인을 구성합니다.
    *
    * <p>생성된 프로세서들은 {@code LogWorker} 내에서 순차적으로 실행되며, 로그 메시지를
    * 수집, 검증, 저장 등의 단계별로 처리합니다.
    *
    * @return 파이프라인 구성에 사용될 {@link LogProcessor} 구현체 리스트
-   *         (구현체는 {@link LogCollector}, {@link LogValidator}, {@link LogPersistence} 등을 포함할 수 있음)
+   *         (구현체는 {@link LogCollectorPort}, {@link LogValidatorPort}, {@link LogPersistencePort} 등을 포함할 수 있음)
    *
    * @see LogProcessor
-   * @see LogProcessorSpec#newProcessorInstance()
+   * @see LogProcessorPlugin#newProcessorInstance()
    * @see com.rihee.alerting.loggingService.core.runtime.LogWorker
    */
   public List<? extends LogProcessor> createProcessorChain() {
-    return logProcessorSpecs.stream().map(LogProcessorSpec::newProcessorInstance).toList();
+    return logProcessorPlugins.stream().map(LogProcessorPlugin::newProcessorInstance).toList();
   }
 
   /**
@@ -143,7 +143,7 @@ public class LoggingRuntimeConfig {
   @Override
   public String toString() {
     String processorDescriptions
-        = logProcessorSpecs.stream()
+        = logProcessorPlugins.stream()
                         .map(logProcessorSpec -> {
                           String className = logProcessorSpec.getClass().getSimpleName();
                           String processorType = logProcessorSpec.getProcessorType();
