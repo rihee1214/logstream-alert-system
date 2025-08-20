@@ -30,7 +30,7 @@ import java.util.Map;
  * @see LogProcessingContext
  * @see LogMessage
  */
-public interface LogProcessor {
+public interface LogProcessorPort {
 
   /**
    * 주어진 로그 처리 컨텍스트를 기반으로 단일 단계의 처리를 수행합니다.
@@ -47,7 +47,7 @@ public interface LogProcessor {
   ProcessResult process(LogProcessingContext processingContext);
 
   /**
-   * {@link LogProcessor} 구현체 생성을 위한 빌더 인터페이스입니다.
+   * {@link LogProcessorPort} 구현체 생성을 위한 빌더 인터페이스입니다.
    *
    * @param <T> 생성 대상 LogProcessor의 구체 타입
    *
@@ -55,7 +55,7 @@ public interface LogProcessor {
    *     구현체는 반드시 무상태(stateless)로 생성되어야 하며,
    *     빌더가 내부적으로 상태를 갖고 있어도 동시성 처리는 책임지지 않습니다.
    */
-  interface Builder<T extends LogProcessor> {
+  interface Builder<T extends LogProcessorPort> {
 
     /**
      * 설정 정보를 빌더에 주입합니다.
@@ -67,10 +67,10 @@ public interface LogProcessor {
      *     설정은 명세된 키에 따라 정확히 해석되어야 하며,
      *     잘못된 설정이 들어올 경우 {@code build()} 호출 시점에 예외를 발생시켜야 합니다.
      */
-    LogProcessor.Builder<T> withProperties(Map<String, String> setting);
+    LogProcessorPort.Builder<T> withProperties(Map<String, String> setting);
 
     /**
-     * 빌더에 설정된 정보로 {@link LogProcessor} 인스턴스를 생성합니다.
+     * 빌더에 설정된 정보로 {@link LogProcessorPort} 인스턴스를 생성합니다.
      *
      * @return 구성된 LogProcessor 구현체
      *

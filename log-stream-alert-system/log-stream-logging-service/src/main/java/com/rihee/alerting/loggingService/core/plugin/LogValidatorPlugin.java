@@ -1,8 +1,8 @@
 package com.rihee.alerting.loggingService.core.plugin;
 
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor.Builder;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.port.rule.LogValidatorPort;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
@@ -11,7 +11,7 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 
 /**
- * {@code LogValidatorSpec}는 설정에서 지정된 {@code validator.type} 값을 기반으로
+ * {@code LogValidatorPlugin}은 설정에서 지정된 {@code validator.type} 값을 기반으로
  * 해당 타입의 {@link LogValidatorPort} 구현체를 탐색하고, 해당 구현체의 {@code builder()} 메서드를
  * 호출하여 검증기 인스턴스를 생성하는 팩토리 역할을 수행합니다.
  *
@@ -117,14 +117,14 @@ public final class LogValidatorPlugin implements LogProcessorPlugin {
   }
 
   /**
-   * 현재 스펙에 맞는 {@link LogProcessor} 인스턴스를 생성합니다.
+   * 현재 스펙에 맞는 {@link LogProcessorPort} 인스턴스를 생성합니다.
    *
    * <p>빌더 패턴을 사용하여 {@link LogValidatorPort} 구현체 인스턴스를 생성하며,
    * 생성된 인스턴스는 런타임 파이프라인에서 사용됩니다.
    *
-   * @return 새 {@link LogProcessor} 인스턴스
+   * @return 새 {@link LogProcessorPort} 인스턴스
    */
-  public LogProcessor newProcessorInstance() {
+  public LogProcessorPort newProcessorInstance() {
     return builder.build();
   }
 

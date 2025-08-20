@@ -3,7 +3,7 @@ package com.rihee.alerting.loggingService.core.runtime;
 import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
 import com.rihee.alerting.loggingService.core.plugin.LogCollectorPlugin;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.plugin.LogProcessorPlugin;
 import com.rihee.alerting.loggingService.core.plan.LogProcessorPluginPlanner;
 import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort;
@@ -114,7 +114,7 @@ public class LoggingRuntimeConfig {
   }
 
   /**
-   * 로그 처리 파이프라인을 구성하기 위한 {@link LogProcessor} 인스턴스 목록을 생성합니다.
+   * 로그 처리 파이프라인을 구성하기 위한 {@link LogProcessorPort} 인스턴스 목록을 생성합니다.
    *
    * <p>등록된 {@link LogProcessorPlugin} 목록을 기반으로 각 스펙에 정의된 프로세서 구현체를
    * 순차적으로 인스턴스화하여 파이프라인을 구성합니다.
@@ -122,14 +122,14 @@ public class LoggingRuntimeConfig {
    * <p>생성된 프로세서들은 {@code LogWorker} 내에서 순차적으로 실행되며, 로그 메시지를
    * 수집, 검증, 저장 등의 단계별로 처리합니다.
    *
-   * @return 파이프라인 구성에 사용될 {@link LogProcessor} 구현체 리스트
+   * @return 파이프라인 구성에 사용될 {@link LogProcessorPort} 구현체 리스트
    *         (구현체는 {@link LogCollectorPort}, {@link LogValidatorPort}, {@link LogPersistencePort} 등을 포함할 수 있음)
    *
-   * @see LogProcessor
+   * @see LogProcessorPort
    * @see LogProcessorPlugin#newProcessorInstance()
    * @see com.rihee.alerting.loggingService.core.runtime.LogWorker
    */
-  public List<? extends LogProcessor> createProcessorChain() {
+  public List<? extends LogProcessorPort> createProcessorChain() {
     return logProcessorPlugins.stream().map(LogProcessorPlugin::newProcessorInstance).toList();
   }
 

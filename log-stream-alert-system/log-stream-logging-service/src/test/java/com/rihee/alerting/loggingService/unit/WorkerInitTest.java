@@ -33,9 +33,9 @@ public class WorkerInitTest {
     // processors 키 존재/파이프라인 단서 확인 (옵션)
     assertThat(initResult)
         .contains("processors=")
-        .contains("LogCollectorSpec(")
-        .contains("LogValidatorSpec(")
-        .contains("LogPersistenceSpec(");
+        .contains("LogCollectorPlugin(")
+        .contains("LogValidatorPlugin(")
+        .contains("LogPersistencePlugin(");
 
     // initTime=NNN ms 파싱
     Pattern p = Pattern.compile("initTime\\s*=\\s*(\\d+)\\s*ms");

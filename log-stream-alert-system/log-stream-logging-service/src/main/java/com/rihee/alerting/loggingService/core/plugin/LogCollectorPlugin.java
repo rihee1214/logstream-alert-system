@@ -1,8 +1,8 @@
 package com.rihee.alerting.loggingService.core.plugin;
 
 import com.rihee.alerting.loggingService.annotations.CollectorType;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor.Builder;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
@@ -11,13 +11,13 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 
 /**
- * {@code LogCollectorSpec}은 설정 정보를 기반으로 {@link LogCollectorPort}의 구체 구현체를
+ * {@code LogCollectorPlugin}은 설정 정보를 기반으로 {@link LogCollectorPort}의 구체 구현체를
  * 동적으로 탐색하고, 해당 구현체의 Builder를 통해 인스턴스를 생성하는 책임을 갖는다.
  *
  * <p>Collector는 {@link CollectorType} 애노테이션으로 타입을 식별하며,
  * {@code collector.type} 설정 값을 기준으로 일치하는 클래스를 탐색한다.
  * 탐색된 클래스는 반드시 {@code public static builder()} 메서드를 제공해야 하며,
- * 해당 메서드를 통해 {@link LogProcessor.Builder} 인스턴스를
+ * 해당 메서드를 통해 {@link LogProcessorPort.Builder} 인스턴스를
  * 획득하여 설정을 주입하고 Collector를 생성한다.
  *
  * <p>이 클래스는 초기화 시 1회의 설정만 받고, 이후 Collector 인스턴스를 반복 생성할 수 있도록 설계되었다.
@@ -44,7 +44,7 @@ public final class LogCollectorPlugin implements LogProcessorPlugin {
   }
 
   @Override
-  public LogProcessor newProcessorInstance() {
+  public LogProcessorPort newProcessorInstance() {
     return builder.build();
   }
 
@@ -61,7 +61,7 @@ public final class LogCollectorPlugin implements LogProcessorPlugin {
    * @throws RuntimeException reflection 또는 builder 호출 중 예외가 발생한 경우
    */
   @SuppressWarnings("unchecked")
-  private static LogProcessor.Builder<?> resolveCollectorBuilder(String collectorMode) {
+  private static LogProcessorPort.Builder<?> resolveCollectorBuilder(String collectorMode) {
     try (ScanResult scanResult = new ClassGraph()
                                       .enableAllInfo()
                                       .acceptPackages(COLLECTOR_NAMESPACE)

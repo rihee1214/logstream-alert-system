@@ -1,6 +1,6 @@
 package com.rihee.alerting.loggingService.core.pipeline.port.in;
 
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.plugin.LogCollectorPlugin;
 
 /**
@@ -23,7 +23,7 @@ import com.rihee.alerting.loggingService.core.plugin.LogCollectorPlugin;
  * @see com.rihee.alerting.loggingService.annotations.CollectorType
  * @see LogCollectorPlugin
  */
-public abstract class LogCollectorPort implements LogProcessor {
+public abstract class LogCollectorPort implements LogProcessorPort {
 
 
 }

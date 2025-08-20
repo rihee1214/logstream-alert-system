@@ -1,11 +1,11 @@
 package com.rihee.alerting.loggingService.core.pipeline.port.rule;
 
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 
 /**
- * {@code LogValidator}는 {@link LogProcessor} 파이프라인의
+ * {@code LogValidator}는 {@link LogProcessorPort} 파이프라인의
  * 한 단계로서, {@link LogProcessingContext}에 담긴 로그 데이터를
  * 유효성 검증하기 위한 추상 클래스입니다.
  *
@@ -21,10 +21,10 @@ import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
  * 서비스 전용 예외를 발생시켜 후속 처리 단계를 중단시킬 수 있습니다.
  * 모든 검증 로직은 가능한 한 상태를 변경하지 않는 방식(stateless)으로 작성해야 합니다.
  *
- * @see LogProcessor
+ * @see LogProcessorPort
  * @see LogProcessingContext
  */
-public abstract class LogValidatorPort implements LogProcessor {
+public abstract class LogValidatorPort implements LogProcessorPort {
 
   @Override
   public abstract ProcessResult process(LogProcessingContext processingContext);

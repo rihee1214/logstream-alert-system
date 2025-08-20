@@ -1,5 +1,7 @@
 package com.rihee.alerting.loggingService.tools.annotationprocessor;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 
 /**
  * {@code AbstractTypeProcessor}는 특정 커스텀 애너테이션(@interface)을 기반으로,
@@ -69,12 +72,14 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
    * <p>해당 생성자는 JDK의 {@code Processor} SPI 로딩 메커니즘에 의해 자동 호출되므로,
    * 파라미터를 가지지 않아야 하며, 내부에서 필요한 모든 초기화를 수행해야 합니다.
    *
-   * <p>{@link NamedTypeConflictProcessor}와 {@link BuilderCheckProcessorLogic}를 기본 검증 로직으로 포함한다.
+   * <p>{@link NamedTypeConflictProcessor}와 {@link BuilderCheckProcessorLogic}.
+   * {@link RegistryGenerationLogic}를 기본 검증 로직으로 포함한다.
    */
   protected AbstractTypeProcessor() {
     processorLogics = new ArrayList<>();
     processorLogics.add(new NamedTypeConflictProcessor());
     processorLogics.add(new BuilderCheckProcessorLogic());
+    processorLogics.add(new RegistryGenerationLogic());
   }
 
   /**
@@ -261,12 +266,11 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
         String className = ((TypeElement) element).getQualifiedName().toString();
 
         if (value == null) {
-          processingEnv.getMessager().printMessage(
-              Diagnostic.Kind.ERROR,
-              String.format("@%s 에서 value() 값을 추출할 수 없습니다.", annotationType.getSimpleName()),
-              element
+          throw new IllegalStateException(
+              String.format("@%s 에서 value() 값을 추출할 수 없습니다. element=%s",
+                  annotationType.getSimpleName(),
+                  element.getSimpleName())
           );
-          continue;
         }
 
         if (foundKeys.containsKey(value)) {
@@ -308,12 +312,65 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
 
         if (!hasBuilder) {
           String className = ((TypeElement) element).getQualifiedName().toString();
-          processingEnv.getMessager().printMessage(
-              Diagnostic.Kind.ERROR,
-              className + " 클래스에는 static builder() 메서드가 필요합니다.",
-              element
-          );
+          throw new IllegalStateException(
+              String.format("%s 클래스에는 static builder() 메서드가 필요합니다.", className));
         }
+      }
+    }
+  }
+
+  protected final class RegistryGenerationLogic extends ProcessorLogic {
+
+    @Override
+    public void process(RoundEnvironment roundEnv) {
+      // 마지막 처리에서만 해당 작업이 진행되도록 해야함. 중복 생성 방지용
+      if (!roundEnv.processingOver()) {
+        return;
+      }
+
+      // 대상 value, class의 FQCN 수집
+      Map<String, String> foundKeys = new HashMap<>();
+      Class<? extends Annotation> annotationType = getTargetAnnotationType();
+
+      for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
+        if (element.getKind() != ElementKind.CLASS) {
+          continue;
+        }
+
+        String value = extractAnnotationValue(element, annotationType, "value");
+        String className = ((TypeElement) element).getQualifiedName().toString();
+        foundKeys.put(value, className);
+      }
+
+      // 수집한 FQCN정보들로 레지스트리 소스 생성
+      try {
+        String pkg = "com.rihee.alerting.loggingService.tools.registry";
+        String cls = getSupportedSourceVersion().name() + "Registry";
+
+        JavaFileObject file = processingEnv.getFiler()
+            .createSourceFile(pkg + "." + cls);
+
+        try (Writer w = file.openWriter()) {
+          w.write("package " + pkg + ";\n\n");
+          w.write("import java.util.*;\n\n");
+          w.write("public final class " + cls + " {\n");
+          w.write("  public static final Map<String, String> REGISTRY;\n");
+          w.write("  static {\n");
+          w.write("    Map<String, String> m = new HashMap<>();\n");
+
+          for (Map.Entry<String, String> e : foundKeys.entrySet()) {
+            w.write("    m.put(\"" + e.getKey() + "\", \"" + e.getValue() + "\");\n");
+          }
+
+          w.write("    REGISTRY = Collections.unmodifiableMap(m);\n");
+          w.write("  }\n");
+          w.write("}\n");
+        }
+      } catch (IOException e) {
+        processingEnv.getMessager().printMessage(
+            Diagnostic.Kind.ERROR,
+            "레지스트리 생성 실패: " + e.getMessage()
+        );
       }
     }
   }

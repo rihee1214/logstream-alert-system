@@ -1,7 +1,7 @@
 package com.rihee.alerting.loggingService.core.pipeline.api;
 
 /**
- * 커밋이 가능한 {@link LogProcessor} 구현체임을 나타내는 마커 인터페이스입니다.
+ * 커밋이 가능한 {@link LogProcessorPort} 구현체임을 나타내는 마커 인터페이스입니다.
  *
  * <p>이 인터페이스는 로그 처리 이후 명시적인 커밋 작업이 필요한 프로세서에서 구현되어야 합니다.
  * 예를 들어, Kafka의 오프셋 커밋이나 데이터베이스의 트랜잭션 커밋과 같이
@@ -17,7 +17,7 @@ package com.rihee.alerting.loggingService.core.pipeline.api;
  *     예외 발생 시에도 시스템이 중단되지 않도록 예외 처리를 내부에서 적절히 수행해야 합니다.
  *     <b>커밋 가능한 처리를 명확히 표현하고 싶을 경우, 해당 프로세서는 반드시 이 인터페이스를 구현하는 것이 좋습니다.</b>
  */
-public interface CommitableLogProcessor extends LogProcessor {
+public interface CommitableLogProcessor extends LogProcessorPort {
 
   /**
    * 로그 처리 결과를 외부 시스템에 커밋합니다.

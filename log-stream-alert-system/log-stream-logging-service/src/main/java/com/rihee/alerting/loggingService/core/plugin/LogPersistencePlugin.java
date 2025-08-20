@@ -1,8 +1,8 @@
 package com.rihee.alerting.loggingService.core.plugin;
 
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor.Builder;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
@@ -68,7 +68,7 @@ public final class LogPersistencePlugin implements LogProcessorPlugin {
     }
   }
 
-  public LogProcessor newProcessorInstance() {
+  public LogProcessorPort newProcessorInstance() {
     return this.builder.build();
   }
 

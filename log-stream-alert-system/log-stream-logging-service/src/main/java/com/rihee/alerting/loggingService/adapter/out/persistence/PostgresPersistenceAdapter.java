@@ -5,7 +5,7 @@ import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import com.rihee.alerting.loggingService.core.model.LogMessage;
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
@@ -74,17 +74,17 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
     return ProcessResult.success(result);
   }
 
-  public static LogProcessor.Builder<?> builder() {
+  public static LogProcessorPort.Builder<?> builder() {
     return new Builder();
   }
 
-  public static class Builder implements LogProcessor.Builder<PostgresPersistenceAdapter> {
+  public static class Builder implements LogProcessorPort.Builder<PostgresPersistenceAdapter> {
 
     private static volatile HikariDataSource dataSource;
     private static volatile Jdbi jdbi;
 
     @Override
-    public LogProcessor.Builder<PostgresPersistenceAdapter>
+    public LogProcessorPort.Builder<PostgresPersistenceAdapter>
                                             withProperties(Map<String, String> setting) {
       // 테스트 모드일 경우 setting만 확인하고 넘어가도록 처리
       if (isDevOrTestMode()) {

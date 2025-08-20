@@ -1,9 +1,10 @@
 package com.rihee.alerting.loggingService.core.plugin;
 
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 
 public interface LogProcessorPlugin {
 
-  LogProcessor newProcessorInstance();
+  LogProcessorPort newProcessorInstance();
   String getProcessorType();
 }
+

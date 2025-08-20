@@ -2,7 +2,7 @@ package com.rihee.alerting.loggingService.core.runtime;
 
 import com.rihee.alerting.loggingService.core.pipeline.api.CommitableLogProcessor;
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
-import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessor;
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class LogWorker implements Runnable {
 
   private static final Logger log = LoggerFactory.getLogger(LogWorker.class);
-  private final List<? extends LogProcessor> logProcessors;
+  private final List<? extends LogProcessorPort> logProcessors;
   private final List<? extends CommitableLogProcessor> commitableLogProcessors;
 
   public LogWorker(LoggingRuntimeConfig config) {
@@ -47,7 +47,7 @@ public class LogWorker implements Runnable {
 
     boolean commitPermitted = true;
 
-    for (LogProcessor processor : logProcessors) {
+    for (LogProcessorPort processor : logProcessors) {
       ProcessResult result = processor.process(context);
       if (!result.shouldContinue()) {
         commitPermitted = result.shouldCommit();
