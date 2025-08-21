@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.tools.annotationprocessor;
+package com.rihee.alerting.loggingService.toos.annotationprocessor;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -345,7 +345,7 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
       // 수집한 FQCN정보들로 레지스트리 소스 생성
       try {
         String pkg = "com.rihee.alerting.loggingService.tools.registry";
-        String cls = getSupportedSourceVersion().name() + "Registry";
+        String cls = getTargetAnnotationType().getSimpleName() + "Registry";
 
         JavaFileObject file = processingEnv.getFiler()
             .createSourceFile(pkg + "." + cls);

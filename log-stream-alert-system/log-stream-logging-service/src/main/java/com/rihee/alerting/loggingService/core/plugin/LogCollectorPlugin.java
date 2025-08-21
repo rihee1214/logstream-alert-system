@@ -4,6 +4,7 @@ import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
+import com.rihee.alerting.loggingService.tools.registry.CollectorTypeRegistry;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import java.lang.reflect.Method;
@@ -38,6 +39,8 @@ public final class LogCollectorPlugin implements LogProcessorPlugin {
     if (this.collectorType == null || this.collectorType.isBlank()) {
       throw new IllegalArgumentException("필수 설정 'collector.type' 이 존재하지 않습니다.");
     }
+
+    CollectorTypeRegistry.REGISTRY
 
     this.builder = resolveCollectorBuilder(collectorType)
                                   .withProperties(setting);

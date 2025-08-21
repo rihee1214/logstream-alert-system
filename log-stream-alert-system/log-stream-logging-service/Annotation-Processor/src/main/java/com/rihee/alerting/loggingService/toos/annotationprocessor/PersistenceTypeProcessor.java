@@ -1,8 +1,10 @@
-package com.rihee.alerting.loggingService.tools.annotationprocessor;
+package com.rihee.alerting.loggingService.toos.annotationprocessor;
 
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import java.lang.annotation.Annotation;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 
 /**
  * {@code PersistenceTypeTypeProcessor}는 {@link PersistenceType} 애너테이션이 부여된 클래스들을 대상으로
@@ -38,6 +40,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
  * @see javax.annotation.processing.Processor
  */
 @SupportedAnnotationTypes("com.rihee.alerting.loggingService.annotations.PersistenceType")
+@SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class PersistenceTypeProcessor extends AbstractTypeProcessor {
 
   @Override

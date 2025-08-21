@@ -17,7 +17,6 @@ include(
     "log-stream-biz-standardizer",
     "log-stream-common",
     "log-stream-mock-service",
-    "log-stream-logging-service" ,
-    "log-stream-Annotation-Processor"
+    "log-stream-logging-service"
 )
-include 'log-stream-Annotation-Processor'
+include 'log-stream-logging-service:Annotation-Processor'

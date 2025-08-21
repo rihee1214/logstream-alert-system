@@ -1,7 +1,5 @@
 package com.rihee.alerting.loggingService.annotations;
 
-import com.rihee.alerting.loggingService.core.pipeline.port.rule.LogValidatorPort;
-import com.rihee.alerting.loggingService.core.plugin.LogValidatorPlugin;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,8 +9,7 @@ import java.lang.annotation.Target;
  * {@code @ValidatorType}은 로그 유효성 검사기(LogValidator) 구현체를 식별하기 위한 어노테이션입니다.
  *
  * <p>이 어노테이션은 {@code com.rihee.alerting.loggingService.validators.impl} 하위 패키지에 위치한
- * 클래스에만 적용되어야 하며, 해당 클래스는 반드시 {@link LogValidatorPort}
- * 인터페이스를 구현해야 합니다.
+ * 클래스에만 적용되어야 하며, 해당 클래스는 반드시 LogValidatorPort로써 동작해야 합니다.
  *
  * <p>{@code value()}는 설정 파일에서 정의된 {@code validator.type} 속성과 매칭되며,
  * 런타임 시 어떤 유효성 검사기 구현체를 사용할지 결정하는 **핵심 식별자(사실상의 Primary Key)**로 작동합니다.
@@ -33,9 +30,6 @@ import java.lang.annotation.Target;
  * 요구 조건 위반 시 컴파일이 중단됩니다. 이를 통해 런타임 오류를 사전에 방지하고,
  * 표준화된 로그 유효성 검사기 구성을 보장할 수 있습니다.
  *
- * @see LogValidatorPort
- * @see LogValidatorPort.Builder
- * @see LogValidatorPlugin
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

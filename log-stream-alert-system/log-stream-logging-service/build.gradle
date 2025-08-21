@@ -9,6 +9,9 @@ Central log processor that stores logs and triggers alerts for critical events
 '''
 
 dependencies {
+    annotationProcessor project(":log-stream-logging-service:Annotation-Processor")
+
+    implementation project(":log-stream-logging-service:Annotation-Processor")
     // 전체 프로젝트에서 공통적으로 사용되는 로그 구조 같은 요소들을 모아넣은 project
     implementation project(':log-stream-common')
 
