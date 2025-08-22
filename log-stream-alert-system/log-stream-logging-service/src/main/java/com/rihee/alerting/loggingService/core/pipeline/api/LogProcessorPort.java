@@ -19,7 +19,7 @@ import java.util.Map;
  *   <li>영속화 처리 (DB / Kafka / Storage 등)</li>
  * </ul>
  *
- * @implSpec
+ * @apiNote
  *     구현체는 불변성을 갖는 {@link LogProcessingContext}를 입력받아 처리한 후,
  *     새로운 {@code LogProcessingContext} 인스턴스를 반환해야 합니다.
  *     반환값은 절대 {@code null}이 되어서는 안 되며, 처리 실패 시에도 적절한 상태를 담은 컨텍스트를 반환해야 합니다.
@@ -39,7 +39,7 @@ public interface LogProcessorPort {
    * @return 로그 처리 결과 및 흐름 제어 정보를 담은 {@link ProcessResult} 객체.
    *         컨텍스트 상태뿐 아니라, 처리 지속 여부 및 커밋 가능 여부를 포함합니다.
    *
-   * @implSpec
+   * @apiNote
    *     반환되는 {@link ProcessResult}는 로그 처리의 성공/실패뿐 아니라,
    *     다음 단계로의 진행 여부, 커밋 가능 여부를 함께 전달하기 위한 목적입니다.
    *     그 구체적인 의미와 구조는 {@link ProcessResult} 문서를 참고하십시오.
@@ -51,7 +51,7 @@ public interface LogProcessorPort {
    *
    * @param <T> 생성 대상 LogProcessor의 구체 타입
    *
-   * @implSpec
+   * @apiNote
    *     구현체는 반드시 무상태(stateless)로 생성되어야 하며,
    *     빌더가 내부적으로 상태를 갖고 있어도 동시성 처리는 책임지지 않습니다.
    */
@@ -63,7 +63,7 @@ public interface LogProcessorPort {
      * @param setting 키-값 쌍 형태의 설정 값
      * @return 빌더 인스턴스 자체 (체이닝 지원)
      *
-     * @implSpec
+     * @apiNote
      *     설정은 명세된 키에 따라 정확히 해석되어야 하며,
      *     잘못된 설정이 들어올 경우 {@code build()} 호출 시점에 예외를 발생시켜야 합니다.
      */
@@ -76,7 +76,7 @@ public interface LogProcessorPort {
      *
      * @throws IllegalStateException 필수 설정이 누락된 경우
      *
-     * @implSpec
+     * @apiNote
      *     이 메서드는 반드시 새로운 인스턴스를 생성하거나,
      *     재사용 가능한 안전한 싱글톤을 반환해야 합니다.
      */

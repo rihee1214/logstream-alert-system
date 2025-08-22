@@ -321,15 +321,11 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
 
   protected final class RegistryGenerationLogic extends ProcessorLogic {
 
+    private final Map<String, String> foundKeys = new HashMap<>();
+
     @Override
     public void process(RoundEnvironment roundEnv) {
-      // 마지막 처리에서만 해당 작업이 진행되도록 해야함. 중복 생성 방지용
-      if (!roundEnv.processingOver()) {
-        return;
-      }
-
       // 대상 value, class의 FQCN 수집
-      Map<String, String> foundKeys = new HashMap<>();
       Class<? extends Annotation> annotationType = getTargetAnnotationType();
 
       for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
@@ -339,7 +335,12 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
 
         String value = extractAnnotationValue(element, annotationType, "value");
         String className = ((TypeElement) element).getQualifiedName().toString();
-        foundKeys.put(value, className);
+        this.foundKeys.put(value, className);
+      }
+
+      // 마지막 처리에서만 해당 작업이 진행되도록 해야함. 중복 생성 방지용
+      if (!roundEnv.processingOver()) {
+        return;
       }
 
       // 수집한 FQCN정보들로 레지스트리 소스 생성
@@ -358,7 +359,7 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
           w.write("  static {\n");
           w.write("    Map<String, String> m = new HashMap<>();\n");
 
-          for (Map.Entry<String, String> e : foundKeys.entrySet()) {
+          for (Map.Entry<String, String> e : this.foundKeys.entrySet()) {
             w.write("    m.put(\"" + e.getKey() + "\", \"" + e.getValue() + "\");\n");
           }
 

@@ -40,8 +40,6 @@ public final class LogCollectorPlugin implements LogProcessorPlugin {
       throw new IllegalArgumentException("필수 설정 'collector.type' 이 존재하지 않습니다.");
     }
 
-    CollectorTypeRegistry.REGISTRY
-
     this.builder = resolveCollectorBuilder(collectorType)
                                   .withProperties(setting);
   }
