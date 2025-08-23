@@ -1,13 +1,15 @@
 package com.rihee.alerting.loggingService.core.plugin;
 
-import com.rihee.alerting.loggingService.annotations.PersistenceType;
+import com.rihee.alerting.common.util.MapUtils;
+import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ScanResult;
+import com.rihee.alerting.loggingService.toos.constants.ProcessorRegistryPaths;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Map;
 
 public final class LogPersistencePlugin implements LogProcessorPlugin {
@@ -30,41 +32,51 @@ public final class LogPersistencePlugin implements LogProcessorPlugin {
 
   @SuppressWarnings("unchecked")
   private static LogPersistencePort.Builder<?> resolvePersistenceBuilder(String persistenceMode) {
-    try (ScanResult scanResult = new ClassGraph()
-        .enableAllInfo()
-        .acceptPackages(PERSISTENCE_NAMESPACE) // 스캔 범위 제한
-        .scan()) {
+    final String filePath = ProcessorRegistryPaths.PERSISTENCE.getFilePath();
+    final ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
-      // PersistenceType annotation과 일치하는 클래스 찾기
-      Class<? extends LogPersistencePort> persistenceClass = scanResult
-          .getClassesWithAnnotation(PersistenceType.class.getName())
-          .stream()
-          .map(classInfo -> {
-            try {
-              return (Class<?>) Class.forName(classInfo.getName());
-            } catch (ClassNotFoundException e) {
-              throw new RuntimeException(e);
-            }
-          })
-          .filter(clazz -> {
-            PersistenceType annotation = clazz.getAnnotation(PersistenceType.class);
-            return annotation != null && annotation.value().equals(persistenceMode);
-          })
-          .map(clazz -> (Class<? extends LogPersistencePort>) clazz)
-          .findFirst()
-          .orElseThrow(() ->
-              new IllegalStateException("해당 persistenceMode에 맞는 클래스가 존재하지 않습니다: " + persistenceMode));
+    // 1) 레지스트리 로딩
+    final Map<String, Object> classInfos;
+    try (InputStream is = cl.getResourceAsStream(filePath)) {
+      if (is == null) {
+        throw new IllegalStateException("Registry resource not found: " + filePath);
+      }
+      // Map<String, ?> 대신 문자열 맵 강제 (JSON 규약: 키는 문자열)
+      classInfos = MapUtils.fromInputStream(is);
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to read registry: " + filePath, e);
+    }
 
-      // static builder() 메서드 존재 여부 확인 및 호출
-      Method builderMethod = persistenceClass.getDeclaredMethod("builder");
-      if (!Modifier.isStatic(builderMethod.getModifiers())) {
-        throw new IllegalStateException("builder() 메서드는 static이어야 합니다.");
+    // 2) 대상 FQCN 조회
+    final String fqcn = (String) classInfos.get(persistenceMode);
+    if (StringUtils.isBlank(fqcn)) {
+      throw new IllegalArgumentException("Unknown persistence mode: " + persistenceMode
+          + " (in " + filePath + ")");
+    }
+
+    // 3) 클래스 로딩
+    final Class<?> persistenceClass;
+    try {
+      persistenceClass = Class.forName(fqcn, /*initialize*/ false, cl);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalStateException("Persistence class not found: " + fqcn, e);
+    }
+
+    // 4) builder() 확인 및 호출
+    try {
+      // public static builder()
+      Method builderMethod = persistenceClass.getMethod("builder");
+
+      if (!LogProcessorPort.Builder.class.isAssignableFrom(builderMethod.getReturnType())) {
+        throw new IllegalStateException(fqcn + ".builder() must return LogProcessorPort.Builder");
       }
 
-      return (LogPersistencePort.Builder<?>) builderMethod.invoke(null);
+      return (LogProcessorPort.Builder<?>) builderMethod.invoke(null);
 
-    } catch (Exception e) {
-      throw new RuntimeException("Persistence 빌더 생성 실패: " + persistenceMode, e);
+    } catch (NoSuchMethodException e) {
+      throw new IllegalStateException("Missing public static builder() in " + fqcn, e);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new IllegalStateException("Failed to invoke builder() in " + fqcn, e);
     }
   }
 

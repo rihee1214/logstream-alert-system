@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-
+    implementation project(":log-stream-common")
 }
 
 java {

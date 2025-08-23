@@ -1,11 +1,17 @@
 package com.rihee.alerting.loggingService.core.plugin;
 
+import com.rihee.alerting.common.util.MapUtils;
+import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.port.rule.LogValidatorPort;
+import com.rihee.alerting.loggingService.toos.constants.ProcessorRegistryPaths;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
@@ -58,61 +64,52 @@ public final class LogValidatorPlugin implements LogProcessorPlugin {
                                 .withProperties(setting);
   }
 
-  /**
-   * 지정된 {@code validatorMode} 값에 해당하는 {@link LogValidatorPort} 구현체의
-   * 빌더를 탐색하고 반환합니다.
-   *
-   * <p>탐색 방식:
-   * <ol>
-   *   <li>{@link #VALIDATOR_NAMESPACE} 패키지를 스캔</li>
-   *   <li>{@link ValidatorType} 애노테이션이 붙은 클래스를 필터링</li>
-   *   <li>애노테이션 값이 {@code validatorMode}와 일치하는 클래스 선택</li>
-   *   <li>선택된 클래스의 static {@code builder()} 메서드 호출</li>
-   * </ol>
-   *
-   * @param validatorMode 찾고자 하는 검증기 타입 식별자
-   * @return 해당 타입의 {@link LogValidatorPort.Builder}
-   * @throws IllegalStateException builder 메서드가 없거나 static이 아닌 경우,
-   *                               혹은 구현체를 찾지 못한 경우
-   * @throws RuntimeException 리플렉션 또는 빌더 생성 과정에서 오류가 발생한 경우
-   */
-  @SuppressWarnings("unchecked")
   private static LogValidatorPort.Builder<?> resolveValidatorBuilder(String validatorMode) {
-    try (ScanResult scanResult = new ClassGraph()
-        .enableAllInfo()
-        .acceptPackages(VALIDATOR_NAMESPACE)
-        .scan()) {
+    final String filePath = ProcessorRegistryPaths.VALIDATOR.getFilePath();
+    final ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
-      // ValidatorType annotation과 일치하는 클래스 찾기
-      Class<? extends LogValidatorPort> validatorClass = scanResult
-          .getClassesWithAnnotation(ValidatorType.class.getName())
-          .stream()
-          .map(classInfo -> {
-            try {
-              return (Class<?>) Class.forName(classInfo.getName());
-            } catch (ClassNotFoundException e) {
-              throw new RuntimeException(e);
-            }
-          })
-          .filter(clazz -> {
-            ValidatorType annotation = clazz.getAnnotation(ValidatorType.class);
-            return annotation != null && annotation.value().equals(validatorMode);
-          })
-          .map(clazz -> (Class<? extends LogValidatorPort>) clazz)
-          .findFirst()
-          .orElseThrow(() ->
-              new IllegalStateException("해당 validatorMode에 맞는 클래스가 존재하지 않습니다: " + validatorMode));
+    // 1) 레지스트리 로딩
+    final Map<String, Object> classInfos;
+    try (InputStream is = cl.getResourceAsStream(filePath)) {
+      if (is == null) {
+        throw new IllegalStateException("Registry resource not found: " + filePath);
+      }
+      // Map<String, ?> 대신 문자열 맵 강제 (JSON 규약: 키는 문자열)
+      classInfos = MapUtils.fromInputStream(is);
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to read registry: " + filePath, e);
+    }
 
-      // static builder() 메서드 호출
-      Method builderMethod = validatorClass.getDeclaredMethod("builder");
-      if (!Modifier.isStatic(builderMethod.getModifiers())) {
-        throw new IllegalStateException("builder() 메서드는 static이어야 합니다.");
+    // 2) 대상 FQCN 조회
+    final String fqcn = (String) classInfos.get(validatorMode);
+    if (StringUtils.isBlank(fqcn)) {
+      throw new IllegalArgumentException("Unknown validator mode: " + validatorMode
+          + " (in " + filePath + ")");
+    }
+
+    // 3) 클래스 로딩
+    final Class<?> validatorClass;
+    try {
+      validatorClass = Class.forName(fqcn, /*initialize*/ false, cl);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalStateException("Validator class not found: " + fqcn, e);
+    }
+
+    // 4) builder() 확인 및 호출
+    try {
+      // public static builder()
+      Method builderMethod = validatorClass.getMethod("builder");
+
+      if (!LogProcessorPort.Builder.class.isAssignableFrom(builderMethod.getReturnType())) {
+        throw new IllegalStateException(fqcn + ".builder() must return LogProcessorPort.Builder");
       }
 
-      return (LogValidatorPort.Builder<?>) builderMethod.invoke(null);
+      return (LogProcessorPort.Builder<?>) builderMethod.invoke(null);
 
-    } catch (Exception e) {
-      throw new RuntimeException("Validator 빌더 생성 실패: " + validatorMode, e);
+    } catch (NoSuchMethodException e) {
+      throw new IllegalStateException("Missing public static builder() in " + fqcn, e);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new IllegalStateException("Failed to invoke builder() in " + fqcn, e);
     }
   }
 

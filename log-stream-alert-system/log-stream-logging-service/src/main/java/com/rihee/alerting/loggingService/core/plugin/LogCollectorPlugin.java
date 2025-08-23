@@ -1,14 +1,16 @@
 package com.rihee.alerting.loggingService.core.plugin;
 
+import com.rihee.alerting.common.util.MapUtils;
+import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
-import com.rihee.alerting.loggingService.tools.registry.CollectorTypeRegistry;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ScanResult;
+import com.rihee.alerting.loggingService.toos.constants.ProcessorRegistryPaths;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Map;
 
 /**
@@ -28,9 +30,6 @@ import java.util.Map;
  */
 public final class LogCollectorPlugin implements LogProcessorPlugin {
 
-  private static final String COLLECTOR_NAMESPACE
-                              = "com.rihee.alerting.loggingService.adapter.in.collector";
-
   private final Builder<?> builder;
   private final String collectorType;
 
@@ -49,55 +48,52 @@ public final class LogCollectorPlugin implements LogProcessorPlugin {
     return builder.build();
   }
 
-  /**
-   * {@code collector.type} 값에 해당하는 {@link LogCollectorPort} 구현체를 찾아
-   * 그 내부의 static {@code builder()} 메서드를 호출하여 Builder 인스턴스를 반환한다.
-   *
-   * <p>이 메서드는 클래스 스캔 및 reflection 기반이므로 예외 발생 가능성이 있다.
-   * 다만 AnnotationProcessor를 통해 그럴 가능성을 사전에 차단한다.
-   *
-   * @param collectorMode 설정 파일에서 정의된 collector type 값
-   * @return 해당 구현체의 {@link LogCollectorPort.Builder} 인스턴스
-   * @throws IllegalStateException 매칭되는 클래스가 없거나 builder 메서드가 static이 아닐 경우
-   * @throws RuntimeException reflection 또는 builder 호출 중 예외가 발생한 경우
-   */
-  @SuppressWarnings("unchecked")
   private static LogProcessorPort.Builder<?> resolveCollectorBuilder(String collectorMode) {
-    try (ScanResult scanResult = new ClassGraph()
-                                      .enableAllInfo()
-                                      .acceptPackages(COLLECTOR_NAMESPACE)
-                                      .scan()) {
+    final String filePath = ProcessorRegistryPaths.COLLECTOR.getFilePath();
+    final ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
-      // CollectorType annotation과 일치하는 클래스 찾기
-      Class<? extends LogCollectorPort> collectorClass = scanResult
-          .getClassesWithAnnotation(CollectorType.class.getName())
-          .stream()
-          .map(classInfo -> {
-            try {
-              return (Class<?>) Class.forName(classInfo.getName());
-            } catch (ClassNotFoundException e) {
-              throw new RuntimeException(e);
-            }
-          })
-          .filter(clazz -> {
-            CollectorType annotation = clazz.getAnnotation(CollectorType.class);
-            return annotation != null && annotation.value().equals(collectorMode);
-          })
-          .map(clazz -> (Class<? extends LogCollectorPort>) clazz)
-          .findFirst()
-          .orElseThrow(() ->
-              new IllegalStateException("해당 collectorMode에 맞는 클래스가 존재하지 않습니다: " + collectorMode));
+    // 1) 레지스트리 로딩
+    final Map<String, Object> classInfos;
+    try (InputStream is = cl.getResourceAsStream(filePath)) {
+      if (is == null) {
+        throw new IllegalStateException("Registry resource not found: " + filePath);
+      }
+      // Map<String, ?> 대신 문자열 맵 강제 (JSON 규약: 키는 문자열)
+      classInfos = MapUtils.fromInputStream(is);
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to read registry: " + filePath, e);
+    }
 
-      // builder 메서드 확인 및 호출
-      Method builderMethod = collectorClass.getDeclaredMethod("builder");
-      if (!Modifier.isStatic(builderMethod.getModifiers())) {
-        throw new IllegalStateException("builder() 메서드는 static이어야 합니다.");
+    // 2) 대상 FQCN 조회
+    final String fqcn = (String) classInfos.get(collectorMode);
+    if (StringUtils.isBlank(fqcn)) {
+      throw new IllegalArgumentException("Unknown collector mode: " + collectorMode
+          + " (in " + filePath + ")");
+    }
+
+    // 3) 클래스 로딩
+    final Class<?> collectorClass;
+    try {
+      collectorClass = Class.forName(fqcn, /*initialize*/ false, cl);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalStateException("Collector class not found: " + fqcn, e);
+    }
+
+    // 4) builder() 확인 및 호출
+    try {
+      // public static builder()
+      Method builderMethod = collectorClass.getMethod("builder");
+
+      if (!LogProcessorPort.Builder.class.isAssignableFrom(builderMethod.getReturnType())) {
+        throw new IllegalStateException(fqcn + ".builder() must return LogProcessorPort.Builder");
       }
 
-      return (LogCollectorPort.Builder<?>) builderMethod.invoke(null);
+      return (LogProcessorPort.Builder<?>) builderMethod.invoke(null);
 
-    } catch (Exception e) {
-      throw new RuntimeException("Collector 빌더 생성 실패: " + collectorMode, e);
+    } catch (NoSuchMethodException e) {
+      throw new IllegalStateException("Missing public static builder() in " + fqcn, e);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new IllegalStateException("Failed to invoke builder() in " + fqcn, e);
     }
   }
 

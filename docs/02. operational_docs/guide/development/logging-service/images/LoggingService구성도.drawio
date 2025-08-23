@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Whale/4.33.325.17 Safari/537.36" version="28.0.9">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Whale/4.33.325.17 Safari/537.36" version="28.1.0">
   <diagram name="페이지-1" id="3sJZsQZ97CkHA21qjbOU">
-    <mxGraphModel dx="1783" dy="960" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1426" dy="768" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -8,58 +8,58 @@
           <mxGeometry x="58" y="100" width="710" height="970" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-38" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;ExecutorService&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;LogWorker들은 LoggingRuntimeConfig에서 설정을&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;읽어서 생성한 것들로 만들어진다.&lt;br&gt;최대 스레드 개수&lt;br&gt;Processor 인스턴스 등등...&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;verticalAlign=top;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#E8F5E9,#E8F5E9);strokeColor=light-dark(#2E7D32,#2E7D32);" parent="1" vertex="1">
-          <mxGeometry x="101" y="731" width="340" height="240" as="geometry" />
+          <mxGeometry x="101" y="638" width="340" height="240" as="geometry" />
         </mxCell>
-        <mxCell id="z5rj5BKk8c0sryNwI283-32" value="&lt;font&gt;&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;LogProcessors (Collector, Validator, Persistence, ...)&lt;/font&gt;&lt;br&gt;로그를 수집하고, 검증하고, 저장소에 저장하는 등, 다양한 로직들을 가지고 있는 처리기 모음&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;(파이프라인 동작방식)&amp;nbsp;&lt;/span&gt;&lt;/font&gt;&lt;div&gt;&lt;font&gt;logging.properties에 들어가 있으며, 순서대로 해당 인스턴스가 생성된다.&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;(생성 순서대로 동작함)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;CommitableLogProcessor 인터페이스를 상속하는 대상은 모든 프로세스가 종료된 후 commit을 실행한다.&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="1" vertex="1">
-          <mxGeometry x="120" y="440" width="600" height="186" as="geometry" />
+        <mxCell id="z5rj5BKk8c0sryNwI283-32" value="&lt;font&gt;&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;LogProcessorPort (Collector, Validator, Persistence, ...)&lt;/font&gt;&lt;br&gt;로그를 수집하고, 검증하고, 저장소에 저장하는 등, 다양한 로직들을 가지고 있는 처리기 모음&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;(파이프라인 동작방식)&amp;nbsp;&lt;/span&gt;&lt;/font&gt;&lt;div&gt;&lt;font&gt;logging.properties에 들어가 있으며, 순서대로 해당 인스턴스가 생성된다.&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;(생성 순서대로 동작함)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;CommitableLogProcessor 인터페이스를 상속하는 대상은 모든 프로세스가 종료된 후 commit을 실행한다.&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="1" vertex="1">
+          <mxGeometry x="120" y="403" width="600" height="167" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-2" value="Bootstrap(main)" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="1" vertex="1">
-          <mxGeometry x="365" y="991" width="120" height="60" as="geometry" />
+          <mxGeometry x="365" y="898" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-4" value="Setting Loader" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="1" vertex="1">
-          <mxGeometry x="493" y="916" width="120" height="60" as="geometry" />
+          <mxGeometry x="493" y="823" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-8" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-2" target="z5rj5BKk8c0sryNwI283-4" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="360" y="791" as="sourcePoint" />
-            <mxPoint x="460" y="791" as="targetPoint" />
+            <mxPoint x="360" y="698" as="sourcePoint" />
+            <mxPoint x="460" y="698" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="553" y="1020" />
+              <mxPoint x="553" y="927" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-11" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-2" target="z5rj5BKk8c0sryNwI283-3" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="390" y="811" as="sourcePoint" />
-            <mxPoint x="440" y="761" as="targetPoint" />
+            <mxPoint x="390" y="718" as="sourcePoint" />
+            <mxPoint x="440" y="668" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="260" y="1021" />
+              <mxPoint x="260" y="928" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-14" value="LoggingRuntimeConfig" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="1" vertex="1">
-          <mxGeometry x="481" y="821" width="143" height="60" as="geometry" />
+          <mxGeometry x="481" y="728" width="143" height="60" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-15" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-4" target="z5rj5BKk8c0sryNwI283-14" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="390" y="811" as="sourcePoint" />
-            <mxPoint x="440" y="761" as="targetPoint" />
+            <mxPoint x="390" y="718" as="sourcePoint" />
+            <mxPoint x="440" y="668" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-22" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-14" target="z5rj5BKk8c0sryNwI283-17" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="390" y="811" as="sourcePoint" />
-            <mxPoint x="440" y="761" as="targetPoint" />
+            <mxPoint x="390" y="718" as="sourcePoint" />
+            <mxPoint x="440" y="668" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="z5rj5BKk8c0sryNwI283-23" value="LogProcessor" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#E3F2FD,#E3F2FD);strokeColor=light-dark(#1565C0,#1565C0);" parent="1" vertex="1">
-          <mxGeometry x="550" y="530" width="120" height="60" as="geometry" />
+        <mxCell id="z5rj5BKk8c0sryNwI283-23" value="LogProcessorPort" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#E3F2FD,#E3F2FD);strokeColor=light-dark(#1565C0,#1565C0);" parent="1" vertex="1">
+          <mxGeometry x="550" y="496" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="z5rj5BKk8c0sryNwI283-24" value="LogProcessor" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#E3F2FD,#E3F2FD);strokeColor=light-dark(#1565C0,#1565C0);" parent="1" vertex="1">
-          <mxGeometry x="360" y="530" width="120" height="60" as="geometry" />
+        <mxCell id="z5rj5BKk8c0sryNwI283-24" value="LogProcessorPort" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#E3F2FD,#E3F2FD);strokeColor=light-dark(#1565C0,#1565C0);" parent="1" vertex="1">
+          <mxGeometry x="360" y="496" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="z5rj5BKk8c0sryNwI283-25" value="LogProcessor" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#E3F2FD,#E3F2FD);strokeColor=light-dark(#1565C0,#1565C0);" parent="1" vertex="1">
-          <mxGeometry x="170" y="530" width="120" height="60" as="geometry" />
+        <mxCell id="z5rj5BKk8c0sryNwI283-25" value="LogProcessorPort" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#E3F2FD,#E3F2FD);strokeColor=light-dark(#1565C0,#1565C0);" parent="1" vertex="1">
+          <mxGeometry x="170" y="496" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-26" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-20" target="z5rj5BKk8c0sryNwI283-23" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
@@ -87,38 +87,38 @@
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-37" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;fontColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-14" target="z5rj5BKk8c0sryNwI283-38" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="630" y="966" as="sourcePoint" />
-            <mxPoint x="390" y="841" as="targetPoint" />
+            <mxPoint x="630" y="873" as="sourcePoint" />
+            <mxPoint x="390" y="748" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-42" value="Commitable" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#1565C0,#1565C0);fillColor=light-dark(#E3F2FD,#E3F2FD);" parent="1" vertex="1">
-          <mxGeometry x="230" y="516" width="90" height="30" as="geometry" />
+          <mxGeometry x="230" y="482" width="90" height="30" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-47" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;LogWorker에서 구현체 예시&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#E3F2FD,#E3F2FD);strokeColor=light-dark(#1565C0,#1565C0);" parent="1" vertex="1">
-          <mxGeometry x="120" y="128" width="600" height="262" as="geometry" />
+          <mxGeometry x="120" y="129" width="600" height="240" as="geometry" />
         </mxCell>
-        <mxCell id="z5rj5BKk8c0sryNwI283-48" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;KafkaLogCollector&lt;/span&gt;&lt;/div&gt;&lt;div&gt;(Collector)&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
-          <mxGeometry x="184" y="198" width="120" height="60" as="geometry" />
+        <mxCell id="z5rj5BKk8c0sryNwI283-48" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;KafkaLogCollectorPort&lt;/span&gt;&lt;/div&gt;&lt;div&gt;(Collector)&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
+          <mxGeometry x="170" y="177" width="134" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="z5rj5BKk8c0sryNwI283-49" value="DefaultValidator&lt;div&gt;(Validator)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
-          <mxGeometry x="360" y="198" width="120" height="60" as="geometry" />
+        <mxCell id="z5rj5BKk8c0sryNwI283-49" value="DefaultValidatorPort&lt;div&gt;(Validator)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
+          <mxGeometry x="358" y="177" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="z5rj5BKk8c0sryNwI283-50" value="PostgresPersistence&lt;div&gt;(Persistence)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
-          <mxGeometry x="550" y="198" width="120" height="60" as="geometry" />
+        <mxCell id="z5rj5BKk8c0sryNwI283-50" value="PostgresPersistencePort&lt;div&gt;(Persistence)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
+          <mxGeometry x="550" y="177" width="140" height="60" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-51" value="Commitable" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
-          <mxGeometry x="230" y="248" width="90" height="30" as="geometry" />
+          <mxGeometry x="230" y="227" width="90" height="30" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-52" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;dashed=1;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-48" target="z5rj5BKk8c0sryNwI283-49" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="400" y="570" as="sourcePoint" />
-            <mxPoint x="470" y="570" as="targetPoint" />
+            <mxPoint x="400" y="549" as="sourcePoint" />
+            <mxPoint x="470" y="549" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-53" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;dashed=1;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-49" target="z5rj5BKk8c0sryNwI283-50" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="490" y="350" as="sourcePoint" />
-            <mxPoint x="546" y="350" as="targetPoint" />
+            <mxPoint x="490" y="329" as="sourcePoint" />
+            <mxPoint x="546" y="329" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-54" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;fillColor=light-dark(#9E9E9E,#9E9E9E);fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#333333,#333333);" parent="1" source="z5rj5BKk8c0sryNwI283-32" target="z5rj5BKk8c0sryNwI283-47" edge="1">
@@ -129,25 +129,25 @@
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-55" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;flowAnimation=0;dashed=1;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-56" target="z5rj5BKk8c0sryNwI283-48" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="340.20000000000005" y="326.00199999999995" as="sourcePoint" />
-            <mxPoint x="184" y="227" as="targetPoint" />
+            <mxPoint x="340.20000000000005" y="305.00199999999995" as="sourcePoint" />
+            <mxPoint x="184" y="206" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="150" y="330" />
-              <mxPoint x="150" y="229" />
+              <mxPoint x="150" y="309" />
+              <mxPoint x="150" y="208" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-56" value="run() method&lt;div&gt;While(true) 내부&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
-          <mxGeometry x="186" y="300" width="120" height="60" as="geometry" />
+          <mxGeometry x="186" y="279" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-58" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;dashed=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontColor=light-dark(#000000,#000000);strokeColor=light-dark(#000000,#000000);" parent="1" source="z5rj5BKk8c0sryNwI283-56" target="z5rj5BKk8c0sryNwI283-51" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="240" y="460" as="sourcePoint" />
-            <mxPoint x="280" y="280" as="targetPoint" />
+            <mxPoint x="240" y="439" as="sourcePoint" />
+            <mxPoint x="280" y="259" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-59" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Worker는 계속 동작하도록 while(true)안에 모든 동작이 들어있음.&lt;br&gt;모든 Processor(수집기, 검증기, 저장)를 실행 시킨 후 commit이 가능한 상태면 commit 가능한 요소들에 대해 Commit을 실행 후 한 사이클을 종료한다.&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=light-dark(#000000,#000000);" parent="1" vertex="1">
-          <mxGeometry x="320" y="300" width="390" height="58" as="geometry" />
+          <mxGeometry x="320" y="279" width="390" height="58" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-61" value="범례" style="swimlane;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFEBEE,#FFEBEE);strokeColor=light-dark(#B71C1C,#B71C1C);" parent="1" vertex="1">
           <mxGeometry x="631" y="790" width="119" height="256" as="geometry" />
@@ -181,11 +181,11 @@
         <mxCell id="z5rj5BKk8c0sryNwI283-69" value="예시" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=light-dark(#000000,#000000);fontSize=14;" parent="1" vertex="1">
           <mxGeometry x="655" y="1000" width="71" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="qaP8AZhU5pSZCJ2Y8ju3-1" value="주입" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=light-dark(#000000,#000000);fontSize=14;fillColor=light-dark(#FFECB3,#FFECB3);strokeColor=light-dark(#F57F17,#F57F17);" vertex="1" parent="1">
-          <mxGeometry x="200" y="681" width="60" height="30" as="geometry" />
+        <mxCell id="qaP8AZhU5pSZCJ2Y8ju3-1" value="주입" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=light-dark(#000000,#000000);fontSize=14;fillColor=light-dark(#FFECB3,#FFECB3);strokeColor=light-dark(#F57F17,#F57F17);" parent="1" vertex="1">
+          <mxGeometry x="200" y="588" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-41" value="" style="group;fontColor=light-dark(#000000,#000000);" parent="1" vertex="1" connectable="0">
-          <mxGeometry x="200" y="846" width="140" height="90" as="geometry" />
+          <mxGeometry x="200" y="753" width="140" height="90" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-5" value="LogWorker&lt;span style=&quot;font-family: monospace; font-size: 0px; text-align: start; text-wrap-mode: nowrap;&quot;&gt;%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22Bootstrap(main)%22%20style%3D%22rounded%3D0%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22365%22%20y%3D%22650%22%20width%3D%22120%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="z5rj5BKk8c0sryNwI283-41" vertex="1">
           <mxGeometry x="20" width="120" height="60" as="geometry" />
@@ -197,13 +197,13 @@
           <mxGeometry y="30" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-20" value="LogProcessorSpec" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="1" vertex="1">
-          <mxGeometry x="511" y="701" width="120" height="60" as="geometry" />
+          <mxGeometry x="511" y="608" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="z5rj5BKk8c0sryNwI283-19" value="LogProcessorSpec" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="1" vertex="1">
-          <mxGeometry x="501" y="711" width="120" height="60" as="geometry" />
+          <mxGeometry x="501" y="618" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="z5rj5BKk8c0sryNwI283-17" value="LogProcessorSpec" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="1" vertex="1">
-          <mxGeometry x="491" y="721" width="120" height="60" as="geometry" />
+        <mxCell id="z5rj5BKk8c0sryNwI283-17" value="LogProcessorPlugin" style="rounded=0;whiteSpace=wrap;html=1;fontColor=light-dark(#000000,#000000);fillColor=light-dark(#FFF3E0,#FFF3E0);strokeColor=light-dark(#EF6C00,#EF6C00);" parent="1" vertex="1">
+          <mxGeometry x="491" y="628" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

@@ -1,5 +1,7 @@
 package com.rihee.alerting.loggingService.toos.annotationprocessor;
 
+import com.rihee.alerting.common.util.MapUtils;
+import com.rihee.alerting.loggingService.toos.constants.ProcessorRegistryPaths;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
@@ -18,7 +20,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 
 /**
  * {@code AbstractTypeProcessor}는 특정 커스텀 애너테이션(@interface)을 기반으로,
@@ -319,10 +321,71 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
     }
   }
 
+  /**
+   * {@code AbstractTypeProcessor} 내부에서 사용되는 전략(Strategy) 구현으로,
+   * 지정된 타깃 애노테이션을 스캔하여 {@code value → FQCN} 매핑을 수집하고
+   * 최종 라운드에서 레지스트리 JSON 리소스를 생성한다.
+   *
+   * <p>동작 개요:
+   * <ol>
+   *   <li>현재 라운드에서 {@link #getTargetAnnotationType()} 애노테이션이 붙은 {@code CLASS} 요소만 선별한다.</li>
+   *   <li>각 요소의 애노테이션 멤버(기본: {@code value})와 대상 타입의 FQCN을 추출하여 내부 맵에 누적한다.</li>
+   *   <li>{@link RoundEnvironment#processingOver()} 가 {@code true}인 마지막 라운드에서만
+   *       누적된 매핑을 JSON으로 직렬화하여 {@code CLASS_OUTPUT}에 생성한다.
+   *       경로는 {@link ProcessorRegistryPaths#fromType(Class)} 로 결정한다.</li>
+   * </ol>
+   *
+   * <p>설계 포인트:
+   * <ul>
+   *   <li>전략(Strategy) 패턴: 추상 기반 로직({@code ProcessorLogic})에 구체 동작을 주입한다.</li>
+   *   <li>증분/다중 라운드 안전: 중간 라운드에서는 파일을 생성하지 않으며, 마지막 라운드에서 한 번만 기록한다.</li>
+   *   <li>의존성 최소화: 생성물은 런타임에서 클래스 임포트 없이 리소스로 로딩할 수 있도록 JSON으로 기록한다.</li>
+   * </ul>
+   *
+   * <p>실패/제약:
+   * <ul>
+   *   <li>애노테이션 멤버 {@code value}가 비어있거나 중복될 경우 최종 레지스트리 충돌이 발생할 수 있다.
+   *       필요 시 상위 로직에서 사전 검증을 수행하라.</li>
+   *   <li>I/O 실패 시 {@link javax.annotation.processing.Messager}를 통해 에러를 보고한다.</li>
+   * </ul>
+   *
+   * @see ProcessorRegistryPaths
+   * @see javax.annotation.processing.ProcessingEnvironment
+   * @see javax.annotation.processing.RoundEnvironment
+   * @see javax.tools.StandardLocation
+   * @see java.lang.annotation.Annotation
+   */
   protected final class RegistryGenerationLogic extends ProcessorLogic {
 
+    /**
+     * 현재 컴파일 라운드까지 수집된 {@code value → FQCN} 매핑.
+     *
+     * <p>키: 애노테이션 멤버 {@code value}, 값: 대상 타입의 FQCN</p>
+     *
+     * <p>마지막 라운드에서 JSON으로 직렬화되어 {@code CLASS_OUTPUT}에 기록된다.</p>
+     */
     private final Map<String, String> foundKeys = new HashMap<>();
 
+    /**
+     * 타깃 애노테이션을 스캔하여 {@code value → FQCN} 매핑을 누적하고,
+     * 마지막 라운드에서 레지스트리 JSON 리소스를 생성한다.
+     *
+     * <p>동작 순서</p>
+     * <ol>
+     *   <li>{@link RoundEnvironment#getElementsAnnotatedWith(Class)} 로 대상 애노테이션이 붙은 요소를 조회</li>
+     *   <li>{@code ElementKind.CLASS} 인 요소만 선별</li>
+     *   <li>애노테이션 멤버 {@code value}와 타입 FQCN을 추출하여 {@link #foundKeys}에 저장</li>
+     *   <li>{@link RoundEnvironment#processingOver()} 가 {@code true}인 경우에만
+     *       {@link ProcessorRegistryPaths#fromType(Class)} 로 파일 경로를 결정하고,
+     *       {@code CLASS_OUTPUT}에 JSON을 기록</li>
+     * </ol>
+     *
+     * <p>생성 파일 경로 예시:
+     * <pre>{@code META-INF/logging/CollectorType.json}</pre>
+     * </p>
+     *
+     * @param roundEnv 현재 컴파일 라운드의 환경
+     */
     @Override
     public void process(RoundEnvironment roundEnv) {
       // 대상 value, class의 FQCN 수집
@@ -345,27 +408,11 @@ public abstract class AbstractTypeProcessor extends AbstractProcessor {
 
       // 수집한 FQCN정보들로 레지스트리 소스 생성
       try {
-        String pkg = "com.rihee.alerting.loggingService.tools.registry";
-        String cls = getTargetAnnotationType().getSimpleName() + "Registry";
+        String resource = ProcessorRegistryPaths.fromType(getTargetAnnotationType()).getFilePath();
 
-        JavaFileObject file = processingEnv.getFiler()
-            .createSourceFile(pkg + "." + cls);
-
-        try (Writer w = file.openWriter()) {
-          w.write("package " + pkg + ";\n\n");
-          w.write("import java.util.*;\n\n");
-          w.write("public final class " + cls + " {\n");
-          w.write("  public static final Map<String, String> REGISTRY;\n");
-          w.write("  static {\n");
-          w.write("    Map<String, String> m = new HashMap<>();\n");
-
-          for (Map.Entry<String, String> e : this.foundKeys.entrySet()) {
-            w.write("    m.put(\"" + e.getKey() + "\", \"" + e.getValue() + "\");\n");
-          }
-
-          w.write("    REGISTRY = Collections.unmodifiableMap(m);\n");
-          w.write("  }\n");
-          w.write("}\n");
+        try (Writer w = processingEnv.getFiler()
+            .createResource(StandardLocation.CLASS_OUTPUT, "", resource).openWriter()) {
+          w.write(MapUtils.toJsonString(this.foundKeys));
         }
       } catch (IOException e) {
         processingEnv.getMessager().printMessage(
