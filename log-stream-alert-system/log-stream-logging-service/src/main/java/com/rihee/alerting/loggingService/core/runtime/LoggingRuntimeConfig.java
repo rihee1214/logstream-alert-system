@@ -1,14 +1,14 @@
 package com.rihee.alerting.loggingService.core.runtime;
 
 import com.rihee.alerting.common.util.MapUtils;
-import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
-import com.rihee.alerting.loggingService.core.plugin.LogCollectorPlugin;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
-import com.rihee.alerting.loggingService.core.plugin.LogProcessorPlugin;
-import com.rihee.alerting.loggingService.core.plan.LogProcessorPluginPlanner;
+import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
 import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort;
-import com.rihee.alerting.loggingService.core.plugin.LogPersistencePlugin;
 import com.rihee.alerting.loggingService.core.pipeline.port.rule.LogValidatorPort;
+import com.rihee.alerting.loggingService.core.plan.LogProcessorPluginPlanner;
+import com.rihee.alerting.loggingService.core.plugin.LogCollectorPlugin;
+import com.rihee.alerting.loggingService.core.plugin.LogPersistencePlugin;
+import com.rihee.alerting.loggingService.core.plugin.LogProcessorPlugin;
 import com.rihee.alerting.loggingService.core.plugin.LogValidatorPlugin;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +123,8 @@ public class LoggingRuntimeConfig {
    * 수집, 검증, 저장 등의 단계별로 처리합니다.
    *
    * @return 파이프라인 구성에 사용될 {@link LogProcessorPort} 구현체 리스트
-   *         (구현체는 {@link LogCollectorPort}, {@link LogValidatorPort}, {@link LogPersistencePort} 등을 포함할 수 있음)
+   *         (구현체는 {@link LogCollectorPort}, {@link LogValidatorPort}, {@link LogPersistencePort}
+   *         등을 포함할 수 있음)
    *
    * @see LogProcessorPort
    * @see LogProcessorPlugin#newProcessorInstance()

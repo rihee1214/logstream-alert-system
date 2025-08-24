@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 초기화가 적절하게 이루어지는지 테스트. (타 시스템과의 직접적인 연결은 되지 않음)
+ */
 public class WorkerInitTest {
 
   private final Logger log = LoggerFactory.getLogger(WorkerInitTest.class);
