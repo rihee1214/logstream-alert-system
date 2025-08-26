@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
  * 표준화된 로그 유효성 검사기 구성을 보장할 수 있습니다.
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface ValidatorType {
 

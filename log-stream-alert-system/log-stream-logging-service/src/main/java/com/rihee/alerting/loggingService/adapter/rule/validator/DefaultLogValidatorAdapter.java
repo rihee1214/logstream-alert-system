@@ -6,8 +6,8 @@ import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
 import com.rihee.alerting.loggingService.core.model.LogErrorMessage;
 import com.rihee.alerting.loggingService.core.model.LogMessage;
-import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
+import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.port.rule.LogValidatorPort;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import java.lang.reflect.Field;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @see LogValidatorPort
  */
 @ValidatorType("default")
-public class DefaultLogValidatorAdapter extends LogValidatorPort {
+public final class DefaultLogValidatorAdapter extends LogValidatorPort {
 
   private static final Logger log = LoggerFactory.getLogger(DefaultLogValidatorAdapter.class);
 

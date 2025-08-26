@@ -15,6 +15,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import java.nio.file.Paths;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class PluginsImportedPropertyTest {
@@ -33,8 +34,10 @@ public class PluginsImportedPropertyTest {
       .withImportOption(new ImportOption.DoNotIncludePackageInfos())
       .importPaths(Paths.get("build", "classes", "java", "main"));
 
-  private static ArchCondition<JavaClass> notAnnotatedWithAnyOtherFromSamePackageAs(Class<?> allowed) {
-    return new ArchCondition<>("not annotated with any other annotation from " + allowed.getPackageName()) {
+  private static ArchCondition<JavaClass>
+                            notAnnotatedWithAnyOtherFromSamePackageAs(Class<?> allowed) {
+    return new ArchCondition<>(
+            "not annotated with any other annotation from " + allowed.getPackageName()) {
       @Override
       public void check(JavaClass item, ConditionEvents events) {
         String pkg = allowed.getPackageName();
@@ -55,6 +58,7 @@ public class PluginsImportedPropertyTest {
     };
   }
 
+  @DisplayName("Adapter.in.collector 패키지 안의 Collector 클래스들은 CollectorType Annotation만 가지고 있어야 한다.")
   @Test
   void collectorsShouldHaveOnlyCollectorType() {
     ArchRule rule = classes()
@@ -67,8 +71,9 @@ public class PluginsImportedPropertyTest {
     rule.check(importLocalMainClasses);
   }
 
+  @DisplayName("Adapter.in.validator 패키지 안의 Validator 클래스들은 ValidatorType Annotation만 가지고 있어야 한다.")
   @Test
-  void validators_should_have_only_ValidatorType() {
+  void validatorsShouldHaveOnlyValidatorType() {
     ArchRule rule = classes()
         .that().resideInAnyPackage("com.rihee.alerting.loggingService.adapter.rule.validator..")
         .and().areTopLevelClasses()
@@ -79,8 +84,10 @@ public class PluginsImportedPropertyTest {
     rule.check(importLocalMainClasses);
   }
 
+  @DisplayName("Adapter.in.persistence 패키지 안의 Persistence 클래스들은 "
+                + "PersistenceType Annotation만 가지고 있어야 한다.")
   @Test
-  void persistence_should_have_only_PersistenceType() {
+  void persistenceShouldHaveOnlyPersistenceType() {
     ArchRule rule = classes()
         .that().resideInAnyPackage("com.rihee.alerting.loggingService.adapter.out.persistence..")
         .and().areTopLevelClasses()

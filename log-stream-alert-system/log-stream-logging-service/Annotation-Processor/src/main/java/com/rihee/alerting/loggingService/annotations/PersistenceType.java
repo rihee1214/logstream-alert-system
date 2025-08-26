@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * 요구 조건을 위반할 경우 빌드 시점에 오류를 발생시켜 시스템 일관성을 보장합니다.
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface PersistenceType {
 

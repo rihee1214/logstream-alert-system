@@ -51,17 +51,21 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
         LogMessage message = it.next();
 
         if (message.isError()) {
+          errorBatch
+              // TODO Occured At 처리 관련 고민
+              .bind("messageId", message.get(ErrorLogSchema.MESSAGE_ID.getSchemaName()))
+              .bind("originLog", message.get(ErrorLogSchema.ORIGIN_LOG.getSchemaName()))
+              .bind("reason", message.get(ErrorLogSchema.REASON.getSchemaName()))
+              .bind("log_version_major",
+                                      message.get(ErrorLogSchema.LOG_VERSION_MAJOR.getSchemaName()))
+              .add();
+        } else {
+          // TODO 기능 완성 및 스키마 완성 필요
           normalBatch
               .bind("traceId", message.get(""))
               .bind("level", message.get(""))
               .bind("message", message.get(""))
               .bind("timestamp", message.get(""))
-              .add();
-        } else {
-          errorBatch
-              .bind("messageId", message.get(ErrorLogSchema.MESSAGE_ID.getSchemaName()))
-              .bind("originLog", message.get(ErrorLogSchema.ORIGIN_LOG.getSchemaName()))
-              .bind("reason", message.get(ErrorLogSchema.REASON.getSchemaName()))
               .add();
         }
 

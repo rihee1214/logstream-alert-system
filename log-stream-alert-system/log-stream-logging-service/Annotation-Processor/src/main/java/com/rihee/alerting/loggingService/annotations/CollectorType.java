@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * <p>이 어노테이션은 런타임 설정 기반 구성과 아키텍처 일관성 유지를 위한 기반으로 활용되며,
  * 설계 강제와 시스템 안정성 확보를 위해 **annotation processor에 의해 엄격히 검증**됩니다.
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface CollectorType {
 
