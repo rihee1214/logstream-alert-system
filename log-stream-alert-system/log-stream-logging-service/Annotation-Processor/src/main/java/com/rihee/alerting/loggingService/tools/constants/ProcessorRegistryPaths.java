@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.toos.constants;
+package com.rihee.alerting.loggingService.tools.constants;
 
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;

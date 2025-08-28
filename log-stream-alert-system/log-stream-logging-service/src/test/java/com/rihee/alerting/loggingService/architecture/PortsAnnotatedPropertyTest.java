@@ -5,15 +5,11 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
-import com.rihee.alerting.loggingService.architecture.constants.PortSpec;
-import com.rihee.alerting.loggingService.toos.annotationprocessor.PersistenceTypeProcessor;
-import com.rihee.alerting.loggingService.toos.constants.ProcessorRegistryPaths;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 public class PortsAnnotatedPropertyTest {

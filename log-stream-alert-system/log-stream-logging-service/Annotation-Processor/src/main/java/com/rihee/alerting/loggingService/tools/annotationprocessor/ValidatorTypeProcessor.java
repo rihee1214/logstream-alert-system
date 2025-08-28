@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.toos.annotationprocessor;
+package com.rihee.alerting.loggingService.tools.annotationprocessor;
 
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
 import java.lang.annotation.Annotation;

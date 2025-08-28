@@ -5,7 +5,7 @@ import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort.Builder;
 import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort;
-import com.rihee.alerting.loggingService.toos.constants.ProcessorRegistryPaths;
+import com.rihee.alerting.loggingService.tools.constants.ProcessorRegistryPaths;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;

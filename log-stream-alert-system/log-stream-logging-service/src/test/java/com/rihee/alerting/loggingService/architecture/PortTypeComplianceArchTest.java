@@ -1,26 +1,33 @@
 package com.rihee.alerting.loggingService.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.rihee.alerting.loggingService.architecture.constants.PortSpec;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.plugin.LogProcessorPlugin;
-import com.rihee.alerting.loggingService.toos.annotationprocessor.PersistenceTypeProcessor;
-import com.rihee.alerting.loggingService.toos.constants.ProcessorRegistryPaths;
+import com.rihee.alerting.loggingService.tools.annotationprocessor.AbstractTypeProcessor;
+import com.rihee.alerting.loggingService.tools.annotationprocessor.PersistenceTypeProcessor;
+import com.rihee.alerting.loggingService.tools.constants.ProcessorRegistryPaths;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,38 +39,42 @@ public class PortTypeComplianceArchTest {
    * ArchUnit 클래스 로딩 방식 비교 결과:
    * - @AnalyzeClasses(패키지 스캔): ~1,000ms ±50ms
    * - importPaths(build/classes/java/main): <100ms
-   * 멀티모듈/외부 JAR 스캔을 피하기 위해 importPaths 전략을 채택한다.
-   * (성능 수치는 로컬 측정 기준, 환경에 따라 변동 가능)
+   * 멀티모듈/외부 JAR 스캔을 피하기 위해 importPaths 전략을 채택한다.<br>
+   * (성능 수치는 로컬 측정 기준, 환경에 따라 변동 가능).<br>
+   * 해당 클래스에서는 서브 프로젝트(Annotation-Processor) 검증 로직까지 들어가 있어서 그것도 Import한다.
    */
   private static final JavaClasses IMPORT_LOCAL_MAIN_CLASSES = new ClassFileImporter()
       .withImportOption(new ImportOption.DoNotIncludeTests())
       .withImportOption(new ImportOption.DoNotIncludeJars())
       .withImportOption(new ImportOption.DoNotIncludeArchives())
       .withImportOption(new ImportOption.DoNotIncludePackageInfos())
-      .importPaths(Paths.get("build", "classes", "java", "main"));
+      .importPaths(
+          Paths.get("build", "classes", "java", "main"),
+          Paths.get("Annotation-Processor/build/classes/java/main")
+      );
 
   static Stream<PortSpec> specs() {
     return Stream.of(
         new PortSpec(
-            "collector",
+            "Collector",
             com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort.class,
             "com.rihee.alerting.loggingService.adapter.in.collector..",
             com.rihee.alerting.loggingService.core.plugin.LogCollectorPlugin.class,
             com.rihee.alerting.loggingService.annotations.CollectorType.class,
-            com.rihee.alerting.loggingService.toos.annotationprocessor.CollectorTypeProcessor.class,
+            com.rihee.alerting.loggingService.tools.annotationprocessor.CollectorTypeProcessor.class,
             ProcessorRegistryPaths.COLLECTOR.getDeclaringClass()
         ),
         new PortSpec(
-            "validator",
+            "Validator",
             com.rihee.alerting.loggingService.core.pipeline.port.rule.LogValidatorPort.class,
             "com.rihee.alerting.loggingService.adapter.rule.validator..",
             com.rihee.alerting.loggingService.core.plugin.LogValidatorPlugin.class,
             com.rihee.alerting.loggingService.annotations.ValidatorType.class,
-            com.rihee.alerting.loggingService.toos.annotationprocessor.ValidatorTypeProcessor.class,
+            com.rihee.alerting.loggingService.tools.annotationprocessor.ValidatorTypeProcessor.class,
             ProcessorRegistryPaths.VALIDATOR.getDeclaringClass()
         ),
         new PortSpec(
-            "persistence",
+            "Persistence",
             com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort.class,
             "com.rihee.alerting.loggingService.adapter.out.persistence..",
             com.rihee.alerting.loggingService.core.plugin.LogPersistencePlugin.class,
@@ -113,10 +124,13 @@ public class PortTypeComplianceArchTest {
 
     // === 진단 메시지 생성 ===
     String portHint = """
-        ❌ PortSpec 누락 감지!
+        ------------------------------------------------------------
+        [PortSpec 누락 감지!]
+        ------------------------------------------------------------
         발견된 Port 목록       : %s
         specs() 등록된 Port 목록: %s
         누락된 Port 목록       : %s
+        ------------------------------------------------------------
         """.formatted(
         toSimpleNames(discoveredPorts),
         toSimpleNames(expectedPorts),
@@ -124,10 +138,13 @@ public class PortTypeComplianceArchTest {
     );
 
     String pluginHint = """
-        ❌ Plugin 누락 감지!
+        ------------------------------------------------------------
+        [Plugin 누락 감지!]
+        ------------------------------------------------------------
         발견된 Plugin 목록       : %s
         specs() 등록된 Plugin 목록: %s
         누락된 Plugin 목록       : %s
+        ------------------------------------------------------------
         """.formatted(
         toSimpleNames(discoveredPlugins),
         toSimpleNames(expectedPlugins),
@@ -145,12 +162,67 @@ public class PortTypeComplianceArchTest {
 
   @ParameterizedTest
   @MethodSource("specs")
-  void adapters_must_implement_port_and_have_annotation(PortSpec s) {
+  void adaptersMustImplementPortAndHaveAnnotation(PortSpec s) {
     ArchRule r = classes()
         .that().resideInAnyPackage(s.adapterPackagePattern())
         .and().areTopLevelClasses().and().areNotInterfaces()
         .should().beAssignableTo(s.portInterface())
         .andShould().beAnnotatedWith(s.adapterAnnotation());
     r.check(IMPORT_LOCAL_MAIN_CLASSES);
+  }
+
+  @ParameterizedTest
+  @MethodSource("specs")
+  void annotationProcessorMustBeTypedCorrectly(PortSpec s) {
+    System.out.println(s.name());
+    ArchRule r = classes()
+        .that().haveFullyQualifiedName(s.annotationProcessor().getName())
+        .should().beAssignableTo(AbstractTypeProcessor.class)
+        .andShould().haveSimpleNameStartingWith(s.name())
+        .andShould().haveSimpleNameEndingWith("TypeProcessor");
+    r.check(IMPORT_LOCAL_MAIN_CLASSES);
+  }
+
+  @ParameterizedTest(name = "AnnotationProcessor의 Annotation 검증")
+  @MethodSource("specs")
+  void validateAnnotationProcessorsAnnotation(PortSpec s) throws Exception {
+    Class<?> processorClass = s.annotationProcessor();
+
+    // 1. getTargetAnnotationType() 반환값 == adapterAnnotation()
+    Method method = processorClass.getDeclaredMethod("getTargetAnnotationType");
+    method.setAccessible(true);
+    @SuppressWarnings("unchecked")
+    Class<? extends Annotation> actualAnnotation
+        = (Class<? extends Annotation>) method.invoke(processorClass.getDeclaredConstructor().newInstance());
+    assertEquals(s.adapterAnnotation(), actualAnnotation,
+        "getTargetAnnotationType()의 반환값이 spec.adapterAnnotation()과 일치해야 합니다.");
+
+    // 2. @SupportedAnnotationTypes 값 검증
+    SupportedAnnotationTypes sat = processorClass.getAnnotation(SupportedAnnotationTypes.class);
+    assertNotNull(sat, "@SupportedAnnotationTypes 어노테이션이 존재해야 합니다.");
+    assertArrayEquals(new String[]{s.adapterAnnotation().getName()}, sat.value(),
+        "@SupportedAnnotationTypes 값은 adapterAnnotation의 FQN과 일치해야 합니다.");
+
+    // 3. @SupportedSourceVersion 값 검증
+    SupportedSourceVersion ssv = processorClass.getAnnotation(SupportedSourceVersion.class);
+    assertNotNull(ssv, "@SupportedSourceVersion 어노테이션이 존재해야 합니다.");
+    assertEquals(SourceVersion.RELEASE_21, ssv.value(),
+        "SupportedSourceVersion은 RELEASE_21이어야 합니다.");
+  }
+
+  @DisplayName("ProcessorRegistryPaths의 enum 이름은 spec의 이름과 일치해야 한다")
+  @ParameterizedTest
+  @MethodSource("specs")
+  void processorRegistryNameMustBeSpecName(PortSpec spec) {
+    Class<? extends Enum<?>> enumClass = spec.registryPathEnum();
+
+    // spec 이름과 동일한 이름을 가진 enum 상수가 존재해야 함
+    boolean hasMatchingEnumConstant = Stream.of(enumClass.getEnumConstants())
+        .anyMatch(e -> e.name().equalsIgnoreCase(spec.name()));  // 대소문자 무시 가능 여부는 선택
+
+    assertTrue(
+        hasMatchingEnumConstant,
+        "spec 이름 `%s`에 대응되는 enum 상수가 `%s`에 존재하지 않습니다.".formatted(spec.name(), enumClass.getName())
+    );
   }
 }

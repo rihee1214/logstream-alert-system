@@ -1,7 +1,7 @@
-package com.rihee.alerting.loggingService.toos.annotationprocessor;
+package com.rihee.alerting.loggingService.tools.annotationprocessor;
 
 import com.rihee.alerting.common.util.MapUtils;
-import com.rihee.alerting.loggingService.toos.constants.ProcessorRegistryPaths;
+import com.rihee.alerting.loggingService.tools.constants.ProcessorRegistryPaths;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
