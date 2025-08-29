@@ -1,7 +1,7 @@
 package com.rihee.alerting.loggingService.core.pipeline.port.rule;
 
-import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
+import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 
 /**
@@ -25,6 +25,13 @@ import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
  * @see LogProcessingContext
  */
 public abstract class LogValidatorPort implements LogProcessorPort {
+
+  private static final String STAGE = "Validator";
+
+  @Override
+  public final String stage() {
+    return STAGE;
+  }
 
   @Override
   public abstract ProcessResult process(LogProcessingContext processingContext);

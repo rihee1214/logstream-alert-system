@@ -26,8 +26,8 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
             DO NOTHING
       """;
   private static final String ERROR_INSERT_QUERY = """
-      INSERT INTO err_logs (message_id, origin_log, reason, log_version_major)
-            VALUES (:messageId, :originLog, :reason, :log_version_major)
+      INSERT INTO err_logs (message_id, origin_log, reason, occurred_at, stage, log_version_major)
+            VALUES (:messageId, :originLog, :reason, :occurred_at, :stage, :log_version_major)
             ON CONFLICT(message_id)
             DO NOTHING
       """;
@@ -56,6 +56,8 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
               .bind("messageId", message.get(ErrorLogSchema.MESSAGE_ID.getSchemaName()))
               .bind("originLog", message.get(ErrorLogSchema.ORIGIN_LOG.getSchemaName()))
               .bind("reason", message.get(ErrorLogSchema.REASON.getSchemaName()))
+              .bind("occurred_at", message.get(ErrorLogSchema.OCCURRED_AT.getSchemaName()))
+              .bind("stage", message.get(ErrorLogSchema.STAGE.getSchemaName()))
               .bind("log_version_major",
                                       message.get(ErrorLogSchema.LOG_VERSION_MAJOR.getSchemaName()))
               .add();

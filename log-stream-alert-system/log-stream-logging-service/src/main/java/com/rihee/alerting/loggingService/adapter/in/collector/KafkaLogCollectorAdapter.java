@@ -65,7 +65,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort implements 
       } catch (RuntimeException e) {
         String reason = String.format("로그 메시지 [key : %s]를 파싱할 수 없어 에러 로그로 처리합니다.", messageKey);
         logger.debug(reason);
-        newMessage = LogErrorMessage.fromOriginMessage(logMessage, messageKey, reason);
+        newMessage = LogErrorMessage.fromOriginMessage(logMessage, messageKey, reason, stage());
 
         if (StringUtils.isBlank(messageKey)) {
           logger.warn("메시지 key가 없는 message입니다. : {}", logMessage);

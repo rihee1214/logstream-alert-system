@@ -97,7 +97,8 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
       if (reason != null) {
         // 치명도가 낮은(복구 가능) 데이터 검증 실패 → warn 수준 + 메시지 키 중심으로 로그 축약
         log.warn(reason);
-        resultMessages.stackingLogMessage(LogErrorMessage.fromNormalMessage(message, reason));
+        resultMessages.stackingLogMessage(
+              LogErrorMessage.fromNormalMessage(message, reason, stage()));
         continue;
       }
       log.debug("Validate Success! : {}", message.getMessageKey());
@@ -147,7 +148,8 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
      * @return 이 빌더 자신(메서드 체이닝용)
      */
     @Override
-    public LogValidatorPort.Builder<DefaultLogValidatorAdapter> withProperties(Map<String, String> setting) {
+    public LogValidatorPort.Builder<DefaultLogValidatorAdapter>
+                                                withProperties(Map<String, String> setting) {
       return this;
     }
 

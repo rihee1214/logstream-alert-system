@@ -46,6 +46,8 @@ public interface LogProcessorPort {
    */
   ProcessResult process(LogProcessingContext processingContext);
 
+  String stage();
+
   /**
    * {@link LogProcessorPort} 구현체 생성을 위한 빌더 인터페이스입니다.
    *

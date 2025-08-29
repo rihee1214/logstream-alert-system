@@ -19,6 +19,7 @@ kanban-plugin: board
 
 ## 일반
 
+- [ ] LogMessage Put메서드 rename고민
 
 
 

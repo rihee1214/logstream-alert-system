@@ -10,7 +10,6 @@ import com.rihee.alerting.loggingService.architecture.constants.PortSpec;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.plugin.LogProcessorPlugin;
 import com.rihee.alerting.loggingService.tools.annotationprocessor.AbstractTypeProcessor;
-import com.rihee.alerting.loggingService.tools.annotationprocessor.PersistenceTypeProcessor;
 import com.rihee.alerting.loggingService.tools.constants.ProcessorRegistryPaths;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
@@ -19,6 +18,7 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -61,7 +61,8 @@ public class PortTypeComplianceArchTest {
             "com.rihee.alerting.loggingService.adapter.in.collector..",
             com.rihee.alerting.loggingService.core.plugin.LogCollectorPlugin.class,
             com.rihee.alerting.loggingService.annotations.CollectorType.class,
-            com.rihee.alerting.loggingService.tools.annotationprocessor.CollectorTypeProcessor.class,
+            com.rihee.alerting.loggingService.tools.annotationprocessor
+                                                                .CollectorTypeProcessor.class,
             ProcessorRegistryPaths.COLLECTOR.getDeclaringClass()
         ),
         new PortSpec(
@@ -70,7 +71,8 @@ public class PortTypeComplianceArchTest {
             "com.rihee.alerting.loggingService.adapter.rule.validator..",
             com.rihee.alerting.loggingService.core.plugin.LogValidatorPlugin.class,
             com.rihee.alerting.loggingService.annotations.ValidatorType.class,
-            com.rihee.alerting.loggingService.tools.annotationprocessor.ValidatorTypeProcessor.class,
+            com.rihee.alerting.loggingService.tools.annotationprocessor
+                                                                .ValidatorTypeProcessor.class,
             ProcessorRegistryPaths.VALIDATOR.getDeclaringClass()
         ),
         new PortSpec(
@@ -79,7 +81,8 @@ public class PortTypeComplianceArchTest {
             "com.rihee.alerting.loggingService.adapter.out.persistence..",
             com.rihee.alerting.loggingService.core.plugin.LogPersistencePlugin.class,
             com.rihee.alerting.loggingService.annotations.PersistenceType.class,
-            PersistenceTypeProcessor.class,
+            com.rihee.alerting.loggingService.tools.annotationprocessor
+                                                                    .PersistenceTypeProcessor.class,
             ProcessorRegistryPaths.PERSISTENCE.getDeclaringClass()
         )
     );
@@ -97,7 +100,7 @@ public class PortTypeComplianceArchTest {
 
     // === specs()에 정의된 예상 포트 클래스 목록 ===
     Set<JavaClass> expectedPorts = specs()
-        .map(PortSpec::portInterface)
+        .map(PortSpec::portAbstracts)
         .map(IMPORT_LOCAL_MAIN_CLASSES::get) // Class<?> → JavaClass
         .collect(Collectors.toCollection(LinkedHashSet::new));
 
@@ -160,17 +163,49 @@ public class PortTypeComplianceArchTest {
     return classes.stream().map(JavaClass::getSimpleName).toList();
   }
 
+  @DisplayName("PortSpec의 abstract 클래스는 반드시 LogProcessorPort를 구현해야 한다")
+  @ParameterizedTest
+  @MethodSource("specs")
+  void portAbstractShouldBeAssignableToLogProcessorPort(PortSpec s) {
+    ArchRule r = classes()
+        .that().haveFullyQualifiedName(s.portAbstracts().getName())
+        .should().beAssignableTo(LogProcessorPort.class);
+    r.check(IMPORT_LOCAL_MAIN_CLASSES);
+  }
+
+  @DisplayName("각 abstract port는 final processorName()을 가지고, 그 반환값이 클래스명에 포함되어야 함")
+  @ParameterizedTest
+  @MethodSource("specs")
+  void portAbstractShouldImplementMethodWithFinal(PortSpec s) throws Exception {
+    Class<?> clazz = s.portAbstracts();
+
+    // processorName 메서드 존재 여부
+    Method method = clazz.getDeclaredMethod("stage");
+    assertNotNull(method, "processorName() 메서드가 존재하지 않습니다.");
+
+    // 메서드의 modifier가 final인지 확인
+    boolean isFinal = Modifier.isFinal(method.getModifiers());
+    assertTrue(isFinal, "processorName() 메서드는 반드시 final이어야 합니다.");
+
+    // 반환 타입은 String이고, 파라미터 없음
+    assertEquals(String.class, method.getReturnType(), "processorName()의 반환 타입은 String이어야 합니다.");
+    assertEquals(0, method.getParameterCount(), "processorName()은 파라미터가 없어야 합니다.");
+  }
+
+  @DisplayName("Port의 구현체는 해당 추상 클래스와 어노테이션을 함께 구현해야 한다")
   @ParameterizedTest
   @MethodSource("specs")
   void adaptersMustImplementPortAndHaveAnnotation(PortSpec s) {
     ArchRule r = classes()
         .that().resideInAnyPackage(s.adapterPackagePattern())
         .and().areTopLevelClasses().and().areNotInterfaces()
-        .should().beAssignableTo(s.portInterface())
+        .should().beAssignableTo(s.portAbstracts())
         .andShould().beAnnotatedWith(s.adapterAnnotation());
     r.check(IMPORT_LOCAL_MAIN_CLASSES);
   }
 
+
+  @DisplayName("Annotation Processor는 AbstractTypeProcessor를 상속하고 명명 규칙을 따라야 한다")
   @ParameterizedTest
   @MethodSource("specs")
   void annotationProcessorMustBeTypedCorrectly(PortSpec s) {
@@ -193,7 +228,8 @@ public class PortTypeComplianceArchTest {
     method.setAccessible(true);
     @SuppressWarnings("unchecked")
     Class<? extends Annotation> actualAnnotation
-        = (Class<? extends Annotation>) method.invoke(processorClass.getDeclaredConstructor().newInstance());
+        = (Class<? extends Annotation>) method.invoke(
+                                          processorClass.getDeclaredConstructor().newInstance());
     assertEquals(s.adapterAnnotation(), actualAnnotation,
         "getTargetAnnotationType()의 반환값이 spec.adapterAnnotation()과 일치해야 합니다.");
 
