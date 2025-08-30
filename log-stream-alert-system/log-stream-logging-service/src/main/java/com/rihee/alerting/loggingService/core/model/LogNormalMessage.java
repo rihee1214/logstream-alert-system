@@ -1,43 +1,81 @@
 package com.rihee.alerting.loggingService.core.model;
 
 import com.rihee.alerting.common.constant.message.LogFieldKey;
+import com.rihee.alerting.common.constant.storage.NormalLogSchema;
 import com.rihee.alerting.common.util.MapUtils;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LogNormalMessage implements LogMessage {
 
-  private static final Set<String> STRUCTURED_KEYS;
+
   private static final int LOG_VERSION_MAJOR = 1;
 
   private final String messageKey;
-  private final Map<String, Object> structuredLogs = new HashMap<>();
-  private final Map<String, Object> unstructuredLogs = new HashMap<>();
+  private final Map<StructuredRouter, Map<String, Object>> logMap
+                                  = Map.of(
+                                      StructuredRouter.NORMAL, new HashMap<>(),
+                                      StructuredRouter.CALL, new HashMap<>(),
+                                      StructuredRouter.NONE, new HashMap<>()
+                                    );
 
-  static {
-    try (ScanResult scanResult = new ClassGraph()
-        .enableClassInfo()
-        .acceptPackages(LogFieldKey.class.getPackageName()) // 특정 패키지만 스캔
-        .scan()) {
+  private enum StructuredRouter {
+    NORMAL,
+    CALL,
+    NONE;
 
-      STRUCTURED_KEYS = scanResult.getClassesImplementing(LogFieldKey.class.getName())
-          .filter(ClassInfo::isEnum)
-          .stream()
-          .map(ClassInfo::loadClass)
-          .filter(LogFieldKey.class::isAssignableFrom)
-          .flatMap(c -> {
-            @SuppressWarnings("unchecked")
-            Class<? extends LogFieldKey> typedClass = (Class<? extends LogFieldKey>) c;
-            return Arrays.stream(typedClass.getEnumConstants());
-          })
-          .map(LogFieldKey::getFieldName)
-          .collect(Collectors.toUnmodifiableSet());
+    private static final Set<String> STRUCTURED_KEYS;
+    private static final Set<String> STRUCTURED_CALL_KEYS;
+    private static final String CALL_PREFIX = "call.";
+
+    static {
+      Set<String> normal;
+      Set<String> call;
+
+      try (ScanResult sr = new ClassGraph()
+          .enableClassInfo()
+          .acceptPackages(LogFieldKey.class.getPackageName()) // 하위 패키지까지 포함됨
+          .scan()) {
+
+        // 1) 모든 enum 상수의 fieldName 스트림
+        Stream<String> names = sr.getClassesImplementing(LogFieldKey.class.getName())
+            .filter(ClassInfo::isEnum)
+            .stream()
+            .map(ci -> (Class<? extends LogFieldKey>) ci.loadClass(LogFieldKey.class))
+            .flatMap(c -> Arrays.stream(c.getEnumConstants()))
+            .map(LogFieldKey::getFieldName);
+
+        // 2) call.* 여부로 한 번에 분할
+        var parts = names.collect(Collectors.partitioningBy(
+            n -> n.startsWith(CALL_PREFIX),
+            Collectors.toCollection(LinkedHashSet::new)
+        ));
+
+        call = parts.get(true);
+        normal = parts.get(false);
+      }
+
+      STRUCTURED_CALL_KEYS = Collections.unmodifiableSet(call);
+      STRUCTURED_KEYS      = Collections.unmodifiableSet(normal);
+    }
+
+    public static StructuredRouter routeKey(String key) {
+      if (STRUCTURED_KEYS.contains(key)) {
+        return NORMAL;
+      } else if (STRUCTURED_CALL_KEYS.contains(key)) {
+        return CALL;
+      } else {
+        return NONE;
+      }
     }
   }
 
@@ -51,7 +89,7 @@ public class LogNormalMessage implements LogMessage {
     for (Map.Entry<String, Object> entry : allLogs.entrySet()) {
       this.put(entry.getKey(), entry.getValue());
     }
-    structuredLogs.put("log_version_major", LOG_VERSION_MAJOR);
+    this.put(NormalLogSchema.LOG_VERSION_MAJOR.getSchemaName(), LOG_VERSION_MAJOR);
   }
 
   public static LogNormalMessage fromOriginMessage(Map<String, Object> allLogs, String messageKey) {
@@ -65,26 +103,19 @@ public class LogNormalMessage implements LogMessage {
 
   @Override
   public Object get(String key) {
-    if (STRUCTURED_KEYS.contains(key)) {
-      return structuredLogs.get(key);
-    } else {
-      return unstructuredLogs.get(key);
-    }
+    return logMap.get(StructuredRouter.routeKey(key)).get(key);
   }
 
   @Override
   public void put(String key, Object value) {
-    if (STRUCTURED_KEYS.contains(key)) {
-      structuredLogs.put(key, value);
-    } else {
-      unstructuredLogs.put(key, value);
-    }
+    logMap.get(StructuredRouter.routeKey(key)).put(key, value);
   }
 
   @Override
   public Map<String, Object> toPersistenceMap() {
-    Map<String, Object> result = new HashMap<>(this.structuredLogs);
-    result.put("meta", MapUtils.toJsonString(this.unstructuredLogs));
+    Map<String, Object> result = new HashMap<>(logMap.get(StructuredRouter.NORMAL));
+    result.put("meta", logMap.get(StructuredRouter.NONE));
+    result.put("call", logMap.get(StructuredRouter.CALL));
     return result;
   }
 
