@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LogNormalMessage implements LogMessage {
+public final class LogNormalMessage implements LogMessage {
 
 
   private static final int LOG_VERSION_MAJOR = 1;
@@ -103,7 +103,13 @@ public class LogNormalMessage implements LogMessage {
 
   @Override
   public Object get(String key) {
-    return logMap.get(StructuredRouter.routeKey(key)).get(key);
+    if ("call".equals(key)) {
+      return MapUtils.toJsonString(logMap.get(StructuredRouter.CALL));
+    } else if ("meta".equals(key)) {
+      return MapUtils.toJsonString(logMap.get(StructuredRouter.NONE));
+    } else {
+      return logMap.get(StructuredRouter.routeKey(key)).get(key);
+    }
   }
 
   @Override
@@ -112,11 +118,11 @@ public class LogNormalMessage implements LogMessage {
   }
 
   @Override
-  public Map<String, Object> toPersistenceMap() {
+  public String toJsonString() {
     Map<String, Object> result = new HashMap<>(logMap.get(StructuredRouter.NORMAL));
     result.put("meta", logMap.get(StructuredRouter.NONE));
     result.put("call", logMap.get(StructuredRouter.CALL));
-    return result;
+    return MapUtils.toJsonString(result);
   }
 
   @Override

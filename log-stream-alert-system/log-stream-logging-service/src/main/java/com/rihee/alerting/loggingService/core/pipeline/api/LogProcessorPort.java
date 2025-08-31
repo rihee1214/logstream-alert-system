@@ -46,6 +46,27 @@ public interface LogProcessorPort {
    */
   ProcessResult process(LogProcessingContext processingContext);
 
+  /**
+   * 현재 {@link LogProcessorPort} 구현체가 속한 처리 단계를 반환합니다.
+   *
+   * <p>이 값은 주로 에러 발생 시 사용되어,
+   * 해당 오류가 로그 파이프라인의 어떤 단계(stage)에서 발생했는지를
+   * 에러 메시지에 명확히 기록하기 위한 용도로 활용됩니다.
+   *
+   * <p>예시:
+   * <ul>
+   *   <li>"COLLECT" – 로그 수집 단계 (Kafka, File, HTTP 등)</li>
+   *   <li>"VALIDATE" – 구문/스키마 검증 단계</li>
+   *   <li>"PERSIST" – 영속화(DB, Kafka 등) 단계</li>
+   * </ul>
+   *
+   * <p><b>구현 주의사항:</b><br>
+   * 이 메서드는 각 단계별 추상 클래스(예: {@code LogCollectorPort}, {@code LogPersistencePort})에서
+   * 반드시 구현하도록 강제되며, 파이프라인 상에서 자신이 속한 고유한 stage 명칭을 반환해야 합니다.
+   * 이는 로그 파이프라인 전반에서 문제 추적과 원인 분석을 돕기 위함입니다.
+   *
+   * @return 이 프로세서가 속한 처리 단계의 명칭 (절대 {@code null} 불가)
+   */
   String stage();
 
   /**

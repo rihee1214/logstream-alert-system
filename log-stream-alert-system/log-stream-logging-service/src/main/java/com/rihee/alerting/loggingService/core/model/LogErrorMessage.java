@@ -25,7 +25,7 @@ import java.util.Map;
  * 생성은 정적 팩토리 메서드 {@link #fromOriginMessage(String, String, String, String)} 또는
  * {@link #fromNormalMessage(LogMessage, String, String)}를 통해 수행된다.
  */
-public class LogErrorMessage implements LogMessage {
+public final class LogErrorMessage implements LogMessage {
 
   // 에러 로그 스키마의 주요 버전
   private static final int LOG_MAJOR_VERSION = 1;
@@ -62,7 +62,7 @@ public class LogErrorMessage implements LogMessage {
   /**
    * 정상 로그 메시지 객체와 에러 사유를 기반으로 {@code LogErrorMessage}를 생성한다.
    *
-   * <p>{@code message}는 {@link LogMessage#toPersistenceMap()}을 통해 JSON 문자열로 직렬화되며,
+   * <p>{@code message}는 {@link LogMessage#toJsonString()}을 통해 JSON 문자열로 직렬화되며,
    * 해당 데이터와 메시지 키를 에러 로그로 변환한다.
    *
    * @param message 원본 {@link LogMessage} 객체
@@ -74,7 +74,7 @@ public class LogErrorMessage implements LogMessage {
   public static LogErrorMessage fromNormalMessage(LogMessage message, String reason,
                                                           String stage) {
     String messageKey = message.getMessageKey();
-    String originLog = MapUtils.toJsonString(message.toPersistenceMap());
+    String originLog = message.toJsonString();
     Map<String, Object> errorLogs = buildErrorLogs(originLog, messageKey, reason, stage);
     return new LogErrorMessage(errorLogs);
   }
@@ -149,8 +149,8 @@ public class LogErrorMessage implements LogMessage {
    * @return 에러 로그 필드 데이터의 복사본
    */
   @Override
-  public Map<String, Object> toPersistenceMap() {
-    return new HashMap<>(this.errorLogs);
+  public String toJsonString() {
+    return MapUtils.toJsonString(new HashMap<>(this.errorLogs));
   }
 
   /**

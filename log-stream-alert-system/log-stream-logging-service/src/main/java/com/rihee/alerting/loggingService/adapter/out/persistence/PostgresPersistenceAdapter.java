@@ -1,6 +1,9 @@
 package com.rihee.alerting.loggingService.adapter.out.persistence;
 
+import com.rihee.alerting.common.constant.message.CallCommonProperties;
+import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.constant.storage.ErrorLogSchema;
+import com.rihee.alerting.common.constant.storage.NormalLogSchema;
 import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import com.rihee.alerting.loggingService.core.model.LogMessage;
@@ -20,16 +23,49 @@ import org.jdbi.v3.core.statement.PreparedBatch;
 public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
   private static final String NORMAL_INSERT_QUERY = """
-      INSERT INTO logs (trace_id, level, message, timestamp)
-            VALUES (:traceId, :level, :message, :timestamp)
-            ON CONFLICT(trace_id, )
-            DO NOTHING
+      INSERT INTO logs (
+          logtype,
+          timestamp,
+          level,
+          service,
+          "class",
+          message,
+          host,
+          container,
+          stacktrace,
+          traceId,
+          spanId,
+          parentSpanId,
+          sampled,
+          flags,
+          log_major_version,
+          call,
+          meta
+      )
+      VALUES (
+          :logtype,
+          :timestamp,
+          :level,
+          :service,
+          :class,
+          :message,
+          :host,
+          :container,
+          :stacktrace,
+          :traceId,
+          :spanId,
+          :parentSpanId,
+          :sampled,
+          :flags,
+          :log_major_version,
+          coalesce(:call::jsonb, '{}'::jsonb),
+          coalesce(:meta::jsonb, '{}'::jsonb)
+      ) ON CONFLICT(message_id) DO NOTHING
       """;
   private static final String ERROR_INSERT_QUERY = """
       INSERT INTO err_logs (message_id, origin_log, reason, occurred_at, stage, log_version_major)
             VALUES (:messageId, :originLog, :reason, :occurred_at, :stage, :log_version_major)
-            ON CONFLICT(message_id)
-            DO NOTHING
+            ON CONFLICT(message_id) DO NOTHING
       """;
 
   private final Jdbi jdbi;
@@ -52,7 +88,6 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
         if (message.isError()) {
           errorBatch
-              // TODO Occured At 처리 관련 고민
               .bind("messageId", message.get(ErrorLogSchema.MESSAGE_ID.getSchemaName()))
               .bind("originLog", message.get(ErrorLogSchema.ORIGIN_LOG.getSchemaName()))
               .bind("reason", message.get(ErrorLogSchema.REASON.getSchemaName()))
@@ -64,10 +99,24 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
         } else {
           // TODO 기능 완성 및 스키마 완성 필요
           normalBatch
-              .bind("traceId", message.get(""))
-              .bind("level", message.get(""))
-              .bind("message", message.get(""))
-              .bind("timestamp", message.get(""))
+              .bind("logtype", message.get(StructuredLogProperties.LOG_TYPE.getFieldName()))
+              .bind("timestamp", message.get(StructuredLogProperties.TIME_STAMP.getFieldName()))
+              .bind("level", message.get(StructuredLogProperties.LEVEL.getFieldName()))
+              .bind("service", message.get(StructuredLogProperties.SERVICE.getFieldName()))
+              .bind("class", message.get(StructuredLogProperties.CLASS.getFieldName()))
+              .bind("message", message.get(StructuredLogProperties.MESSAGE.getFieldName()))
+              .bind("host", message.get(StructuredLogProperties.HOST.getFieldName()))
+              .bind("container", message.get(StructuredLogProperties.CONTAINER.getFieldName()))
+              .bind("stacktrace", message.get(StructuredLogProperties.STACK_TRACE.getFieldName()))
+              .bind("traceId", message.get(StructuredLogProperties.TRACE_ID.getFieldName()))
+              .bind("spanId", message.get(StructuredLogProperties.SPAN_ID.getFieldName()))
+              .bind("parentSpanId",
+                                message.get(StructuredLogProperties.PARENT_SPAN_ID.getFieldName()))
+              .bind("sampled", message.get(StructuredLogProperties.SAMPLED.getFieldName()))
+              .bind("log_major_version",
+                                    message.get(NormalLogSchema.LOG_VERSION_MAJOR.getSchemaName()))
+              .bind("call", message.get("call"))
+              .bind("meta", message.get("meta"))
               .add();
         }
 
