@@ -78,8 +78,6 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
   public ProcessResult process(LogProcessingContext messages) {
     LogProcessingContext result = new DefaultLogProcessingContext();
     jdbi.useHandle(handle -> {
-      handle.createBatch();
-
       PreparedBatch normalBatch = handle.prepareBatch(NORMAL_INSERT_QUERY);
       PreparedBatch errorBatch = handle.prepareBatch(ERROR_INSERT_QUERY);
 
@@ -113,6 +111,7 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
               .bind("parentSpanId",
                                 message.get(StructuredLogProperties.PARENT_SPAN_ID.getFieldName()))
               .bind("sampled", message.get(StructuredLogProperties.SAMPLED.getFieldName()))
+              .bind("flags", message.get(StructuredLogProperties.FLAGS.getFieldName()))
               .bind("log_major_version",
                                     message.get(NormalLogSchema.LOG_VERSION_MAJOR.getSchemaName()))
               .bind("call", message.get("call"))

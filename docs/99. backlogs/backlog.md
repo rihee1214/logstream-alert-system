@@ -6,7 +6,7 @@ kanban-plugin: board
 
 ## 긴급
 
-- [ ] 
+- [ ] logging-service archunit 테스트 재 구축 고민(난잡함)
 
 
 ## 중요
