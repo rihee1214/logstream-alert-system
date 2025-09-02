@@ -26,26 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code KafkaLogCollectorAdapter}는 Kafka Consumer를 통해 로그 메시지를 수집하고,
- * 이를 {@link LogMessage} 객체로 변환하여 {@link LogProcessingContext}에 적재하는
- * 로그 수집기 어댑터입니다.
- *
- * <p>이 클래스는 {@link LogCollectorPort}와 {@link CommitableLogProcessor}를 구현하여
- * 다음과 같은 책임을 가집니다:
- * <ul>
- *   <li>Kafka로부터 JSON 형태의 로그 메시지를 pull 방식으로 수신</li>
- *   <li>수신한 메시지를 {@link LogNormalMessage} 또는 {@link LogErrorMessage}로 변환</li>
- *   <li>변환된 로그를 {@link LogProcessingContext}에 적재</li>
- *   <li>Kafka consumer offset을 명시적으로 commit</li>
- * </ul>
- *
- * <p>또한 {@link Builder} 패턴을 통해 Kafka Consumer 설정 및 topic 구독을 유연하게 초기화할 수 있습니다.
- *
- * <p>이 클래스는 불변(immutable)하게 설계되어 있으며, shutdown hook을 통해 안전한 종료를 보장합니다.
- *
- * @see LogCollectorPort
- * @see CommitableLogProcessor
- * @see KafkaConsumer
+ * TODO 패키지 다르게 만들고 테스트용 mockup으로 만들기.
  */
 @CollectorType("kafka")
 public final class KafkaLogCollectorAdapter extends LogCollectorPort

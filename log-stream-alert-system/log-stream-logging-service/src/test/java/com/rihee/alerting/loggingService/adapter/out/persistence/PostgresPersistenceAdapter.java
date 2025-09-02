@@ -18,6 +18,9 @@ import java.util.Map;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 
+/**
+ * TODO 패키지 다르게 만들고 테스트용 mockup으로 만들기.
+ */
 @PersistenceType("postgres")
 public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
