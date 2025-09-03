@@ -22,7 +22,7 @@ import org.jdbi.v3.core.statement.PreparedBatch;
  * TODO 패키지 다르게 만들고 테스트용 mockup으로 만들기.
  */
 @PersistenceType("postgres")
-public final class PostgresPersistenceAdapter extends LogPersistencePort {
+public final class TestPostgresPersistenceAdapter extends LogPersistencePort {
 
   private static final String NORMAL_INSERT_QUERY = """
       INSERT INTO logs (
@@ -72,7 +72,7 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
   private final Jdbi jdbi;
 
-  private PostgresPersistenceAdapter(Jdbi jdbi) {
+  private TestPostgresPersistenceAdapter(Jdbi jdbi) {
     this.jdbi = jdbi;
   }
 
@@ -134,32 +134,29 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
     return new Builder();
   }
 
-  public static class Builder implements LogProcessorPort.Builder<PostgresPersistenceAdapter> {
+  public static class Builder implements LogProcessorPort.Builder<TestPostgresPersistenceAdapter> {
 
     private static volatile HikariDataSource dataSource;
     private static volatile Jdbi jdbi;
 
     @Override
-    public LogProcessorPort.Builder<PostgresPersistenceAdapter>
+    public LogProcessorPort.Builder<TestPostgresPersistenceAdapter>
                                             withProperties(Map<String, String> setting) {
-      // 테스트 모드일 경우 setting만 확인하고 넘어가도록 처리
-      if (isDevOrTestMode()) {
-        getHikariConfigFromSetting(setting);
-        return this;
-      }
 
-      if (jdbi == null) {
-        synchronized (Builder.class) {
-          if (jdbi == null) {
-            HikariConfig config = getHikariConfigFromSetting(setting);
-            dataSource = new HikariDataSource(config);
-            jdbi = Jdbi.create(dataSource);
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-              dataSource.close();
-            }));
-          }
-        }
-      }
+//      if (jdbi == null) {
+//        synchronized (Builder.class) {
+//          if (jdbi == null) {
+//            HikariConfig config = getHikariConfigFromSetting(setting);
+//            dataSource = new HikariDataSource(config);
+//            jdbi = Jdbi.create(dataSource);
+//            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//              dataSource.close();
+//            }));
+//          }
+//        }
+//      }
+
+      getHikariConfigFromSetting(setting);
 
       return this;
     }
@@ -215,8 +212,8 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
     }
 
     @Override
-    public PostgresPersistenceAdapter build() {
-      return new PostgresPersistenceAdapter(jdbi);
+    public TestPostgresPersistenceAdapter build() {
+      return new TestPostgresPersistenceAdapter(jdbi);
     }
   }
 }

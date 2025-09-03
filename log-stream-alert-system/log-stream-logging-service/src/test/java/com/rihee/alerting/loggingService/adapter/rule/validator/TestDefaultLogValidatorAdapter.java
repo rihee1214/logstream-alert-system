@@ -19,13 +19,10 @@ import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * TODO 패키지 다르게 만들고 테스트용 mockup으로 만들기.
- */
 @ValidatorType("default")
-public final class DefaultLogValidatorAdapter extends LogValidatorPort {
+public final class TestDefaultLogValidatorAdapter extends LogValidatorPort {
 
-  private static final Logger log = LoggerFactory.getLogger(DefaultLogValidatorAdapter.class);
+  private static final Logger log = LoggerFactory.getLogger(TestDefaultLogValidatorAdapter.class);
 
   // CharSequence 기반 필수 문자열 검증(널/공백 불가)
   private static final Predicate<Object> IS_VALID_STRING
@@ -51,13 +48,13 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
     REQUIRED_FIELDS = Collections.unmodifiableMap(predicateMap);
   }
 
-  private DefaultLogValidatorAdapter() {
+  private TestDefaultLogValidatorAdapter() {
   }
 
   /**
-   * {@link DefaultLogValidatorAdapter}를 생성하기 위한 빌더를 반환합니다.
+   * {@link TestDefaultLogValidatorAdapter}를 생성하기 위한 빌더를 반환합니다.
    *
-   * @return {@link DefaultLogValidatorAdapter} 전용 빌더
+   * @return {@link TestDefaultLogValidatorAdapter} 전용 빌더
    */
   public static LogValidatorPort.Builder<?> builder() {
     return new Builder();
@@ -113,7 +110,7 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
   }
 
   /**
-   * {@link DefaultLogValidatorAdapter} 인스턴스를 생성하기 위한 빌더입니다.
+   * {@link TestDefaultLogValidatorAdapter} 인스턴스를 생성하기 위한 빌더입니다.
    *
    * <p>현재 구현에서는 외부 설정을 사용하지 않으며,
    * 어노테이션 {@link LogPolicy#isEssential()} 기반 필수 필드만 검증합니다.
@@ -121,7 +118,7 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
    * @see #withProperties(Map)
    * @see #build()
    */
-  public static class Builder implements LogValidatorPort.Builder<DefaultLogValidatorAdapter> {
+  public static class Builder implements LogValidatorPort.Builder<TestDefaultLogValidatorAdapter> {
 
     /**
      * 빌더에 설정 값을 전달합니다.
@@ -133,19 +130,19 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
      * @return 이 빌더 자신(메서드 체이닝용)
      */
     @Override
-    public LogValidatorPort.Builder<DefaultLogValidatorAdapter>
+    public LogValidatorPort.Builder<TestDefaultLogValidatorAdapter>
                                                 withProperties(Map<String, String> setting) {
       return this;
     }
 
     /**
-     * {@link DefaultLogValidatorAdapter} 인스턴스를 생성합니다.
+     * {@link TestDefaultLogValidatorAdapter} 인스턴스를 생성합니다.
      *
-     * @return 새 {@link DefaultLogValidatorAdapter} 인스턴스
+     * @return 새 {@link TestDefaultLogValidatorAdapter} 인스턴스
      */
     @Override
-    public DefaultLogValidatorAdapter build() {
-      return new DefaultLogValidatorAdapter();
+    public TestDefaultLogValidatorAdapter build() {
+      return new TestDefaultLogValidatorAdapter();
     }
   }
 }

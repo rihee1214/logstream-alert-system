@@ -22,23 +22,20 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.kafka.clients.consumer.MockConsumer;
+import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 
 /**
  * TODO 패키지 다르게 만들고 테스트용 mockup으로 만들기.
  */
 @CollectorType("kafka")
-public final class KafkaLogCollectorAdapter extends LogCollectorPort
+public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
                                             implements CommitableLogProcessor {
-
-  private static final Logger logger
-      = LoggerFactory.getLogger(KafkaLogCollectorAdapter.class);
 
   private final Consumer<String, String> kafkaConsumer;
   private final Duration kafkaTimeoutMillis;
 
-  private KafkaLogCollectorAdapter(Consumer<String, String> kafkaConsumer, int timeoutMillis) {
+  private TestKafkaLogCollectorAdapter(Consumer<String, String> kafkaConsumer, int timeoutMillis) {
     this.kafkaConsumer = kafkaConsumer;
     this.kafkaTimeoutMillis = Duration.ofMillis(timeoutMillis);
 
@@ -49,7 +46,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
   }
 
   /**
-   * {@link KafkaLogCollectorAdapter} 생성을 위한 {@link Builder}를 반환합니다.
+   * {@link TestKafkaLogCollectorAdapter} 생성을 위한 {@link Builder}를 반환합니다.
    *
    * <p>일반적으로 사용 예시는 다음과 같습니다:
    * <pre>{@code
@@ -95,11 +92,11 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
         newMessage = LogNormalMessage.fromOriginMessage(allLogComponents, messageKey);
       } catch (RuntimeException e) {
         String reason = String.format("로그 메시지 [key : %s]를 파싱할 수 없어 에러 로그로 처리합니다.", messageKey);
-        logger.debug(reason);
+//        logger.debug(reason);
         newMessage = LogErrorMessage.fromOriginMessage(logMessage, messageKey, reason, stage());
 
         if (StringUtils.isBlank(messageKey)) {
-          logger.warn("메시지 key가 없는 message입니다. : {}", logMessage);
+//          logger.warn("메시지 key가 없는 message입니다. : {}", logMessage);
           continue;
         }
       }
@@ -132,7 +129,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
     try {
       kafkaConsumer.commitSync();
     } catch (CommitFailedException e) {
-      logger.warn("Commit failed", e);
+//      logger.warn("Commit failed", e);
     }
   }
 
@@ -167,13 +164,13 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
    *   <li>Kafka Consumer 설정을 외부 properties로부터 로딩</li>
    *   <li>필수 Kafka 설정 검증 (bootstrap.servers, group.id 등)</li>
    *   <li>Kafka Topic 구독 등록</li>
-   *   <li>{@link KafkaLogCollectorAdapter} 인스턴스 생성</li>
+   *   <li>{@link TestKafkaLogCollectorAdapter} 인스턴스 생성</li>
    * </ul>
    *
    * <p>이 클래스의 {@link #build()} 메서드는 여러 번 호출할 수 있으며,
-   * 호출 시마다 새로운 {@link KafkaLogCollectorAdapter} 인스턴스를 생성합니다.
+   * 호출 시마다 새로운 {@link TestKafkaLogCollectorAdapter} 인스턴스를 생성합니다.
    */
-  public static class Builder implements LogCollectorPort.Builder<KafkaLogCollectorAdapter> {
+  public static class Builder implements LogCollectorPort.Builder<TestKafkaLogCollectorAdapter> {
 
     private static final Map<String, String> KEY_MAPPING = Map.of(
         "kafka.bootstrap.servers",  ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -213,29 +210,30 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
 
     /**
      * 설정된 값들을 기반으로 Kafka Consumer를 생성하고,
-     * 지정된 topic을 구독하는 {@link KafkaLogCollectorAdapter}를 빌드합니다.
+     * 지정된 topic을 구독하는 {@link TestKafkaLogCollectorAdapter}를 빌드합니다.
      *
      * <p>이 메서드는 여러 번 호출할 수 있으며, 호출될 때마다 새로운
-     * {@link KafkaLogCollectorAdapter} 인스턴스를 반환합니다.
+     * {@link TestKafkaLogCollectorAdapter} 인스턴스를 반환합니다.
      *
      * @return 초기화된 KafkaLogCollectorAdapter 인스턴스
      * @throws IllegalArgumentException topic이 설정되지 않은 경우
      */
     @Override
-    public KafkaLogCollectorAdapter build() {
+    public TestKafkaLogCollectorAdapter build() {
       if (this.kafkaTopic == null || this.kafkaTopic.isBlank()) {
         throw new IllegalArgumentException("kafka Topic[kafka.topic]이 세팅되어있지 않습니다.");
       }
 
       Consumer<String, String> kafkaConsumer
-          = new KafkaConsumer<>(new HashMap<>(consumerSetting));
+          = new MockConsumer<>(OffsetResetStrategy.LATEST);
+//          = new KafkaConsumer<>(new HashMap<>(consumerSetting));
       kafkaConsumer.subscribe(
           Arrays.stream(kafkaTopic.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toList()
       );
-      return new KafkaLogCollectorAdapter(kafkaConsumer, this.timeoutMillis);
+      return new TestKafkaLogCollectorAdapter(kafkaConsumer, this.timeoutMillis);
     }
   }
 

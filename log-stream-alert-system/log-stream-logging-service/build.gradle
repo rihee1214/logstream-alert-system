@@ -10,6 +10,7 @@ Central log processor that stores logs and triggers alerts for critical events
 
 dependencies {
     annotationProcessor project(":log-stream-logging-service:Annotation-Processor")
+    testAnnotationProcessor project(":log-stream-logging-service:Annotation-Processor")
 
     implementation project(":log-stream-logging-service:Annotation-Processor")
     // 전체 프로젝트에서 공통적으로 사용되는 로그 구조 같은 요소들을 모아넣은 project
@@ -41,8 +42,6 @@ tasks.withType(Test).configureEach {
     // 환경 변수 설정
 //    environment "VALIDATOR_MODE", "strict"
     environment "POSTGRES_CONNECT_PASSWORD", "password"
-
-    systemProperty "PROGRAM_MODE", "dev"
 
     // JVM 옵션
     jvmArgs += ["-XX:+EnableDynamicAgentLoading"]

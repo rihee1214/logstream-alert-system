@@ -67,6 +67,11 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
     }));
   }
 
+  KafkaLogCollectorAdapter(Consumer<String, String> kafkaConsumer) {
+    this.kafkaConsumer = kafkaConsumer;
+    this.kafkaTimeoutMillis = Duration.ofMillis(1000);
+  }
+
   /**
    * {@link KafkaLogCollectorAdapter} 생성을 위한 {@link Builder}를 반환합니다.
    *
