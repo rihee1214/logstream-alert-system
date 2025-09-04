@@ -8,15 +8,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * 초기화가 적절하게 이루어지는지 테스트. (타 시스템과의 직접적인 연결은 되지 않음)
  */
+@ExtendWith(InitGuard.class)
 public class WorkerInitTest {
-
-  private final Logger log = LoggerFactory.getLogger(WorkerInitTest.class);
 
   /**
    * 빌드, CI 테스트 등 단위 테스트에서는 PROGRAM_MODE를 dev 혹은 test로 둘것.
@@ -27,8 +25,6 @@ public class WorkerInitTest {
     LoggingRuntimeConfig config = SettingLoader.loadRuntimeSettingFromClasspath();
 
     String initResult = config.toString();
-
-    log.info("init result : {}", initResult);
 
     // then: threadCount 존재/숫자 확인 (옵션)
     assertThat(initResult).contains("threadCount=");
@@ -49,5 +45,19 @@ public class WorkerInitTest {
     long initMs = Long.parseLong(m.group(1));
     assertThat(initMs).as("init time should be < 5000 ms, actual=%d", initMs)
         .isLessThan(5_000);
+  }
+}
+
+
+@ExtendWith(InitGuard.class)
+class InitOnceTestB {
+
+  @Test
+  void must_share_same_instance_and_id() {
+    // A에서 만든 것과 동일해야 함
+    assertThat(InitGuard.initCount()).isEqualTo(1);
+    // 필요하면 인스턴스 identity도 확인 가능
+    var cfg = InitGuard.config();
+    assertThat(System.identityHashCode(cfg)).isEqualTo(System.identityHashCode(InitGuard.config()));
   }
 }
