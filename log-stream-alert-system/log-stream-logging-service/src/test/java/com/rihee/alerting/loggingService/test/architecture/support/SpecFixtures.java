@@ -1,9 +1,9 @@
-package com.rihee.alerting.loggingService.architecture.support;
+package com.rihee.alerting.loggingService.test.architecture.support;
 
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
-import com.rihee.alerting.loggingService.architecture.constants.PortSpec;
+import com.rihee.alerting.loggingService.test.architecture.constants.PortSpec;
 import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
 import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort;
 import com.rihee.alerting.loggingService.core.pipeline.port.rule.LogValidatorPort;

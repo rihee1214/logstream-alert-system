@@ -1,9 +1,10 @@
-package com.rihee.alerting.loggingService.unit;
+package com.rihee.alerting.loggingService.test.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.rihee.alerting.loggingService.core.runtime.LoggingRuntimeConfig;
 import com.rihee.alerting.loggingService.core.runtime.SettingLoader;
+import com.rihee.alerting.loggingService.runtime.RuntimeBootstrapExtension;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 /**
  * 초기화가 적절하게 이루어지는지 테스트. (타 시스템과의 직접적인 연결은 되지 않음)
  */
-@ExtendWith(InitGuard.class)
+@ExtendWith(RuntimeBootstrapExtension.class)
 public class WorkerInitTest {
 
   /**
@@ -49,15 +50,3 @@ public class WorkerInitTest {
 }
 
 
-@ExtendWith(InitGuard.class)
-class InitOnceTestB {
-
-  @Test
-  void must_share_same_instance_and_id() {
-    // A에서 만든 것과 동일해야 함
-    assertThat(InitGuard.initCount()).isEqualTo(1);
-    // 필요하면 인스턴스 identity도 확인 가능
-    var cfg = InitGuard.config();
-    assertThat(System.identityHashCode(cfg)).isEqualTo(System.identityHashCode(InitGuard.config()));
-  }
-}

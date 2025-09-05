@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.architecture.constants;
+package com.rihee.alerting.loggingService.test.architecture.constants;
 
 import java.lang.annotation.Annotation;
 import java.util.Objects;

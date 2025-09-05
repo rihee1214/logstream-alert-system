@@ -1,8 +1,8 @@
-package com.rihee.alerting.loggingService.architecture;
+package com.rihee.alerting.loggingService.test.architecture;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.rihee.alerting.loggingService.architecture.constants.PortSpec;
+import com.rihee.alerting.loggingService.test.architecture.constants.PortSpec;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

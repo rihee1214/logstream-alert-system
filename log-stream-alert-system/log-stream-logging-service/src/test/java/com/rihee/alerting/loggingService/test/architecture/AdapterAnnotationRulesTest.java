@@ -1,9 +1,9 @@
-package com.rihee.alerting.loggingService.architecture;
+package com.rihee.alerting.loggingService.test.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
-import com.rihee.alerting.loggingService.architecture.constants.PortSpec;
-import com.rihee.alerting.loggingService.architecture.support.ArchitectureImports;
+import com.rihee.alerting.loggingService.test.architecture.constants.PortSpec;
+import com.rihee.alerting.loggingService.test.architecture.support.ArchitectureImports;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

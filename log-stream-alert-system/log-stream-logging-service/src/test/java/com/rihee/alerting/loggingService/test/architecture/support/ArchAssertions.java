@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.architecture.support;
+package com.rihee.alerting.loggingService.test.architecture.support;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import java.util.List;

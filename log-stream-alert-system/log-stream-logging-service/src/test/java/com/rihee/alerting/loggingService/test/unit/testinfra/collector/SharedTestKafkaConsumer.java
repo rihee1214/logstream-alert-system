@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.unit.testinfra.collector;
+package com.rihee.alerting.loggingService.test.unit.testinfra.collector;
 
 import java.time.Duration;
 import java.util.Arrays;

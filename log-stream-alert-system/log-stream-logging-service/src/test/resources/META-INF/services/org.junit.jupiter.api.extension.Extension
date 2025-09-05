@@ -1,1 +1,1 @@
-com.rihee.alerting.loggingService.unit.InitGuard
+com.rihee.alerting.loggingService.runtime.RuntimeBootstrapExtension

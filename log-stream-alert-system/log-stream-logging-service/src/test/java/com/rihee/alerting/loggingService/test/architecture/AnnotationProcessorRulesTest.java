@@ -1,12 +1,12 @@
-package com.rihee.alerting.loggingService.architecture;
+package com.rihee.alerting.loggingService.test.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.rihee.alerting.loggingService.architecture.constants.PortSpec;
-import com.rihee.alerting.loggingService.architecture.support.ArchitectureImports;
+import com.rihee.alerting.loggingService.test.architecture.constants.PortSpec;
+import com.rihee.alerting.loggingService.test.architecture.support.ArchitectureImports;
 import com.rihee.alerting.loggingService.tools.annotationprocessor.AbstractTypeProcessor;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import java.lang.annotation.Annotation;
