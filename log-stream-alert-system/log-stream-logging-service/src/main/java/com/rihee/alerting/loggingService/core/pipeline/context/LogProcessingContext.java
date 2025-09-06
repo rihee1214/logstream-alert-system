@@ -57,4 +57,6 @@ public interface LogProcessingContext {
    * @return 로그 메시지가 하나도 없으면 {@code true}, 그렇지 않으면 {@code false}
    */
   boolean isEmpty();
+
+  int size();
 }

@@ -12,7 +12,7 @@ public class RegistryEnumRulesTest {
 
   @DisplayName("ProcessorRegistryPaths enum 이름은 spec 이름과 일치해야 한다")
   @ParameterizedTest
-  @MethodSource("com.rihee.alerting.loggingService.architecture.support.SpecFixtures#specs")
+  @MethodSource("com.rihee.alerting.loggingService.test.architecture.support.SpecFixtures#specs")
   void processorRegistryNameMustBeSpecName(PortSpec spec) {
     Class<? extends Enum<?>> enumClass = spec.registryPathEnum();
 

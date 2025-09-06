@@ -22,7 +22,7 @@ public class AnnotationProcessorRulesTest {
   private static final JavaClasses CLASSES = ArchitectureImports.imports();
 
   @ParameterizedTest(name = "{0} AP should extend AbstractTypeProcessor and follow naming")
-  @MethodSource("com.rihee.alerting.loggingService.architecture.support.SpecFixtures#specs")
+  @MethodSource("com.rihee.alerting.loggingService.test.architecture.support.SpecFixtures#specs")
   void annotationProcessorMustBeTypedCorrectly(PortSpec s) {
     classes()
         .that().haveFullyQualifiedName(s.annotationProcessor().getName())
@@ -33,7 +33,7 @@ public class AnnotationProcessorRulesTest {
   }
 
   @ParameterizedTest(name = "{0} AP annotations must match spec")
-  @MethodSource("com.rihee.alerting.loggingService.architecture.support.SpecFixtures#specs")
+  @MethodSource("com.rihee.alerting.loggingService.test.architecture.support.SpecFixtures#specs")
   void validateAnnotationProcessorsAnnotation(PortSpec s) throws Exception {
     Class<?> clazz = s.annotationProcessor();
 

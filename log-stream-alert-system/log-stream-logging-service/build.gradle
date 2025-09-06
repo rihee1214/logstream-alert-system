@@ -36,8 +36,24 @@ dependencies {
     runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
 }
 
+// 1) 테스트 전용 레지스트리 JAR 생성
+def testRegistryJar = tasks.register('testRegistryJar', Jar) {
+    archiveBaseName.set('test-registry-override')
+    from('src/test/resources-override') {
+        // 운영과 동일 경로/파일명으로 넣어 덮어쓰기
+        include 'META-INF/rihee/logging/collectors.index'
+    }
+    // (선택) 재현성 옵션
+    // preserveFileTimestamps = false
+    // reproducibleFileOrder = true
+}
+
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
+
+    dependsOn(testRegistryJar)
+    // testRegistryJar 산출물을 classpath 맨 앞에 배치
+    classpath = files(testRegistryJar.flatMap { it.archiveFile }) + classpath
 
     // 환경 변수 설정
 //    environment "VALIDATOR_MODE", "strict"

@@ -18,7 +18,7 @@ public class PortAbstractionRulesTest {
   private static final JavaClasses CLASSES = ArchitectureImports.imports();
 
   @ParameterizedTest(name = "{0} abstract port must implement LogProcessorPort")
-  @MethodSource("com.rihee.alerting.loggingService.architecture.support.SpecFixtures#specs")
+  @MethodSource("com.rihee.alerting.loggingService.test.architecture.support.SpecFixtures#specs")
   void portAbstractShouldBeAssignableToLogProcessorPort(PortSpec s) {
     classes().that().haveFullyQualifiedName(s.portAbstracts().getName())
         .should().beAssignableTo(LogProcessorPort.class)
@@ -26,7 +26,7 @@ public class PortAbstractionRulesTest {
   }
 
   @ParameterizedTest(name = "{0} abstract port must expose final stage()")
-  @MethodSource("com.rihee.alerting.loggingService.architecture.support.SpecFixtures#specs")
+  @MethodSource("com.rihee.alerting.loggingService.test.architecture.support.SpecFixtures#specs")
   void portAbstractShouldExposeFinalStage(PortSpec s) throws Exception {
     Method m = s.portAbstracts().getDeclaredMethod("stage");
     assertEquals(String.class, m.getReturnType(), "stage() must return String");

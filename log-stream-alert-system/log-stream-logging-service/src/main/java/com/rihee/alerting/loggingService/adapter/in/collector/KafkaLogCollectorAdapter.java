@@ -231,6 +231,10 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
       });
 
       this.kafkaTopic = setting.get("kafka.topic");
+      if (this.kafkaTopic == null || this.kafkaTopic.isBlank()) {
+        throw new IllegalArgumentException("kafka Topic[kafka.topic]이 세팅되어있지 않습니다.");
+      }
+
       this.timeoutMillis = Integer.parseInt(setting.getOrDefault("kafka.max.poll.timeout", "1000"));
       return this;
     }
@@ -247,10 +251,6 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
      */
     @Override
     public KafkaLogCollectorAdapter build() {
-      if (this.kafkaTopic == null || this.kafkaTopic.isBlank()) {
-        throw new IllegalArgumentException("kafka Topic[kafka.topic]이 세팅되어있지 않습니다.");
-      }
-
       Consumer<String, String> kafkaConsumer
           = new KafkaConsumer<>(new HashMap<>(consumerSetting));
       kafkaConsumer.subscribe(
@@ -260,6 +260,10 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
                 .toList()
       );
       return new KafkaLogCollectorAdapter(kafkaConsumer, this.timeoutMillis);
+    }
+
+    String getKafkaTopic() {
+      return this.kafkaTopic;
     }
   }
 

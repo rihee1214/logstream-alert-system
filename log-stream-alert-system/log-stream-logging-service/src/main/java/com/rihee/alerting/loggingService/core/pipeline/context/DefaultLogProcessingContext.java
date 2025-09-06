@@ -60,4 +60,9 @@ public class DefaultLogProcessingContext implements LogProcessingContext {
   public boolean isEmpty() {
     return logMessages.isEmpty();
   }
+
+  @Override
+  public int size() {
+    return logMessages.size();
+  }
 }

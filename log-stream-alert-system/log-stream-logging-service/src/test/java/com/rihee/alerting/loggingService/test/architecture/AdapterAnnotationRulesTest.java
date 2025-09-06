@@ -13,7 +13,7 @@ public class AdapterAnnotationRulesTest {
   private static final JavaClasses CLASSES = ArchitectureImports.imports();
 
   @ParameterizedTest(name = "{0} adapters must implement abstract port and have annotation")
-  @MethodSource("com.rihee.alerting.loggingService.architecture.support.SpecFixtures#specs")
+  @MethodSource("com.rihee.alerting.loggingService.test.architecture.support.SpecFixtures#specs")
   void adaptersMustImplementPortAndHaveAnnotation(PortSpec s) {
     classes()
         .that().resideInAnyPackage(s.adapterPackagePattern())
