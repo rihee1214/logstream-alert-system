@@ -20,7 +20,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 
 @PersistenceType("postgres")
-public final class PostgresPersistenceAdapter extends LogPersistencePort {
+public final class PostgresPersistenceAdapter extends LogPersistencePort implements AutoCloseable{
 
   private static final String NORMAL_INSERT_QUERY = """
       INSERT INTO logs (
@@ -134,6 +134,11 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
   public static LogProcessorPort.Builder<?> builder() {
     return new Builder();
+  }
+
+  @Override
+  public void close() throws Exception {
+
   }
 
   public static class Builder implements LogProcessorPort.Builder<PostgresPersistenceAdapter> {

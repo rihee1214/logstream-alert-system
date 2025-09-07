@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @see LogValidatorPort
  */
 @ValidatorType("default")
-public final class DefaultLogValidatorAdapter extends LogValidatorPort {
+public final class DefaultLogValidatorAdapter extends LogValidatorPort implements AutoCloseable {
 
   private static final Logger log = LoggerFactory.getLogger(DefaultLogValidatorAdapter.class);
 
@@ -125,6 +125,11 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
       }
     }
     return null;
+  }
+
+  @Override
+  public void close() throws Exception {
+    // 회수할 자원이 없으므로, 그대로 둔다.
   }
 
   /**

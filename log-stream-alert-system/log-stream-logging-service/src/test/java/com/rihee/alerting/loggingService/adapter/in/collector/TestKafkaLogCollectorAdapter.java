@@ -2,16 +2,17 @@ package com.rihee.alerting.loggingService.adapter.in.collector;
 
 import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
+import com.rihee.alerting.loggingService.adapter.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.core.pipeline.api.CommitableLogProcessor;
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
+import com.rihee.alerting.loggingService.core.plan.LogProcessorPluginPlanner;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
@@ -22,7 +23,7 @@ import org.apache.kafka.common.TopicPartition;
  */
 @CollectorType("kafka")
 public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
-                                            implements CommitableLogProcessor {
+                                  implements CommitableLogProcessor, TestProcessorAdapter {
 
   private final KafkaLogCollectorAdapter original;
   private final MockConsumer<String, String> consumer;
@@ -95,6 +96,21 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
                             originLog.get(StructuredLogProperties.CONTAINER.getFieldName()));
 
     return LogMessageKeyGenerator.generate(serviceName, hostName, containerName);
+  }
+
+  @Override
+  public String id() {
+    return LogProcessorPluginPlanner.COLLECT.name();
+  }
+
+  @Override
+  public void resetState() {
+
+  }
+
+  @Override
+  public void close() throws Exception {
+
   }
 
   public static class Builder implements LogCollectorPort.Builder<TestKafkaLogCollectorAdapter> {

@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @CollectorType("kafka")
 public final class KafkaLogCollectorAdapter extends LogCollectorPort
-                                            implements CommitableLogProcessor {
+                                            implements CommitableLogProcessor, AutoCloseable {
 
   private static final Logger logger
       = LoggerFactory.getLogger(KafkaLogCollectorAdapter.class);
@@ -181,6 +181,11 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
                             originLog.get(StructuredLogProperties.CONTAINER.getFieldName()));
 
     return LogMessageKeyGenerator.generate(serviceName, hostName, containerName);
+  }
+
+  @Override
+  public void close() throws Exception {
+    kafkaConsumer.close();
   }
 
   /**
