@@ -4,39 +4,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.rihee.alerting.common.util.MapUtils;
+import com.rihee.alerting.loggingService.adapter.Proc;
+import com.rihee.alerting.loggingService.adapter.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.adapter.in.collector.TestKafkaLogCollectorAdapter;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
+import com.rihee.alerting.loggingService.runtime.RuntimeBootstrapExtension;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(RuntimeBootstrapExtension.class)
 public class KafkaCollectorSingleMessageTest {
 
   @Test
   @DisplayName("단일 메시지를 수집하여 파이프라인으로 전달한다")
-  void collects_single_message_and_emits_to_pipeline() {
-    // given: 테스트용 Kafka 수집기 (MockConsumer 내부 주입)
-    // TODO 이제 자동으로 주입될 수 있도록 만들어서 이런 설정없이 가능하도록 해야함.
-    var adapter = TestKafkaLogCollectorAdapter.builder()
-        .withProperties(
-            Map.of(
-                "kafka.bootstrap.servers", "localhost:9092",
-                "kafka.topic", "log_topic",
-                "kafka.group.id", "logging-worker",
-                "kafka.enable.auto.commit", "false",
-                "kafka.auto.offset.reset", "earliest",
-                "kafka.max.poll.records", "100",
-                "kafka.max.poll.timeout", "5000",
-                "kafka.key.deserializer",
-                "org.apache.kafka.common.serialization.StringDeserializer",
-                "kafka.value.deserializer",
-                "org.apache.kafka.common.serialization.StringDeserializer"
-            )
-        )
-        .build();
+  void collects_single_message_and_emits_to_pipeline(
+        @Proc(TestKafkaLogCollectorAdapter.class) TestKafkaLogCollectorAdapter adapter) {
+    // given: 테스트용 Kafka 수집기 (MockConsumer 내부 주입)=
 
 
     Map<String, Object> params = new HashMap<>();

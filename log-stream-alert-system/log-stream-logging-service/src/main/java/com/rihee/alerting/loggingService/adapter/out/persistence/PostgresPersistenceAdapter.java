@@ -20,7 +20,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 
 @PersistenceType("postgres")
-public final class PostgresPersistenceAdapter extends LogPersistencePort implements AutoCloseable{
+public final class PostgresPersistenceAdapter extends LogPersistencePort implements AutoCloseable {
 
   private static final String NORMAL_INSERT_QUERY = """
       INSERT INTO logs (
@@ -69,13 +69,16 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort impleme
       """;
 
   private final Jdbi jdbi;
+  private final DataSource dataSource;
 
-  private PostgresPersistenceAdapter(Jdbi jdbi) {
+  private PostgresPersistenceAdapter(Jdbi jdbi, DataSource dataSource) {
     this.jdbi = jdbi;
+    this.dataSource = dataSource;
   }
 
   PostgresPersistenceAdapter(DataSource dataSource) {
     this.jdbi = Jdbi.create(dataSource);
+    this.dataSource = dataSource;
   }
 
   @Override
@@ -138,7 +141,13 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort impleme
 
   @Override
   public void close() throws Exception {
-
+    if (dataSource instanceof AutoCloseable) {
+      try {
+        ((AutoCloseable) dataSource).close();
+      } catch (Exception ignore) {
+        // 오류가 발생하더라도 무시한다. 이미 종료된 자원이거나, 종료할 수 없는 자원임.
+      }
+    }
   }
 
   public static class Builder implements LogProcessorPort.Builder<PostgresPersistenceAdapter> {
@@ -218,7 +227,7 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort impleme
 
     @Override
     public PostgresPersistenceAdapter build() {
-      return new PostgresPersistenceAdapter(jdbi);
+      return new PostgresPersistenceAdapter(jdbi, dataSource);
     }
   }
 }

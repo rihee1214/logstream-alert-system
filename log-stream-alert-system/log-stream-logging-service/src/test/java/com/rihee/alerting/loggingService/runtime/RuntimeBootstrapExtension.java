@@ -72,15 +72,15 @@ public class RuntimeBootstrapExtension
 
     @Override
     public void close() {
-      // ds.close(); pool.shutdown(); 등
+      // 실제로 자원을 생성하지 않으므로 NO-OP.
     }
   }
 
   static final class PerTestHolder implements AutoCloseable {
 
-    final Map<String, TestProcessorAdapter> byId;
+    final Map<Class<?>, TestProcessorAdapter> byId;
 
-    PerTestHolder(Map<String, TestProcessorAdapter> byId) {
+    PerTestHolder(Map<Class<?>, TestProcessorAdapter> byId) {
       this.byId = byId;
     }
 
@@ -128,24 +128,20 @@ public class RuntimeBootstrapExtension
   }
 
   // 운영 체인 → 테스트 어댑터 맵
-  private static Map<String, TestProcessorAdapter> buildPerTestAdapters(LoggingRuntimeConfig cfg) {
+  private static Map<Class<?>, TestProcessorAdapter>
+                                          buildPerTestAdapters(LoggingRuntimeConfig cfg) {
     var chain = cfg.createProcessorChain(); // List<원본 Processor/Adapter>
-    var map = new LinkedHashMap<String, TestProcessorAdapter>();
+    var map = new LinkedHashMap<Class<?>, TestProcessorAdapter>();
     for (var p : chain) {
-      String id = extractId(p);           // 예: p.descriptor().id()
-      map.put(id, toTestAdapter(p));      // 예: 새 Mock/Recording로 감싼 TestAdapter
+      if (!(p instanceof TestProcessorAdapter)) {
+        throw new IllegalStateException(
+            "테스트 환경에서 config.createProcessorChain의 결과는 TestProcessorAdapter 타입의 List이어야 합니다."
+            + " " + p.getClass()
+        );
+      }
+      Class<?> id = p.getClass();          // 예: p.descriptor().id()
+      map.put(id, (TestProcessorAdapter) p);      // 예: 새 Mock/Recording로 감싼 TestAdapter
     }
     return map;
-  }
-
-  private static String extractId(Object p) {
-    if (!(p instanceof TestProcessorAdapter)) {
-      throw new IllegalStateException("해당 요소의 타입이 TestProcessorAdapter가 아닙니다.");
-    }
-    return ((TestProcessorAdapter) p).id();
-  }
-
-  private static TestProcessorAdapter toTestAdapter(Object p) {
-    return ((TestProcessorAdapter) p);
   }
 }

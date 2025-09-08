@@ -3,6 +3,7 @@ package com.rihee.alerting.loggingService.adapter.rule.validator;
 import com.rihee.alerting.common.constant.annotation.LogPolicy;
 import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.util.StringUtils;
+import com.rihee.alerting.loggingService.adapter.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
 import com.rihee.alerting.loggingService.core.model.LogErrorMessage;
 import com.rihee.alerting.loggingService.core.model.LogMessage;
@@ -20,7 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ValidatorType("default")
-public final class TestDefaultLogValidatorAdapter extends LogValidatorPort {
+public final class TestDefaultLogValidatorAdapter extends LogValidatorPort
+                                                    implements TestProcessorAdapter {
 
   private static final Logger log = LoggerFactory.getLogger(TestDefaultLogValidatorAdapter.class);
 
@@ -107,6 +109,16 @@ public final class TestDefaultLogValidatorAdapter extends LogValidatorPort {
       }
     }
     return null;
+  }
+
+  @Override
+  public void resetState() {
+
+  }
+
+  @Override
+  public void close() throws Exception {
+
   }
 
   /**

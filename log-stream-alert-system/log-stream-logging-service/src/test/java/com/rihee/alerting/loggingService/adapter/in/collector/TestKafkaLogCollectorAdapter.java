@@ -8,7 +8,6 @@ import com.rihee.alerting.loggingService.core.pipeline.api.CommitableLogProcesso
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
-import com.rihee.alerting.loggingService.core.plan.LogProcessorPluginPlanner;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -96,11 +95,6 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
                             originLog.get(StructuredLogProperties.CONTAINER.getFieldName()));
 
     return LogMessageKeyGenerator.generate(serviceName, hostName, containerName);
-  }
-
-  @Override
-  public String id() {
-    return LogProcessorPluginPlanner.COLLECT.name();
   }
 
   @Override

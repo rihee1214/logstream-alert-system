@@ -11,8 +11,5 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Proc {
 
-  /**
-   * 예: "validator", "persistence", "collector".
-   */
-  String value();
+  Class<?> value();
 }

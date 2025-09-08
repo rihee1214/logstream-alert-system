@@ -4,6 +4,7 @@ import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.constant.storage.ErrorLogSchema;
 import com.rihee.alerting.common.constant.storage.NormalLogSchema;
 import com.rihee.alerting.common.util.StringUtils;
+import com.rihee.alerting.loggingService.adapter.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import com.rihee.alerting.loggingService.core.model.LogMessage;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
@@ -22,7 +23,8 @@ import org.jdbi.v3.core.statement.PreparedBatch;
  * TODO 패키지 다르게 만들고 테스트용 mockup으로 만들기.
  */
 @PersistenceType("postgres")
-public final class TestPostgresPersistenceAdapter extends LogPersistencePort {
+public final class TestPostgresPersistenceAdapter extends LogPersistencePort
+                                                implements TestProcessorAdapter {
 
   private static final String NORMAL_INSERT_QUERY = """
       INSERT INTO logs (
@@ -132,6 +134,16 @@ public final class TestPostgresPersistenceAdapter extends LogPersistencePort {
 
   public static LogProcessorPort.Builder<?> builder() {
     return new Builder();
+  }
+
+  @Override
+  public void resetState() {
+
+  }
+
+  @Override
+  public void close() throws Exception {
+
   }
 
   public static class Builder implements LogProcessorPort.Builder<TestPostgresPersistenceAdapter> {
