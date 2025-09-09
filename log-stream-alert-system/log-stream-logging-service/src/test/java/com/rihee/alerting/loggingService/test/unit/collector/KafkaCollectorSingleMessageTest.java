@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.rihee.alerting.common.util.MapUtils;
-import com.rihee.alerting.loggingService.adapter.Proc;
-import com.rihee.alerting.loggingService.adapter.TestProcessorAdapter;
+import com.rihee.alerting.loggingService.testinfra.common.Proc;
 import com.rihee.alerting.loggingService.adapter.in.collector.TestKafkaLogCollectorAdapter;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;

@@ -1,4 +1,4 @@
-package com.rihee.alerting.loggingService.adapter;
+package com.rihee.alerting.loggingService.testinfra.common;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

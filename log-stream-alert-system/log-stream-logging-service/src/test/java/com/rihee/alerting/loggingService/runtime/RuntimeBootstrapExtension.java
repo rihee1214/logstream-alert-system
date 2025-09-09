@@ -1,7 +1,7 @@
 package com.rihee.alerting.loggingService.runtime;
 
-import com.rihee.alerting.loggingService.adapter.Proc;
-import com.rihee.alerting.loggingService.adapter.TestProcessorAdapter;
+import com.rihee.alerting.loggingService.testinfra.common.Proc;
+import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.core.runtime.LoggingRuntimeConfig;
 import com.rihee.alerting.loggingService.core.runtime.SettingLoader;
 import java.util.LinkedHashMap;

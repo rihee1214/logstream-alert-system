@@ -4,7 +4,7 @@ import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.constant.storage.ErrorLogSchema;
 import com.rihee.alerting.common.constant.storage.NormalLogSchema;
 import com.rihee.alerting.common.util.StringUtils;
-import com.rihee.alerting.loggingService.adapter.TestProcessorAdapter;
+import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import com.rihee.alerting.loggingService.core.model.LogMessage;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
@@ -14,8 +14,14 @@ import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePo
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
+import javax.sql.DataSource;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 
@@ -137,7 +143,7 @@ public final class TestPostgresPersistenceAdapter extends LogPersistencePort
   }
 
   @Override
-  public void resetState() {
+  public void createNewInstance() {
 
   }
 
@@ -154,33 +160,9 @@ public final class TestPostgresPersistenceAdapter extends LogPersistencePort
     @Override
     public LogProcessorPort.Builder<TestPostgresPersistenceAdapter>
                                             withProperties(Map<String, String> setting) {
-
-//      if (jdbi == null) {
-//        synchronized (Builder.class) {
-//          if (jdbi == null) {
-//            HikariConfig config = getHikariConfigFromSetting(setting);
-//            dataSource = new HikariDataSource(config);
-//            jdbi = Jdbi.create(dataSource);
-//            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//              dataSource.close();
-//            }));
-//          }
-//        }
-//      }
-
       getHikariConfigFromSetting(setting);
 
       return this;
-    }
-
-    private static boolean isDevOrTestMode() {
-      String programMode = System.getProperty("PROGRAM_MODE");
-      if (programMode == null) {
-        programMode = System.getenv("PROGRAM_MODE");
-      }
-      return programMode != null
-          && (programMode.equalsIgnoreCase("dev")
-          || programMode.equalsIgnoreCase("test"));
     }
 
     private HikariConfig getHikariConfigFromSetting(Map<String, String> setting) {
@@ -226,6 +208,54 @@ public final class TestPostgresPersistenceAdapter extends LogPersistencePort
     @Override
     public TestPostgresPersistenceAdapter build() {
       return new TestPostgresPersistenceAdapter(jdbi);
+    }
+  }
+
+  private class MockDataSource implements DataSource {
+
+    @Override
+    public Connection getConnection() throws SQLException {
+      return null;
+    }
+
+    @Override
+    public Connection getConnection(String username, String password) throws SQLException {
+      return null;
+    }
+
+    @Override
+    public PrintWriter getLogWriter() throws SQLException {
+      return null;
+    }
+
+    @Override
+    public void setLogWriter(PrintWriter out) throws SQLException {
+
+    }
+
+    @Override
+    public void setLoginTimeout(int seconds) throws SQLException {
+
+    }
+
+    @Override
+    public int getLoginTimeout() throws SQLException {
+      return 0;
+    }
+
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+      return null;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+      return null;
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+      return false;
     }
   }
 }

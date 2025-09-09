@@ -3,7 +3,7 @@ package com.rihee.alerting.loggingService.adapter.rule.validator;
 import com.rihee.alerting.common.constant.annotation.LogPolicy;
 import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.util.StringUtils;
-import com.rihee.alerting.loggingService.adapter.TestProcessorAdapter;
+import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
 import com.rihee.alerting.loggingService.core.model.LogErrorMessage;
 import com.rihee.alerting.loggingService.core.model.LogMessage;
@@ -112,7 +112,7 @@ public final class TestDefaultLogValidatorAdapter extends LogValidatorPort
   }
 
   @Override
-  public void resetState() {
+  public void createNewInstance() {
 
   }
 

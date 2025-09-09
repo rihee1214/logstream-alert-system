@@ -2,7 +2,7 @@ package com.rihee.alerting.loggingService.adapter.in.collector;
 
 import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
-import com.rihee.alerting.loggingService.adapter.TestProcessorAdapter;
+import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.core.pipeline.api.CommitableLogProcessor;
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
@@ -17,9 +17,6 @@ import org.apache.kafka.clients.consumer.MockConsumer;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 import org.apache.kafka.common.TopicPartition;
 
-/**
- * TODO 초기화 테스트(fail-fast)는 여기서 진행하되, 실제 테스트 클래스들이 잘 사용할 수 있도록 구현해야함.
- */
 @CollectorType("kafka")
 public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
                                   implements CommitableLogProcessor, TestProcessorAdapter {
@@ -30,10 +27,10 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
 
   private TestKafkaLogCollectorAdapter(KafkaLogCollectorAdapter original,
                                         MockConsumer<String, String> consumer,
-                                        List<TopicPartition> partions) {
+                                        List<TopicPartition> partitions) {
     this.original = original;
     this.consumer = consumer;
-    this.partitions = partions;
+    this.partitions = partitions;
   }
 
   /**
@@ -98,7 +95,7 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
   }
 
   @Override
-  public void resetState() {
+  public void createNewInstance() {
 
   }
 
