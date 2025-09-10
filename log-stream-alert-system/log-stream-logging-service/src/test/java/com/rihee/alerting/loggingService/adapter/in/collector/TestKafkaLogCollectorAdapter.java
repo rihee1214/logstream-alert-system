@@ -2,12 +2,12 @@ package com.rihee.alerting.loggingService.adapter.in.collector;
 
 import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
-import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
 import com.rihee.alerting.loggingService.core.pipeline.api.CommitableLogProcessor;
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
+import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -21,15 +21,11 @@ import org.apache.kafka.common.TopicPartition;
 public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
                                   implements CommitableLogProcessor, TestProcessorAdapter {
 
-  private final KafkaLogCollectorAdapter original;
-  private final MockConsumer<String, String> consumer;
+  private static final ThreadLocal<KafkaLogCollectorResource> HARNESS_THREAD_LOCAL
+                                                                    = new ThreadLocal<>();
   private final List<TopicPartition> partitions;
 
-  private TestKafkaLogCollectorAdapter(KafkaLogCollectorAdapter original,
-                                        MockConsumer<String, String> consumer,
-                                        List<TopicPartition> partitions) {
-    this.original = original;
-    this.consumer = consumer;
+  private TestKafkaLogCollectorAdapter(List<TopicPartition> partitions) {
     this.partitions = partitions;
   }
 
@@ -44,30 +40,32 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
   // ---- 테스트 편의: 레코드 주입/오프셋 초기화 ----
   public void enqueue(String topic, long offset, String key, String value) {
     // 단일 파티션(0) 기준; 필요시 확장
-    consumer.addRecord(new ConsumerRecord<>(topic, 0, offset, key, value));
+    HARNESS_THREAD_LOCAL.get()
+        .consumer().addRecord(new ConsumerRecord<>(topic, 0, offset, key, value));
   }
 
   /**
    * 필요하면 시작 오프셋을 재지정할 때 사용.
    */
   public void resetBeginningOffsets(long offset) {
-    consumer.updateBeginningOffsets(
-        partitions.stream().collect(Collectors.toMap(tp -> tp, tp -> offset))
-    );
+    HARNESS_THREAD_LOCAL.get()
+        .consumer().updateBeginningOffsets(
+          partitions.stream().collect(Collectors.toMap(tp -> tp, tp -> offset))
+        );
   }
 
   @Override
   public ProcessResult process(LogProcessingContext contextMessage) {
-    return this.original.process(contextMessage);
+    return HARNESS_THREAD_LOCAL.get().adapter().process(contextMessage);
   }
 
   @Override
   public void commit() {
     // 원본이 커밋을 노출하면 위임, 아니면 mock의 commitSync 사용
-    if (original instanceof CommitableLogProcessor cp) {
+    if (HARNESS_THREAD_LOCAL.get().adapter() instanceof CommitableLogProcessor cp) {
       cp.commit();
     } else {
-      consumer.commitSync();
+      HARNESS_THREAD_LOCAL.get().consumer().commitSync();
     }
   }
 
@@ -96,12 +94,29 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
 
   @Override
   public void createNewInstance() {
+    MockConsumer<String, String> mockConsumer = null;
+    KafkaLogCollectorResource resource = null;
+    try {
+      mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+      mockConsumer.assign(partitions);
+      mockConsumer.updateBeginningOffsets(partitions.stream()
+          .collect(Collectors.toMap(tp -> tp, tp -> 0L)));
 
+      resource = new KafkaLogCollectorResource(new KafkaLogCollectorAdapter(mockConsumer),
+                                                                          mockConsumer, partitions);
+    } catch (Exception e) {
+      if (mockConsumer != null) {
+        mockConsumer.close();
+      }
+      throw new IllegalStateException(e);
+    }
+
+    HARNESS_THREAD_LOCAL.set(resource);
   }
 
   @Override
   public void close() throws Exception {
-
+    HARNESS_THREAD_LOCAL.remove();
   }
 
   public static class Builder implements LogCollectorPort.Builder<TestKafkaLogCollectorAdapter> {
@@ -135,22 +150,21 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
      */
     @Override
     public TestKafkaLogCollectorAdapter build() {
-      MockConsumer<String, String> kafkaConsumer
-          = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
       List<String> topics = Arrays.stream(kafkaTopic.split(","))
-                            .map(String::trim)
-                            .filter(s -> !s.isEmpty())
-                            .toList();
+          .map(String::trim)
+          .filter(s -> !s.isEmpty())
+          .toList();
       List<TopicPartition> tps = topics.stream()
-                                        .map(t -> new TopicPartition(t, 0))
-                                        .toList();
-      kafkaConsumer.assign(tps);
-      kafkaConsumer.updateBeginningOffsets(tps.stream()
-                  .collect(Collectors.toMap(tp -> tp, tp -> 0L)));
+          .map(t -> new TopicPartition(t, 0))
+          .toList();
 
-      return new TestKafkaLogCollectorAdapter(
-                          new KafkaLogCollectorAdapter(kafkaConsumer), kafkaConsumer, tps);
+      return new TestKafkaLogCollectorAdapter(tps);
     }
   }
 
+  private record KafkaLogCollectorResource(KafkaLogCollectorAdapter adapter,
+                                                  MockConsumer<String, String> consumer,
+                                                  List<TopicPartition> topics) {
+
+  }
 }

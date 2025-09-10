@@ -1,9 +1,9 @@
 package com.rihee.alerting.loggingService.runtime;
 
-import com.rihee.alerting.loggingService.testinfra.common.Proc;
-import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
 import com.rihee.alerting.loggingService.core.runtime.LoggingRuntimeConfig;
 import com.rihee.alerting.loggingService.core.runtime.SettingLoader;
+import com.rihee.alerting.loggingService.testinfra.common.Proc;
+import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.FutureTask;
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 public class RuntimeBootstrapExtension
-              implements BeforeAllCallback, ParameterResolver {
+                      implements BeforeAllCallback, ParameterResolver {
 
   private static final AtomicBoolean STARTED = new AtomicBoolean();
   private static final AtomicInteger COUNT = new AtomicInteger(0);
@@ -124,6 +124,8 @@ public class RuntimeBootstrapExtension
     if (a == null) {
       throw new ParameterResolutionException("No adapter for id=" + id);
     }
+
+    a.createNewInstance();
     return a;
   }
 
