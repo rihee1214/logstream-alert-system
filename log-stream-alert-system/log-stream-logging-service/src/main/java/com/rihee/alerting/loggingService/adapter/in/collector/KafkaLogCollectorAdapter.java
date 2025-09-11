@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -118,14 +119,13 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
         }
         newMessage = LogNormalMessage.fromOriginMessage(allLogComponents, messageKey);
       } catch (RuntimeException e) {
-        String reason = String.format("로그 메시지 [key : %s]를 파싱할 수 없어 에러 로그로 처리합니다.", messageKey);
-        logger.debug(reason);
-        newMessage = LogErrorMessage.fromOriginMessage(logMessage, messageKey, reason, stage());
-
         if (StringUtils.isBlank(messageKey)) {
           logger.warn("메시지 key가 없는 message입니다. : {}", logMessage);
           continue;
         }
+        String reason = String.format("로그 메시지 [key : %s]를 파싱할 수 없어 에러 로그로 처리합니다.", messageKey);
+        logger.warn(reason);
+        newMessage = LogErrorMessage.fromOriginMessage(logMessage, messageKey, reason, stage());
       }
 
       contextMessage.stackingLogMessage(newMessage);
@@ -173,12 +173,16 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
    * @return 생성된 고유한 로그 메시지 key
    */
   private String generateKey(Map<String, Object> originLog) {
-    String serviceName = String.valueOf(
-                            originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
-    String hostName = String.valueOf(
-                            originLog.get(StructuredLogProperties.HOST.getFieldName()));
-    String containerName = String.valueOf(
-                            originLog.get(StructuredLogProperties.CONTAINER.getFieldName()));
+    Object rawServiceName
+        = Objects.requireNonNull(originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
+    Object rawHostName
+        = Objects.requireNonNull(originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
+    Object rawContainerName
+        = Objects.requireNonNull(originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
+
+    String serviceName = String.valueOf(rawServiceName);
+    String hostName = String.valueOf(rawHostName);
+    String containerName = String.valueOf(rawContainerName);
 
     return LogMessageKeyGenerator.generate(serviceName, hostName, containerName);
   }

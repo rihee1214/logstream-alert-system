@@ -129,4 +129,9 @@ public final class LogNormalMessage implements LogMessage {
   public String getMessageKey() {
     return this.messageKey;
   }
+
+  @Override
+  public String toString() {
+    return this.toJsonString();
+  }
 }

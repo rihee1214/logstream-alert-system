@@ -58,5 +58,11 @@ public interface LogProcessingContext {
    */
   boolean isEmpty();
 
+  /**
+   * 컨텍스트에 담긴 메시지 수를 반환합니다.
+   * 내부적으로 관리되는 리스트의 크기와 같습니다.
+   *
+   * @return 메시지 개수
+   */
   int size();
 }

@@ -65,4 +65,9 @@ public class DefaultLogProcessingContext implements LogProcessingContext {
   public int size() {
     return logMessages.size();
   }
+
+  @Override
+  public String toString() {
+    return this.logMessages.toString();
+  }
 }

@@ -162,4 +162,9 @@ public final class LogErrorMessage implements LogMessage {
   public String getMessageKey() {
     return this.errorLogs.get(ErrorLogSchema.MESSAGE_ID.getSchemaName()).toString();
   }
+
+  @Override
+  public String toString() {
+    return this.toJsonString();
+  }
 }
