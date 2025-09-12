@@ -42,6 +42,15 @@ public class RuntimeBootstrapExtension
     }
   }
 
+  @Override
+  public void beforeAll(ExtensionContext context) throws Exception {
+    ensureStarted();
+    // 확장 내부에선 AssertJ 대신 예외를 던지는 편이 안전
+    if (initCount() != 1) {
+      throw new IllegalStateException("Init should run exactly once per JVM, count=" + COUNT.get());
+    }
+  }
+
   private static ExtensionContext.Store classStore(ExtensionContext ctx) {
     return ctx.getStore(ExtensionContext.Namespace.create("msa-log", "per-class",
         ctx.getRequiredTestClass().getName()));
@@ -52,23 +61,8 @@ public class RuntimeBootstrapExtension
         ctx.getUniqueId()));
   }
 
-  @Override
-  public void beforeAll(ExtensionContext context) throws Exception {
-    ensureStarted();
-    // 확장 내부에선 AssertJ 대신 예외를 던지는 편이 안전
-    if (initCount() != 1) {
-      throw new IllegalStateException("Init should run exactly once per JVM, count=" + COUNT.get());
-    }
-  }
-
   // 공유 자원 (클래스 스코프)
-  final class SharedHolder implements AutoCloseable {
-    final LoggingRuntimeConfig cfg;
-
-    // optional: DataSource ds; ExecutorService pool; ...
-    SharedHolder(LoggingRuntimeConfig cfg /*, ... */) {
-      this.cfg = cfg;
-    }
+  private record SharedHolder(LoggingRuntimeConfig cfg) implements AutoCloseable {
 
     @Override
     public void close() {
@@ -76,17 +70,12 @@ public class RuntimeBootstrapExtension
     }
   }
 
-  static final class PerTestHolder implements AutoCloseable {
-
-    final Map<Class<?>, TestProcessorAdapter> byId;
-
-    PerTestHolder(Map<Class<?>, TestProcessorAdapter> byId) {
-      this.byId = byId;
-    }
+  private record PerTestHolder(Map<Class<?>, TestProcessorAdapter> typeMap)
+                                                                        implements AutoCloseable {
 
     @Override
     public void close() {
-      byId.values().forEach(a -> {
+      typeMap.values().forEach(a -> {
         try {
           a.close();
         } catch (Exception ignore) {
@@ -114,15 +103,15 @@ public class RuntimeBootstrapExtension
       return shared.cfg;
     }
 
-    var id = pc.findAnnotation(Proc.class).orElseThrow().value();
+    var type = pc.findAnnotation(Proc.class).orElseThrow().value();
     PerTestHolder perTest = testStore(ec).getOrComputeIfAbsent(
         "perTest",
         k -> new PerTestHolder((buildPerTestAdapters(shared.cfg))),
         PerTestHolder.class
     );
-    TestProcessorAdapter a = perTest.byId.get(id);
+    TestProcessorAdapter a = perTest.typeMap.get(type);
     if (a == null) {
-      throw new ParameterResolutionException("No adapter for id=" + id);
+      throw new ParameterResolutionException("No adapter for type=" + type);
     }
 
     a.createNewInstance();

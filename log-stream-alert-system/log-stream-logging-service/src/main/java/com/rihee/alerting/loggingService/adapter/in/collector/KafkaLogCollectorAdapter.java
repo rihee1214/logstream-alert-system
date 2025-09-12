@@ -172,7 +172,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
    * @param originLog 수집된 로그의 원본 key-value 맵
    * @return 생성된 고유한 로그 메시지 key
    */
-  private String generateKey(Map<String, Object> originLog) {
+  String generateKey(Map<String, Object> originLog) {
     Object rawServiceName
         = Objects.requireNonNull(originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
     Object rawHostName

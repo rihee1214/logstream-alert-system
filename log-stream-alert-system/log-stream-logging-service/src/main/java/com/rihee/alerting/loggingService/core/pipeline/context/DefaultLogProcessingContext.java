@@ -66,6 +66,13 @@ public class DefaultLogProcessingContext implements LogProcessingContext {
     return logMessages.size();
   }
 
+  /**
+   * 이 컨텍스트에 누적된 로그 메시지들의 문자열 표현을 반환합니다.
+   *
+   * <p>형식은 내부 리스트의 {@code toString()} 결과와 동일합니다.</p>
+   *
+   * @return 메시지 목록의 문자열 표현
+   */
   @Override
   public String toString() {
     return this.logMessages.toString();
