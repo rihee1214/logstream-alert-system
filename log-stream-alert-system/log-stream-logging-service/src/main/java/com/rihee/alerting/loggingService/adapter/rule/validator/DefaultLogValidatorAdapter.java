@@ -66,7 +66,7 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort implement
     REQUIRED_FIELDS = Collections.unmodifiableMap(predicateMap);
   }
 
-  private DefaultLogValidatorAdapter() {
+  DefaultLogValidatorAdapter() {
   }
 
   /**
