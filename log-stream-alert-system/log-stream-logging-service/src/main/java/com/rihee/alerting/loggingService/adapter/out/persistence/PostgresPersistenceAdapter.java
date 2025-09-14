@@ -22,7 +22,7 @@ import org.jdbi.v3.core.statement.PreparedBatch;
 @PersistenceType("postgres")
 public final class PostgresPersistenceAdapter extends LogPersistencePort implements AutoCloseable {
 
-  private static final String NORMAL_INSERT_QUERY = """
+  static final String NORMAL_INSERT_QUERY = """
       INSERT INTO logs (
           logtype,
           timestamp,
@@ -62,7 +62,7 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort impleme
           coalesce(:meta::jsonb, '{}'::jsonb)
       ) ON CONFLICT(message_id) DO NOTHING
       """;
-  private static final String ERROR_INSERT_QUERY = """
+  static final String ERROR_INSERT_QUERY = """
       INSERT INTO err_logs (message_id, origin_log, reason, occurred_at, stage, log_version_major)
             VALUES (:messageId, :originLog, :reason, :occurred_at, :stage, :log_version_major)
             ON CONFLICT(message_id) DO NOTHING
@@ -71,13 +71,8 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort impleme
   private final Jdbi jdbi;
   private final DataSource dataSource;
 
-  private PostgresPersistenceAdapter(Jdbi jdbi, DataSource dataSource) {
+  PostgresPersistenceAdapter(Jdbi jdbi, DataSource dataSource) {
     this.jdbi = jdbi;
-    this.dataSource = dataSource;
-  }
-
-  PostgresPersistenceAdapter(DataSource dataSource) {
-    this.jdbi = Jdbi.create(dataSource);
     this.dataSource = dataSource;
   }
 

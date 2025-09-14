@@ -34,6 +34,9 @@ dependencies {
     implementation "io.github.classgraph:classgraph:${classPathScannerVersion}"
 
     runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "org.mockito:mockito-inline:${mockitoInlineVersion}" // static/final 모킹
 }
 
 // 1) 테스트 전용 레지스트리 JAR 생성

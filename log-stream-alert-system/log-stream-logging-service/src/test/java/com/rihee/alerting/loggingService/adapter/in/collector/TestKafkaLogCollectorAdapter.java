@@ -62,6 +62,14 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
     return new Builder();
   }
 
+  private KafkaLogCollectorResource requireHarness() {
+    KafkaLogCollectorResource r = HARNESS_THREAD_LOCAL.get();
+    if (r == null) {
+      throw new IllegalStateException("createNewInstance() 먼저 호출하세요.");
+    }
+    return r;
+  }
+
   /**
    * 테스트 레코드를 현재 스레드의 {@link MockConsumer}에 주입합니다.
    *
@@ -76,7 +84,7 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
    */
   public void enqueue(String topic, long offset, String key, String value) {
     // 단일 파티션(0) 기준; 필요시 확장
-    HARNESS_THREAD_LOCAL.get()
+    requireHarness()
         .consumer().addRecord(new ConsumerRecord<>(topic, 0, offset, key, value));
   }
 
@@ -89,7 +97,7 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
    */
   @Override
   public ProcessResult process(LogProcessingContext contextMessage) {
-    return HARNESS_THREAD_LOCAL.get().adapter().process(contextMessage);
+    return requireHarness().adapter().process(contextMessage);
   }
 
   /**
@@ -102,11 +110,12 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
    */
   @Override
   public void commit() {
+    KafkaLogCollectorResource resource = requireHarness();
     // 원본이 커밋을 노출하면 위임, 아니면 mock의 commitSync 사용
-    if (HARNESS_THREAD_LOCAL.get().adapter() instanceof CommitableLogProcessor cp) {
+    if (resource.adapter() instanceof CommitableLogProcessor cp) {
       cp.commit();
     } else {
-      HARNESS_THREAD_LOCAL.get().consumer().commitSync();
+      resource.consumer().commitSync();
     }
   }
 
@@ -116,7 +125,7 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
    * <p>실제 로직은 내부 어댑터에 위임합니다.
    */
   private String generateKey(Map<String, Object> originLog) {
-    return HARNESS_THREAD_LOCAL.get().adapter().generateKey(originLog);
+    return requireHarness().adapter().generateKey(originLog);
   }
 
   /**
@@ -141,6 +150,10 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
    */
   @Override
   public void createNewInstance() {
+    if (HARNESS_THREAD_LOCAL.get() != null) {
+      this.close();
+    }
+
     MockConsumer<String, String> mockConsumer = null;
     KafkaLogCollectorResource resource = null;
     try {
@@ -148,6 +161,9 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
       mockConsumer.assign(partitions);
       mockConsumer.updateBeginningOffsets(partitions.stream()
           .collect(Collectors.toMap(tp -> tp, tp -> 0L)));
+      for (TopicPartition tp : partitions) {
+        mockConsumer.seek(tp, 0L);
+      }
 
       resource = new KafkaLogCollectorResource(new KafkaLogCollectorAdapter(mockConsumer),
                                                                           mockConsumer, partitions);
@@ -168,8 +184,17 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
    * (실제 자원은 모의 객체이므로 별도 해제가 필요하지 않습니다)
    */
   @Override
-  public void close() throws Exception {
-    HARNESS_THREAD_LOCAL.remove();
+  public void close() {
+    KafkaLogCollectorResource r = HARNESS_THREAD_LOCAL.get();
+    try {
+      if (r != null) {
+        r.adapter().close(); // adapter.close() 호출
+      }
+    } catch (Exception ignore) {
+      // 테스트 하네스라 조용히 무시
+    } finally {
+      HARNESS_THREAD_LOCAL.remove();
+    }
   }
 
   /**
@@ -225,8 +250,7 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
    * <p>현재 스레드에서만 접근해야 합니다.
    */
   private record KafkaLogCollectorResource(KafkaLogCollectorAdapter adapter,
-                                                  MockConsumer<String, String> consumer,
-                                                  List<TopicPartition> topics) {
-
+                                           MockConsumer<String, String> consumer,
+                                           List<TopicPartition> topics) {
   }
 }
