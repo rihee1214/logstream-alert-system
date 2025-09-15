@@ -1,6 +1,7 @@
 package com.rihee.alerting.loggingService.adapter.in.collector;
 
 import com.rihee.alerting.loggingService.annotations.CollectorType;
+import com.rihee.alerting.loggingService.core.model.LogMessage;
 import com.rihee.alerting.loggingService.core.pipeline.api.CommitableLogProcessor;
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.port.in.LogCollectorPort;
@@ -117,15 +118,6 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
     } else {
       resource.consumer().commitSync();
     }
-  }
-
-  /**
-   * 원본 로그 맵에서 메시지 키를 생성합니다(테스트 편의 메서드).
-   *
-   * <p>실제 로직은 내부 어댑터에 위임합니다.
-   */
-  private String generateKey(Map<String, Object> originLog) {
-    return requireHarness().adapter().generateKey(originLog);
   }
 
   /**

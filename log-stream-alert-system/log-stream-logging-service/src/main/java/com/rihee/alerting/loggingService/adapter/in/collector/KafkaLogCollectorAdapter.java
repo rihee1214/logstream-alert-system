@@ -113,11 +113,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
       String logMessage = record.value();
       LogMessage newMessage = null;
       try {
-        Map<String, Object> allLogComponents = MapUtils.fromJson(logMessage);
-        if (StringUtils.isBlank(messageKey)) {
-          messageKey = generateKey(allLogComponents);
-        }
-        newMessage = LogNormalMessage.fromOriginMessage(allLogComponents, messageKey);
+        newMessage = LogNormalMessage.fromOriginMessage(MapUtils.fromJson(logMessage), messageKey);
       } catch (RuntimeException e) {
         if (StringUtils.isBlank(messageKey)) {
           logger.warn("메시지 key가 없는 message입니다. : {}", logMessage);
@@ -158,33 +154,6 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
     } catch (CommitFailedException e) {
       logger.warn("Commit failed", e);
     }
-  }
-
-  /**
-   * 원본 로그로부터 service, host, container 정보를 추출하여
-   * 고유한 메시지 key를 생성합니다.
-   *
-   * <p>Kafka 레코드에 key가 존재하지 않는 경우를 대비해 사용되며,
-   * 정상적인 상황에서는 호출될 가능성이 거의 없습니다.
-   * 다만 message key가 누락된 경우에도 로그 메시지를 추적할 수 있도록
-   * {@link LogMessageKeyGenerator}를 통해 대체 key를 생성합니다.
-   *
-   * @param originLog 수집된 로그의 원본 key-value 맵
-   * @return 생성된 고유한 로그 메시지 key
-   */
-  String generateKey(Map<String, Object> originLog) {
-    Object rawServiceName
-        = Objects.requireNonNull(originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
-    Object rawHostName
-        = Objects.requireNonNull(originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
-    Object rawContainerName
-        = Objects.requireNonNull(originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
-
-    String serviceName = String.valueOf(rawServiceName);
-    String hostName = String.valueOf(rawHostName);
-    String containerName = String.valueOf(rawContainerName);
-
-    return LogMessageKeyGenerator.generate(serviceName, hostName, containerName);
   }
 
   @Override

@@ -25,7 +25,7 @@ import java.util.Map;
  * 생성은 정적 팩토리 메서드 {@link #fromOriginMessage(String, String, String, String)} 또는
  * {@link #fromNormalMessage(LogMessage, String, String)}를 통해 수행된다.
  */
-public final class LogErrorMessage implements LogMessage {
+public final class LogErrorMessage extends LogMessage {
 
   // 에러 로그 스키마의 주요 버전
   private static final int LOG_MAJOR_VERSION = 1;
@@ -93,8 +93,15 @@ public final class LogErrorMessage implements LogMessage {
                                                             String messageKey,
                                                             String reason,
                                                             String stage) {
-    if (StringUtils.isBlank(messageKey)) {
-      throw new IllegalArgumentException("messageKey가 제대로 존재하지 않습니다.");
+    String tobeMessageKey = messageKey;
+    if (StringUtils.isBlank(tobeMessageKey)) {
+      Map<String, Object> tobeOriginLog = null;
+      try {
+        tobeOriginLog = MapUtils.fromJson(originLog);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("messageKey가 존재하지 않으며, 생성할 수 없습니다.");
+      }
+      tobeMessageKey = generateKey(tobeOriginLog);
     }
 
     if (StringUtils.isBlank(reason)) {
@@ -102,7 +109,7 @@ public final class LogErrorMessage implements LogMessage {
     }
 
     Map<String, Object> errorLogs = new HashMap<>();
-    errorLogs.put(ErrorLogSchema.MESSAGE_ID.getSchemaName(), messageKey);
+    errorLogs.put(ErrorLogSchema.MESSAGE_ID.getSchemaName(), tobeMessageKey);
     errorLogs.put(ErrorLogSchema.ORIGIN_LOG.getSchemaName(), originLog);
     errorLogs.put(ErrorLogSchema.REASON.getSchemaName(), reason);
     errorLogs.put(ErrorLogSchema.OCCURRED_AT.getSchemaName(), Instant.now());

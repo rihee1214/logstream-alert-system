@@ -1,5 +1,11 @@
 package com.rihee.alerting.loggingService.core.model;
 
+import com.rihee.alerting.common.constant.message.StructuredLogProperties;
+import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
+import com.rihee.alerting.common.util.MapUtils;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * 로그 메시지를 표현하는 핵심 인터페이스입니다.
  *
@@ -20,21 +26,21 @@ package com.rihee.alerting.loggingService.core.model;
  * <p>이 인터페이스를 구현하는 클래스는 로그 수집 파이프라인 전반에서
  * 공통적으로 다뤄질 수 있도록 설계되어 있습니다.
  */
-public sealed interface LogMessage permits LogNormalMessage, LogErrorMessage {
+public sealed abstract class LogMessage permits LogNormalMessage, LogErrorMessage {
 
   /**
    * 로그 메시지를 식별하기 위한 고유 key를 반환합니다.
    *
    * @return 로그 메시지 key
    */
-  String getMessageKey();
+  public abstract String getMessageKey();
 
   /**
    * 이 로그가 에러 로그인지 여부를 반환합니다.
    *
    * @return 에러 로그라면 {@code true}, 정상 로그라면 {@code false}
    */
-  boolean isError();
+  public abstract boolean isError();
 
   /**
    * 주어진 key에 해당하는 로그 속성을 반환합니다.
@@ -42,7 +48,7 @@ public sealed interface LogMessage permits LogNormalMessage, LogErrorMessage {
    * @param key 조회할 속성의 key
    * @return 해당 key에 매핑된 값, 존재하지 않으면 {@code null}
    */
-  Object get(String key);
+  public abstract Object get(String key);
 
   /**
    * 주어진 key와 value를 로그 속성에 추가하거나 갱신합니다.
@@ -50,7 +56,7 @@ public sealed interface LogMessage permits LogNormalMessage, LogErrorMessage {
    * @param key 속성 key
    * @param value 속성 값
    */
-  void put(String key, Object value);
+  public abstract void put(String key, Object value);
 
   /**
    * 로그 전체를 JSON 문자열로 직렬화합니다.
@@ -59,5 +65,20 @@ public sealed interface LogMessage permits LogNormalMessage, LogErrorMessage {
    *
    * @return 로그의 JSON 표현
    */
-  String toJsonString();
+  public abstract String toJsonString();
+
+  protected static String generateKey(Map<String, Object> originLog) {
+    Object rawServiceName
+        = Objects.requireNonNull(originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
+    Object rawHostName
+        = Objects.requireNonNull(originLog.get(StructuredLogProperties.HOST.getFieldName()));
+    Object rawContainerName
+        = Objects.requireNonNull(originLog.get(StructuredLogProperties.CONTAINER.getFieldName()));
+
+    String serviceName = String.valueOf(rawServiceName);
+    String hostName = String.valueOf(rawHostName);
+    String containerName = String.valueOf(rawContainerName);
+
+    return LogMessageKeyGenerator.generate(serviceName, hostName, containerName);
+  }
 }

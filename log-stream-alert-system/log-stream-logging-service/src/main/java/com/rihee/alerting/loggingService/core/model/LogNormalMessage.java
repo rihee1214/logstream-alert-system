@@ -3,6 +3,7 @@ package com.rihee.alerting.loggingService.core.model;
 import com.rihee.alerting.common.constant.message.LogFieldKey;
 import com.rihee.alerting.common.constant.storage.NormalLogSchema;
 import com.rihee.alerting.common.util.MapUtils;
+import com.rihee.alerting.common.util.StringUtils;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
@@ -15,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class LogNormalMessage implements LogMessage {
+public final class LogNormalMessage extends LogMessage {
 
 
   private static final int LOG_VERSION_MAJOR = 1;
@@ -93,7 +94,11 @@ public final class LogNormalMessage implements LogMessage {
   }
 
   public static LogNormalMessage fromOriginMessage(Map<String, Object> allLogs, String messageKey) {
-    return new LogNormalMessage(allLogs, messageKey);
+    String tobeMessageKey = messageKey;
+    if (StringUtils.isBlank(tobeMessageKey)) {
+      tobeMessageKey = generateKey(allLogs);
+    }
+    return new LogNormalMessage(allLogs, tobeMessageKey);
   }
 
   @Override
