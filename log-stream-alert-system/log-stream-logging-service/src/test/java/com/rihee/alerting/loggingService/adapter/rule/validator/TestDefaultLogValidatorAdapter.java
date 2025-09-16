@@ -5,12 +5,10 @@ import com.rihee.alerting.loggingService.annotations.ValidatorType;
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.port.rule.LogValidatorPort;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
-import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
 import java.util.Map;
 
 @ValidatorType("default")
-public final class TestDefaultLogValidatorAdapter extends LogValidatorPort
-                                                    implements TestProcessorAdapter {
+public final class TestDefaultLogValidatorAdapter extends LogValidatorPort {
 
   private static final DefaultLogValidatorAdapter ADAPTER = new DefaultLogValidatorAdapter();
 
@@ -32,11 +30,6 @@ public final class TestDefaultLogValidatorAdapter extends LogValidatorPort
   }
 
   @Override
-  public void createNewInstance() {
-    // 초기화 시킬 자원자체가 없기 때문에 무시
-  }
-
-  @Override
   public void close() throws Exception {
     // 초기화 시킨 자원자체가 없기 때문에 무시
   }
@@ -55,12 +48,13 @@ public final class TestDefaultLogValidatorAdapter extends LogValidatorPort
     /**
      * 빌더에 설정 값을 전달합니다.
      *
-     * @param setting 설정 값 맵(현재 미사용)
+     * @param setting 검증용 설정 값 맵
      * @return 이 빌더 자신(메서드 체이닝용)
      */
     @Override
     public LogValidatorPort.Builder<TestDefaultLogValidatorAdapter>
                                                 withProperties(Map<String, String> setting) {
+      DefaultLogValidatorAdapter.builder().withProperties(setting);
       return this;
     }
 

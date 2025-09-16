@@ -1,7 +1,5 @@
 package com.rihee.alerting.loggingService.adapter.in.collector;
 
-import com.rihee.alerting.common.constant.message.StructuredLogProperties;
-import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
 import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.CollectorType;
@@ -16,7 +14,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -50,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 @CollectorType("kafka")
 public final class KafkaLogCollectorAdapter extends LogCollectorPort
-                                            implements CommitableLogProcessor, AutoCloseable {
+                                            implements CommitableLogProcessor {
 
   private static final Logger logger
       = LoggerFactory.getLogger(KafkaLogCollectorAdapter.class);

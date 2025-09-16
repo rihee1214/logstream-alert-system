@@ -1,41 +1,21 @@
 package com.rihee.alerting.loggingService.runtime;
 
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
+import com.rihee.alerting.loggingService.core.runtime.LoggingRuntimeConfig;
 import com.rihee.alerting.loggingService.core.runtime.SettingLoader;
 import com.rihee.alerting.loggingService.testinfra.common.Proc;
-import com.rihee.alerting.loggingService.testinfra.common.TestProcessorAdapter;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 /**
  * JUnit 5 확장: 런타임 파이프라인을 한 번만 초기화하고, 각 테스트에 테스트 어댑터를 주입/정리한다.
- *
- * <p><b>역할</b>
- * <ul>
- *   <li><b>초기화(1회):</b>
- *      {@link SettingLoader}에서 세팅을 로딩해서 가져온 {@literal List<LogProcessorPort>} 결과를
- *      {@code Map<Class<? extends LogProcessorPort>, LogProcessorPort>}로 캐시한다.</li>
- *   <li><b>주입:</b> 테스트 메서드 파라미터에 선언된
- *       {@link com.rihee.alerting.loggingService.testinfra.common.Proc @Proc}(타입)를 해석해
- *       대응하는 {@link TestProcessorAdapter}를 찾아 반환한다.
- *       반환 직전 {@link TestProcessorAdapter#createNewInstance()}를 호출해
- *       테스트 스코프의 상태(예: 내부 모의 자원)로 바인딩한다.</li>
- *   <li><b>정리:</b> 각 테스트 종료 시({@code afterEach})
- *        모든 {@code TestProcessorAdapter}에 대해 {@code close()}를 호출해
- *        테스트 스코프 상태를 정리한다(예: ThreadLocal 제거, 모의 자원 종료 등).</li>
- * </ul>
  *
  * <h3>스레드 모델 / 제약</h3>
  *
@@ -66,22 +46,16 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  *
  * <p>오류 또는 정리 실패는 테스트 안정성을 해치지 않도록 내부에서 안전하게 처리한다(필요 시 로깅/서프레스트).</p>
  */
-public class RuntimeBootstrapExtension
-                      implements BeforeAllCallback, ParameterResolver, AfterEachCallback {
+public class RuntimeBootstrapExtension implements BeforeAllCallback, ParameterResolver {
 
+  private static final Namespace NS = Namespace.create(RuntimeBootstrapExtension.class);
   private static final AtomicBoolean STARTED = new AtomicBoolean();
   private static final AtomicInteger COUNT = new AtomicInteger(0);
   private static final
-      FutureTask<Map<Class<? extends LogProcessorPort>, LogProcessorPort>> TASK
+      FutureTask<LoggingRuntimeConfig> TASK
         = new FutureTask<>(() -> {
           COUNT.incrementAndGet();
-          return SettingLoader.loadRuntimeSettingFromClasspath().createProcessorChain()
-              .stream().collect(Collectors.toMap(
-                  a -> a.getClass(),
-                  Function.identity(),
-                  (a, b) -> a,
-                  LinkedHashMap::new
-              ));
+          return SettingLoader.loadRuntimeSettingFromClasspath();
         });
 
   private int initCount() {
@@ -112,42 +86,25 @@ public class RuntimeBootstrapExtension
   @Override
   public boolean supportsParameter(ParameterContext pc, ExtensionContext ec) {
     return pc.isAnnotated(Proc.class)
-                && TestProcessorAdapter.class.isAssignableFrom(pc.getParameter().getType());
+                && LogProcessorPort.class.isAssignableFrom(pc.getParameter().getType());
   }
 
   @Override
   public Object resolveParameter(ParameterContext pc, ExtensionContext ec) {
     Class<?> type = pc.findAnnotation(Proc.class).orElseThrow().value();
 
-    TestProcessorAdapter p = null;
     try {
-      p = (TestProcessorAdapter) TASK.get().get(type);
+      for (LogProcessorPort target : TASK.get().createProcessorChain()) {
+        if (type.isInstance(target)) {
+          ec.getStore(NS).put(pc.getIndex(), target);
+          return type.cast(target);
+        }
+      }
     } catch (InterruptedException | ExecutionException e) {
       throw new IllegalStateException("파라미터 세팅 도중 문제가 발생하였습니다.", e);
     }
 
-    if (!(p instanceof TestProcessorAdapter a)) {
-      //noinspection ConstantValue
-      throw new ParameterResolutionException(
-          "Adapter must implement TestProcessorAdapter: " + (p == null ? "null" : p.getClass()));
-    }
-
-    a.createNewInstance();
-    return a;
+    throw new IllegalStateException("넣어준 타입에 맞는 클래스의 인스턴스가 존재하지 않습니다. annotation을 다시 확인하세요.");
   }
 
-  @Override
-  public void afterEach(ExtensionContext context) throws Exception {
-    TASK.get().values().forEach(this::closeResource);
-  }
-
-  private void closeResource(LogProcessorPort processor) {
-    if (processor instanceof AutoCloseable) {
-      try {
-        ((AutoCloseable) processor).close();
-      } catch (Exception ignore) {
-        //한 두개의 resource가 제대로 처리 안되더라도 크게 문제는 없음
-      }
-    }
-  }
 }

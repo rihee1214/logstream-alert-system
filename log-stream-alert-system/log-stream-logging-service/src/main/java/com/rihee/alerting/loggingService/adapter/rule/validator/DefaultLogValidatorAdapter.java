@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @see LogValidatorPort
  */
 @ValidatorType("default")
-public final class DefaultLogValidatorAdapter extends LogValidatorPort implements AutoCloseable {
+public final class DefaultLogValidatorAdapter extends LogValidatorPort {
 
   private static final Logger log = LoggerFactory.getLogger(DefaultLogValidatorAdapter.class);
 

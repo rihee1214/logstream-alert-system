@@ -30,7 +30,7 @@ import java.util.Map;
  * @see LogProcessingContext
  * @see LogMessage
  */
-public interface LogProcessorPort {
+public interface LogProcessorPort extends AutoCloseable {
 
   /**
    * 주어진 로그 처리 컨텍스트를 기반으로 단일 단계의 처리를 수행합니다.
