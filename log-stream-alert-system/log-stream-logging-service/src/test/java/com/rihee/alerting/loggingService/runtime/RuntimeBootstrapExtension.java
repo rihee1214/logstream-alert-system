@@ -3,7 +3,7 @@ package com.rihee.alerting.loggingService.runtime;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.runtime.LoggingRuntimeConfig;
 import com.rihee.alerting.loggingService.core.runtime.SettingLoader;
-import com.rihee.alerting.loggingService.testinfra.common.Proc;
+import com.rihee.alerting.loggingService.testinfra.common.TestParameter;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -85,13 +85,13 @@ public class RuntimeBootstrapExtension implements BeforeAllCallback, ParameterRe
 
   @Override
   public boolean supportsParameter(ParameterContext pc, ExtensionContext ec) {
-    return pc.isAnnotated(Proc.class)
+    return pc.isAnnotated(TestParameter.class)
                 && LogProcessorPort.class.isAssignableFrom(pc.getParameter().getType());
   }
 
   @Override
   public Object resolveParameter(ParameterContext pc, ExtensionContext ec) {
-    Class<?> type = pc.findAnnotation(Proc.class).orElseThrow().value();
+    Class<?> type = pc.findAnnotation(TestParameter.class).orElseThrow().value();
 
     try {
       for (LogProcessorPort target : TASK.get().createProcessorChain()) {

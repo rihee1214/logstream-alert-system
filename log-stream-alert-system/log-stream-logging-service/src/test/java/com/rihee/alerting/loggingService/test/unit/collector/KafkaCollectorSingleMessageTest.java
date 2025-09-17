@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.loggingService.core.model.LogErrorMessage;
-import com.rihee.alerting.loggingService.testinfra.common.Proc;
+import com.rihee.alerting.loggingService.testinfra.common.TestParameter;
 import com.rihee.alerting.loggingService.adapter.in.collector.TestKafkaLogCollectorAdapter;
 import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
@@ -23,7 +23,7 @@ public class KafkaCollectorSingleMessageTest {
   @Test
   @DisplayName("단일 메시지를 수집하여 파이프라인으로 전달한다")
   void collects_single_message_and_emits_to_pipeline(
-        @Proc(TestKafkaLogCollectorAdapter.class) TestKafkaLogCollectorAdapter adapter) {
+        @TestParameter(TestKafkaLogCollectorAdapter.class) TestKafkaLogCollectorAdapter adapter) {
 
     Map<String, Object> params = new HashMap<>();
     params.put("logtype", "biz");
@@ -57,7 +57,7 @@ public class KafkaCollectorSingleMessageTest {
   @Test
   @DisplayName("단일 메시지를 수집하여 key 생성 불가 메시지를 스킵한다.")
   void collects_single_message_and_skip_create_message_key_error(
-      @Proc(TestKafkaLogCollectorAdapter.class) TestKafkaLogCollectorAdapter adapter) {
+      @TestParameter(TestKafkaLogCollectorAdapter.class) TestKafkaLogCollectorAdapter adapter) {
 
     Map<String, Object> params = new HashMap<>();
     params.put("logtype", "biz");
@@ -89,7 +89,7 @@ public class KafkaCollectorSingleMessageTest {
   @Test
   @DisplayName("단일 메시지를 수집한 후 파싱 불가능 판정으로, 에러 메시지로 변환한다.")
   void collects_single_message_and_emit_error_message(
-      @Proc(TestKafkaLogCollectorAdapter.class) TestKafkaLogCollectorAdapter adapter) {
+      @TestParameter(TestKafkaLogCollectorAdapter.class) TestKafkaLogCollectorAdapter adapter) {
 
     // 테스트 레코드 1건 주입 (topic, offset, key, value)
     adapter.enqueue("log_topic", 0L, "k123", "에러 발생용 메시지입니다.");

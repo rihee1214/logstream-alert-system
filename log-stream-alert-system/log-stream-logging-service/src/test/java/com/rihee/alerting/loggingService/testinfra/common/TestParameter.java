@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Proc {
+public @interface TestParameter {
 
   Class<?> value();
 }
