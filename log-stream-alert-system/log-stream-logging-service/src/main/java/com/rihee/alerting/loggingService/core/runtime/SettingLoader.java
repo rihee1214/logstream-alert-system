@@ -1,8 +1,11 @@
 package com.rihee.alerting.loggingService.core.runtime;
 
+import com.rihee.alerting.common.util.StringUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -59,15 +62,16 @@ public class SettingLoader {
   public static LoggingRuntimeConfig loadRuntimeSettingFromClasspath() {
     Properties setting = new Properties();
 
-    try (InputStream is = SettingLoader.class.getClassLoader()
-                              .getResourceAsStream("config/logging.properties")) {
-      if (is == null) {
-        throw new FileNotFoundException("설정 파일이 classpath에 존재하지 않습니다: config/logging.properties");
-      }
+    String path = System.getProperty("logging.props");
+    if (StringUtils.isBlank(path)) {
+      throw new IllegalArgumentException("java옵션 중 logging.props 항목의 값을 설정 파일 절대 경로로 넣어야 합니다.");
+    }
+
+    try (InputStream is = Files.newInputStream(Path.of(path))) {
       setting.load(is);
     } catch (IOException e) {
       throw new IllegalStateException(
-          "설정 파일을 classpath에서 로드할 수 없습니다: config/logging.properties", e);
+          "설정 파일을 classpath에서 로드할 수 없습니다: " + path, e);
     }
     return LoggingRuntimeConfig.from(setting);
   }
