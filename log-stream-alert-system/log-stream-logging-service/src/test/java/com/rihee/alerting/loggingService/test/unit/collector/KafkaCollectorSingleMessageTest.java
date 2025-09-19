@@ -102,6 +102,7 @@ public class KafkaCollectorSingleMessageTest {
     assertThat(result.shouldCommit()).isTrue();
     assertThat(result.context().size()).isEqualTo(1);
     assertThat(result.context().iterator().next()).isInstanceOf(LogErrorMessage.class);
+    assertThat(result.context().iterator().next().isError()).isFalse();
 
     // (선택) 커밋 경로 검증 — 예외 없이 실행되는지만 확인
     assertThatCode(adapter::commit).doesNotThrowAnyException();

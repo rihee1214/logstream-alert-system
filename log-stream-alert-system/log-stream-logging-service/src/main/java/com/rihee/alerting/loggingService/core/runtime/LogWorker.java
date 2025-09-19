@@ -58,10 +58,10 @@ public class LogWorker implements Runnable {
    *   <li>해당 체인에서 {@link CommitableLogProcessor}만 별도로 추출하여 커밋 대상 목록 생성</li>
    * </ul>
    *
-   * @param config 파이프라인 구성을 정의한 런타임 설정 객체
+   * @param logProcessors 파이프라인 구성을 정의한 런타임 설정 객체
    */
-  public LogWorker(LoggingRuntimeConfig config) {
-    this.logProcessors = config.createProcessorChain();
+  public LogWorker(List<? extends LogProcessorPort> logProcessors) {
+    this.logProcessors = logProcessors;
     this.commitableLogProcessors = logProcessors.stream()
                                             .filter(CommitableLogProcessor.class::isInstance)
                                             .map(CommitableLogProcessor.class::cast)

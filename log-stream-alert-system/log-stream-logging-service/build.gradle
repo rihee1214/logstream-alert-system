@@ -39,24 +39,59 @@ dependencies {
     testImplementation "org.mockito:mockito-inline:${mockitoInlineVersion}" // static/final 모킹
 }
 
-// 1) 테스트 전용 레지스트리 JAR 생성
-def testRegistryJar = tasks.register('testRegistryJar', Jar) {
-    archiveBaseName.set('test-registry-override')
-    from('src/test/resources-override') {
-        // 운영과 동일 경로/파일명으로 넣어 덮어쓰기
-        include 'META-INF/rihee/logging/collectors.index'
+/**
+ * 핵심 아이디어
+ *  - 어노테이션 프로세서가 JSON을 빌드 시점에 다음 디렉터리에 생성하게 한다:
+ *      build/generated-resources/main/...
+ *      build/generated-resources/test/...
+ *  - 그 디렉터리를 각 sourceSet의 resources 경로에 추가한다.
+ *  - processResources가 compileJava 이후에 해당 디렉터리에서 파일을 집어오도록 보장한다.
+ */
+def genResDirMain = layout.buildDirectory.dir('generated-resources/main').get().asFile
+def genResDirTest = layout.buildDirectory.dir('generated-resources/test').get().asFile
+
+sourceSets {
+    main {
+        // 기본값: src/main/resources (유지)
+        resources {
+            srcDir 'src/main/resources'
+            // 프로세서 산출물(운영용)을 리소스에 포함
+            srcDir genResDirMain
+        }
     }
-    // (선택) 재현성 옵션
-    // preserveFileTimestamps = false
-    // reproducibleFileOrder = true
+    test {
+        // 기본값: src/test/resources (유지)
+        resources {
+            srcDir 'src/test/resources'
+            // 프로세서 산출물(테스트용)을 리소스에 포함
+            srcDir genResDirTest
+        }
+
+        // (참고) 테스트 클래스패스는 기본적으로 test → main 순서라
+        // 동일 경로 리소스가 있으면 test 쪽이 우선적으로 로딩됨.
+        // 필요시 아래처럼 명시적으로 확인 가능하지만 보통 필요 없음.
+        // runtimeClasspath = files(output, resources, compileClasspath, sourceSets.main.output)
+    }
 }
+
+/**
+ * 리소스 패키징 순서 보장:
+ * - 어노테이션 프로세서가 컴파일 타임에 실행되므로,
+ *   processResources가 compileJava 이후에 산출물을 집도록 dependsOn을 건다.
+ */
+tasks.named('processResources') {
+    dependsOn tasks.named('compileJava')
+}
+
+tasks.named('processTestResources') {
+    dependsOn tasks.named('compileTestJava')
+}
+
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
 
-    dependsOn(testRegistryJar)
-    // testRegistryJar 산출물을 classpath 맨 앞에 배치
-    classpath = files(testRegistryJar.flatMap { it.archiveFile }) + classpath
+    systemProperty 'logging.props', file('build/resources/test/logging.properties').absolutePath
 
     // 환경 변수 설정
 //    environment "VALIDATOR_MODE", "strict"

@@ -86,25 +86,30 @@ public class RuntimeBootstrapExtension implements BeforeAllCallback, ParameterRe
   @Override
   public boolean supportsParameter(ParameterContext pc, ExtensionContext ec) {
     return pc.isAnnotated(TestParameter.class)
-                && LogProcessorPort.class.isAssignableFrom(pc.getParameter().getType());
+            && (
+                LogProcessorPort.class.isAssignableFrom(pc.getParameter().getType())
+                || LoggingRuntimeConfig.class.isAssignableFrom(pc.getParameter().getType())
+            );
   }
 
   @Override
   public Object resolveParameter(ParameterContext pc, ExtensionContext ec) {
-    Class<?> type = pc.findAnnotation(TestParameter.class).orElseThrow().value();
+    Class<? extends LogProcessorPort> type
+                              = pc.findAnnotation(TestParameter.class).orElseThrow().value();
 
     try {
-      for (LogProcessorPort target : TASK.get().createProcessorChain()) {
-        if (type.isInstance(target)) {
-          ec.getStore(NS).put(pc.getIndex(), target);
-          return type.cast(target);
-        }
+      if (type.equals(LogProcessorPort.class)) {
+        ec.getStore(NS).put(pc.getIndex(), TASK.get());
+        return TASK.get();
+      } else if (LogProcessorPort.class.isAssignableFrom(type)) {
+        ec.getStore(NS).put(pc.getIndex(), null);
+        return type.cast(null);
+      } else {
+        throw new IllegalArgumentException("테스트 파라미터로 적절한 type이 아닙니다. : " + type.getSimpleName());
       }
     } catch (InterruptedException | ExecutionException e) {
       throw new IllegalStateException("파라미터 세팅 도중 문제가 발생하였습니다.", e);
     }
-
-    throw new IllegalStateException("넣어준 타입에 맞는 클래스의 인스턴스가 존재하지 않습니다. annotation을 다시 확인하세요.");
   }
 
 }

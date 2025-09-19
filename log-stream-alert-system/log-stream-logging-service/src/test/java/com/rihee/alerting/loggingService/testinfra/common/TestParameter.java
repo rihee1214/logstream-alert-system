@@ -1,5 +1,6 @@
 package com.rihee.alerting.loggingService.testinfra.common;
 
+import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,5 +12,5 @@ import java.lang.annotation.Target;
 @Documented
 public @interface TestParameter {
 
-  Class<?> value();
+  Class<? extends LogProcessorPort> value();
 }

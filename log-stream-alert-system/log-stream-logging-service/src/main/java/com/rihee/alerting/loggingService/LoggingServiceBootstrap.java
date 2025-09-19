@@ -42,7 +42,7 @@ public class LoggingServiceBootstrap {
     int threadCount = config.getWorkerThreadCount();
     try (ExecutorService service = Executors.newFixedThreadPool(threadCount);) {
       for (int i = 0; i < threadCount; i++) {
-        service.execute(new LogWorker(config));
+        service.execute(new LogWorker(config.createProcessorChain()));
       }
     }
   }

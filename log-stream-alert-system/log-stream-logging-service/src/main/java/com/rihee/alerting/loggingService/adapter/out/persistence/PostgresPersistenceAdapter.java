@@ -83,6 +83,9 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
       PreparedBatch normalBatch = handle.prepareBatch(NORMAL_INSERT_QUERY);
       PreparedBatch errorBatch = handle.prepareBatch(ERROR_INSERT_QUERY);
 
+      int normalCount = 0;
+      int errorCount = 0;
+
       for (Iterator<LogMessage> it = messages.iterator(); it.hasNext();) {
         LogMessage message = it.next();
 
@@ -96,6 +99,7 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
               .bind("log_version_major",
                                       message.get(ErrorLogSchema.LOG_VERSION_MAJOR.getSchemaName()))
               .add();
+          errorCount++;
         } else {
           // TODO 기능 완성 및 스키마 완성 필요
           normalBatch
@@ -119,13 +123,18 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
               .bind("call", message.get("call"))
               .bind("meta", message.get("meta"))
               .add();
+          normalCount++;
         }
 
         result.stackingLogMessage(message);
       }
 
-      normalBatch.execute();
-      errorBatch.execute();
+      if (normalCount > 0) {
+        normalBatch.execute();
+      }
+      if (errorCount > 0) {
+        errorBatch.execute();
+      }
     });
     return ProcessResult.success(result);
   }
@@ -150,34 +159,14 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
     private static volatile HikariDataSource dataSource;
     private static volatile Jdbi jdbi;
 
+    private HikariConfig config;
+
     @Override
     public LogProcessorPort.Builder<PostgresPersistenceAdapter>
                                             withProperties(Map<String, String> setting) {
 
-      if (jdbi == null) {
-        synchronized (Builder.class) {
-          if (jdbi == null) {
-            HikariConfig config = getHikariConfigFromSetting(setting);
-            dataSource = new HikariDataSource(config);
-            jdbi = Jdbi.create(dataSource);
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-              dataSource.close();
-            }));
-          }
-        }
-      }
-
+      config = getHikariConfigFromSetting(setting);
       return this;
-    }
-
-    private static boolean isDevOrTestMode() {
-      String programMode = System.getProperty("PROGRAM_MODE");
-      if (programMode == null) {
-        programMode = System.getenv("PROGRAM_MODE");
-      }
-      return programMode != null
-          && (programMode.equalsIgnoreCase("dev")
-          || programMode.equalsIgnoreCase("test"));
     }
 
     private HikariConfig getHikariConfigFromSetting(Map<String, String> setting) {
@@ -222,6 +211,17 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
     @Override
     public PostgresPersistenceAdapter build() {
+      if (jdbi == null) {
+        synchronized (Builder.class) {
+          if (jdbi == null) {
+            dataSource = new HikariDataSource(config);
+            jdbi = Jdbi.create(dataSource);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+              dataSource.close();
+            }));
+          }
+        }
+      }
       return new PostgresPersistenceAdapter(jdbi, dataSource);
     }
   }
