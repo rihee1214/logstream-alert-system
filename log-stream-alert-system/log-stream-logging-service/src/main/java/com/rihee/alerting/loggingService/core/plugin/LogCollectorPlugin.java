@@ -133,9 +133,9 @@ public final class LogCollectorPlugin implements LogProcessorPlugin {
     }
 
     // 3) 클래스 로딩
-    final Class<?> collectorClass;
+    final Class<?> targetClass;
     try {
-      collectorClass = Class.forName(fqcn, /*initialize*/ false, cl);
+      targetClass = Class.forName(fqcn, /*initialize*/ false, cl);
     } catch (ClassNotFoundException e) {
       throw new IllegalStateException("Collector class not found: " + fqcn, e);
     }
@@ -143,7 +143,7 @@ public final class LogCollectorPlugin implements LogProcessorPlugin {
     // 4) builder() 확인 및 호출
     try {
       // public static builder()
-      Method builderMethod = collectorClass.getMethod("builder");
+      Method builderMethod = targetClass.getMethod("builder");
 
       if (!LogProcessorPort.Builder.class.isAssignableFrom(builderMethod.getReturnType())) {
         throw new IllegalStateException(fqcn + ".builder() must return LogProcessorPort.Builder");

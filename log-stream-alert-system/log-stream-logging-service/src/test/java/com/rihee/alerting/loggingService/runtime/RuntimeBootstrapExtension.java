@@ -3,7 +3,7 @@ package com.rihee.alerting.loggingService.runtime;
 import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.runtime.LoggingRuntimeConfig;
 import com.rihee.alerting.loggingService.core.runtime.SettingLoader;
-import com.rihee.alerting.loggingService.testinfra.common.TestParameter;
+import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -85,25 +85,29 @@ public class RuntimeBootstrapExtension implements BeforeAllCallback, ParameterRe
 
   @Override
   public boolean supportsParameter(ParameterContext pc, ExtensionContext ec) {
-    return pc.isAnnotated(TestParameter.class)
-            && (
-                LogProcessorPort.class.isAssignableFrom(pc.getParameter().getType())
-                || LoggingRuntimeConfig.class.isAssignableFrom(pc.getParameter().getType())
-            );
+    return LogProcessorPort.class.isAssignableFrom(pc.getParameter().getType())
+        || LoggingRuntimeConfig.class.isAssignableFrom(pc.getParameter().getType());
   }
 
   @Override
   public Object resolveParameter(ParameterContext pc, ExtensionContext ec) {
-    Class<? extends LogProcessorPort> type
-                              = pc.findAnnotation(TestParameter.class).orElseThrow().value();
-
+    Class<?> type = pc.getParameter().getType();
     try {
       if (type.equals(LogProcessorPort.class)) {
         ec.getStore(NS).put(pc.getIndex(), TASK.get());
         return TASK.get();
       } else if (LogProcessorPort.class.isAssignableFrom(type)) {
-        ec.getStore(NS).put(pc.getIndex(), null);
-        return type.cast(null);
+        Object instance = null;
+        try {
+          Method m = type.getMethod("builder");
+          LogProcessorPort.Builder<? extends LogProcessorPort> builder
+                = (LogProcessorPort.Builder<? extends LogProcessorPort>) m.invoke(null);
+          instance = builder.build();
+        } catch (Exception e) {
+          throw new IllegalStateException("LogProcessor 인스턴스를 생성하는 도중 문제가 발생하였습니다.", e);
+        }
+        ec.getStore(NS).put(pc.getIndex(), instance);
+        return type.cast(instance);
       } else {
         throw new IllegalArgumentException("테스트 파라미터로 적절한 type이 아닙니다. : " + type.getSimpleName());
       }

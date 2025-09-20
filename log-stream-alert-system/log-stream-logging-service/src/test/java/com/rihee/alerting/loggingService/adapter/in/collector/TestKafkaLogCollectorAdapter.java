@@ -19,6 +19,7 @@ import org.apache.kafka.common.TopicPartition;
 public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
                                                 implements CommitableLogProcessor {
 
+  public static final String DEFAULT_TOPIC = "test-logs";
   private final KafkaLogCollectorAdapter adapter;
   private final MockConsumer<String, String> consumer;
 
@@ -91,7 +92,7 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
   public static class Builder implements LogCollectorPort.Builder<TestKafkaLogCollectorAdapter> {
 
     private KafkaLogCollectorAdapter.Builder originBuilder;
-    private String kafkaTopic;
+    private String kafkaTopic = DEFAULT_TOPIC;
 
     /**
      * Kafka 설정을 수용합니다.

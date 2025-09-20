@@ -9,7 +9,6 @@ import com.rihee.alerting.loggingService.core.pipeline.context.DefaultLogProcess
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import com.rihee.alerting.loggingService.runtime.RuntimeBootstrapExtension;
-import com.rihee.alerting.loggingService.testinfra.common.TestParameter;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +21,7 @@ public class DefaultValidatorSingleMessageTest {
 
   @Test
   @DisplayName("단일 정상 메시지를 받아서 해당 메시지를 검증한 후 다음 파이프 라인으로 넘긴다.")
-  void collects_single_message_and_emits_to_pipeline(
-      @TestParameter(TestDefaultLogValidatorAdapter.class) TestDefaultLogValidatorAdapter adapter) {
+  void collects_single_message_and_emits_to_pipeline(TestDefaultLogValidatorAdapter adapter) {
 
     Map<String, Object> params = new HashMap<>();
     params.put("logtype", "biz");
