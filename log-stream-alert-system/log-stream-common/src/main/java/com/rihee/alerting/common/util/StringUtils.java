@@ -26,6 +26,10 @@ public final class StringUtils {
     return validateTarget != null && !validateTarget.isBlank();
   }
 
+  public static boolean isNotBlankText(Object validateTarget) {
+    return validateTarget instanceof String target && !target.isBlank();
+  }
+
   /**
    * 주어진 문자열이 비어 있는지 검사합니다.
    *
@@ -38,6 +42,10 @@ public final class StringUtils {
    */
   public static boolean isBlank(String validateTarget) {
     return validateTarget == null || validateTarget.isBlank();
+  }
+
+  public static boolean isBlankText(Object validateTarget) {
+    return !(validateTarget instanceof String target) || target.isBlank();
   }
 
   /**

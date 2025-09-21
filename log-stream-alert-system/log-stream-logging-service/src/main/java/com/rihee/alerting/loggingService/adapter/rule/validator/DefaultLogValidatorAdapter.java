@@ -43,8 +43,7 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
   private static final Logger log = LoggerFactory.getLogger(DefaultLogValidatorAdapter.class);
 
   // CharSequence 기반 필수 문자열 검증(널/공백 불가)
-  private static final Predicate<Object> IS_VALID_STRING
-      = value -> StringUtils.isNotBlank((String) value);
+  private static final Predicate<Object> IS_VALID_STRING = StringUtils::isNotBlankText;
   // 기본(required by annotation) 필수 필드들
   private static final Map<String, Predicate<Object>> REQUIRED_FIELDS;
 
@@ -93,15 +92,15 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
     LogProcessingContext resultMessages = new DefaultLogProcessingContext();
     for (Iterator<LogMessage> it = messages.iterator(); it.hasNext();) {
       LogMessage message = it.next();
-      String reason = validateMessage(message);
-      if (reason != null) {
-        // 치명도가 낮은(복구 가능) 데이터 검증 실패 → warn 수준 + 메시지 키 중심으로 로그 축약
-        log.warn(reason);
-        resultMessages.stackingLogMessage(
-              LogErrorMessage.fromNormalMessage(message, reason, stage()));
-        continue;
+      if (!message.isError()) {
+        String reason = validateMessage(message);
+        if (reason != null) {
+          // 치명도가 낮은(복구 가능) 데이터 검증 실패 → warn 수준 + 메시지 키 중심으로 로그 축약
+          log.warn(reason);
+          message = LogErrorMessage.fromNormalMessage(message, reason, stage());
+        }
       }
-      log.debug("Validate Success! : {}", message.getMessageKey());
+      log.debug("Validate Target : {}", message.getMessageKey());
       resultMessages.stackingLogMessage(message);
     }
     return ProcessResult.success(resultMessages);

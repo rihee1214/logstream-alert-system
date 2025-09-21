@@ -2,7 +2,6 @@ package com.rihee.alerting.loggingService.core.model;
 
 import com.rihee.alerting.common.constant.message.StructuredLogProperties;
 import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
-import com.rihee.alerting.common.util.MapUtils;
 import java.util.Map;
 import java.util.Objects;
 
