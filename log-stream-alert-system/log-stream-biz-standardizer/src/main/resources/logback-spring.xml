@@ -7,7 +7,7 @@
                 <providers>
                     <timestamp>
                         <fieldName>timestamp</fieldName>
-                        <pattern>yyyy-MM-dd HH:mm:ss.SSSZ</pattern>
+                        <pattern>yyyy-MM-dd HH:mm:ss.SSSSSSSSSXXX</pattern>
                     </timestamp>
                     <logLevel>
                         <fieldName>level</fieldName>
@@ -32,7 +32,7 @@
                 <providers>
                     <timestamp>
                         <fieldName>timestamp</fieldName>
-                        <pattern>yyyy-MM-dd HH:mm:ss.SSSZ</pattern>
+                        <pattern>yyyy-MM-dd HH:mm:ss.SSSSSSSSSXXX</pattern>
                     </timestamp>
                     <logLevel>
                         <fieldName>level</fieldName>
