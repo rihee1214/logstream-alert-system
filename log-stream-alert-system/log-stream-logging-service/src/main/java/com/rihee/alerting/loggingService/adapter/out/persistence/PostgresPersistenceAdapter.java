@@ -1,6 +1,6 @@
 package com.rihee.alerting.loggingService.adapter.out.persistence;
 
-import com.rihee.alerting.common.constant.message.StructuredLogProperties;
+import com.rihee.alerting.common.constant.logging.StructuredLogFields;
 import com.rihee.alerting.common.constant.storage.ErrorLogSchema;
 import com.rihee.alerting.common.constant.storage.NormalLogSchema;
 import com.rihee.alerting.common.util.StringUtils;
@@ -39,7 +39,6 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
           sampled,
           flags,
           log_major_version,
-          call,
           meta
       )
       VALUES (
@@ -58,7 +57,6 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
           :sampled,
           :flags,
           :log_major_version,
-          coalesce(:call::jsonb, '{}'::jsonb),
           coalesce(:meta::jsonb, '{}'::jsonb)
       ) ON CONFLICT(message_id) DO NOTHING
       """;
@@ -103,24 +101,23 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
         } else {
           // TODO 기능 완성 및 스키마 완성 필요
           normalBatch
-              .bind("logtype", message.get(StructuredLogProperties.LOG_TYPE.getFieldName()))
-              .bind("timestamp", message.get(StructuredLogProperties.TIME_STAMP.getFieldName()))
-              .bind("level", message.get(StructuredLogProperties.LEVEL.getFieldName()))
-              .bind("service", message.get(StructuredLogProperties.SERVICE.getFieldName()))
-              .bind("class", message.get(StructuredLogProperties.CLASS.getFieldName()))
-              .bind("message", message.get(StructuredLogProperties.MESSAGE.getFieldName()))
-              .bind("host", message.get(StructuredLogProperties.HOST.getFieldName()))
-              .bind("container", message.get(StructuredLogProperties.CONTAINER.getFieldName()))
-              .bind("stacktrace", message.get(StructuredLogProperties.STACK_TRACE.getFieldName()))
-              .bind("traceId", message.get(StructuredLogProperties.TRACE_ID.getFieldName()))
-              .bind("spanId", message.get(StructuredLogProperties.SPAN_ID.getFieldName()))
+              .bind("logtype", message.get(StructuredLogFields.LOG_TYPE.getFieldName()))
+              .bind("timestamp", message.get(StructuredLogFields.TIME_STAMP.getFieldName()))
+              .bind("level", message.get(StructuredLogFields.LEVEL.getFieldName()))
+              .bind("service", message.get(StructuredLogFields.SERVICE.getFieldName()))
+              .bind("class", message.get(StructuredLogFields.CLASS.getFieldName()))
+              .bind("message", message.get(StructuredLogFields.MESSAGE.getFieldName()))
+              .bind("host", message.get(StructuredLogFields.HOST.getFieldName()))
+              .bind("container", message.get(StructuredLogFields.CONTAINER.getFieldName()))
+              .bind("stacktrace", message.get(StructuredLogFields.STACK_TRACE.getFieldName()))
+              .bind("traceId", message.get(StructuredLogFields.TRACE_ID.getFieldName()))
+              .bind("spanId", message.get(StructuredLogFields.SPAN_ID.getFieldName()))
               .bind("parentSpanId",
-                                message.get(StructuredLogProperties.PARENT_SPAN_ID.getFieldName()))
-              .bind("sampled", message.get(StructuredLogProperties.SAMPLED.getFieldName()))
-              .bind("flags", message.get(StructuredLogProperties.FLAGS.getFieldName()))
+                                message.get(StructuredLogFields.PARENT_SPAN_ID.getFieldName()))
+              .bind("sampled", message.get(StructuredLogFields.SAMPLED.getFieldName()))
+              .bind("flags", message.get(StructuredLogFields.FLAGS.getFieldName()))
               .bind("log_major_version",
                                     message.get(NormalLogSchema.LOG_VERSION_MAJOR.getSchemaName()))
-              .bind("call", message.get("call"))
               .bind("meta", message.get("meta"))
               .add();
           normalCount++;

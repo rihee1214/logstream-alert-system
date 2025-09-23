@@ -1,8 +1,8 @@
 package com.rihee.alerting.logbizcore.log;
 
-import static com.rihee.alerting.common.constant.message.StructuredLogProperties.LOG_TYPE;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.LOG_TYPE;
 
-import com.rihee.alerting.common.constant.message.LogType;
+import com.rihee.alerting.common.constant.logging.LogType;
 import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;

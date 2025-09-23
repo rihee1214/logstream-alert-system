@@ -1,20 +1,20 @@
 package com.rihee.alerting.logbizcore.util.client.web;
 
-import static com.rihee.alerting.common.constant.message.CallCommonProperties.ELAPSED_MS;
-import static com.rihee.alerting.common.constant.message.CallCommonProperties.TYPE;
-import static com.rihee.alerting.common.constant.message.CallType.HTTP;
-import static com.rihee.alerting.common.constant.message.HttpCallProperties.METHOD;
-import static com.rihee.alerting.common.constant.message.HttpCallProperties.RESP_TRACE_ID;
-import static com.rihee.alerting.common.constant.message.HttpCallProperties.STATUS_CODE;
-import static com.rihee.alerting.common.constant.message.HttpCallProperties.STATUS_MESSAGE;
-import static com.rihee.alerting.common.constant.message.HttpCallProperties.URI;
-import static com.rihee.alerting.common.constant.message.StructuredLogProperties.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.constant.message.StructuredLogProperties.SPAN_ID;
-import static com.rihee.alerting.common.constant.message.StructuredLogProperties.TRACE_ID;
+import static com.rihee.alerting.common.constant.observability.CallCommonFields.ELAPSED_MS;
+import static com.rihee.alerting.common.constant.observability.CallCommonFields.TYPE;
+import static com.rihee.alerting.common.constant.observability.CallType.HTTP;
+import static com.rihee.alerting.common.constant.observability.HttpCallFields.METHOD;
+import static com.rihee.alerting.common.constant.observability.HttpCallFields.RESP_TRACE_ID;
+import static com.rihee.alerting.common.constant.observability.HttpCallFields.STATUS_CODE;
+import static com.rihee.alerting.common.constant.observability.HttpCallFields.STATUS_MESSAGE;
+import static com.rihee.alerting.common.constant.observability.HttpCallFields.URI;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SPAN_ID;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.TRACE_ID;
 
 import com.rihee.alerting.common.constant.B3Header;
 import com.rihee.alerting.common.constant.DefaultValues;
-import com.rihee.alerting.common.constant.message.LogType;
+import com.rihee.alerting.common.constant.logging.LogType;
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
 import com.rihee.alerting.logbizcore.util.client.web.response.WebClientCallResult;

@@ -1,6 +1,6 @@
 package com.rihee.alerting.loggingService.core.model;
 
-import com.rihee.alerting.common.constant.message.StructuredLogProperties;
+import com.rihee.alerting.common.constant.logging.StructuredLogFields;
 import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
 import java.util.Map;
 import java.util.Objects;
@@ -68,11 +68,11 @@ public sealed abstract class LogMessage permits LogNormalMessage, LogErrorMessag
 
   protected static String generateKey(Map<String, Object> originLog) {
     Object rawServiceName
-        = Objects.requireNonNull(originLog.get(StructuredLogProperties.SERVICE.getFieldName()));
+        = Objects.requireNonNull(originLog.get(StructuredLogFields.SERVICE.getFieldName()));
     Object rawHostName
-        = Objects.requireNonNull(originLog.get(StructuredLogProperties.HOST.getFieldName()));
+        = Objects.requireNonNull(originLog.get(StructuredLogFields.HOST.getFieldName()));
     Object rawContainerName
-        = Objects.requireNonNull(originLog.get(StructuredLogProperties.CONTAINER.getFieldName()));
+        = Objects.requireNonNull(originLog.get(StructuredLogFields.CONTAINER.getFieldName()));
 
     String serviceName = String.valueOf(rawServiceName);
     String hostName = String.valueOf(rawHostName);

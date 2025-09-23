@@ -1,5 +1,6 @@
 package com.rihee.alerting.common.constant.annotation;
 
+import com.rihee.alerting.common.constant.logging.StructuredLogFields;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,7 +20,7 @@ import java.lang.annotation.Target;
  * TIME_STAMP("timestamp"),
  * }</pre>
  *
- * @see com.rihee.alerting.common.constant.message.StructuredLogProperties
+ * @see StructuredLogFields
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

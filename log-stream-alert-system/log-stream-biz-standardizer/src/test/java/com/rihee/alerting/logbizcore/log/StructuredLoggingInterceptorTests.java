@@ -1,8 +1,8 @@
 package com.rihee.alerting.logbizcore.log;
 
-import static com.rihee.alerting.common.constant.message.StructuredLogProperties.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.constant.message.StructuredLogProperties.SPAN_ID;
-import static com.rihee.alerting.common.constant.message.StructuredLogProperties.TRACE_ID;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SPAN_ID;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.TRACE_ID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

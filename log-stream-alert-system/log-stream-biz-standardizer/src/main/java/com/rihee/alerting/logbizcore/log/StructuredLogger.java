@@ -1,6 +1,6 @@
 package com.rihee.alerting.logbizcore.log;
 
-import com.rihee.alerting.common.constant.message.LogType;
+import com.rihee.alerting.common.constant.logging.LogType;
 import java.util.Map;
 
 /**

@@ -1,10 +1,10 @@
-package com.rihee.alerting.common.constant.message;
+package com.rihee.alerting.common.constant.observability;
 
 /**
  * {@code CallCommonProperties}는 구조화 로그 내에서 호출(call)과 관련된
  * 공통 메타 데이터를 정의하는 열거형입니다.
  * 전체 스키마 설계 및 공통 정의에 대해서는
- * {@link com.rihee.alerting.common.constant.message package 설명}을 참고하세요.
+ * {@link com.rihee.alerting.common.constant.logging package 설명}을 참고하세요.
  *
  * <p>이 열거형에 포함된 필드는 호출 방식과 응답까지의 소요 시간 등,
  * HTTP, gRPC, Kafka 등 다양한 통신 방식에서 공통적으로 기록될 수 있는 항목들입니다.
@@ -17,7 +17,7 @@ package com.rihee.alerting.common.constant.message;
  * @author 리희
  * @since 1.0
  */
-public enum CallCommonProperties implements LogFieldKey {
+public enum CallCommonFields {
 
   /**
    * 호출 방식(type)을 나타냅니다.
@@ -35,7 +35,7 @@ public enum CallCommonProperties implements LogFieldKey {
 
   private final String key;
 
-  CallCommonProperties(String key) {
+  CallCommonFields(String key) {
     this.key = key;
   }
 

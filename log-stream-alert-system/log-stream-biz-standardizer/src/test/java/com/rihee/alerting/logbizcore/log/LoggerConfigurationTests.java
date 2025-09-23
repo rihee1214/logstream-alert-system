@@ -2,7 +2,7 @@ package com.rihee.alerting.logbizcore.log;
 
 import ch.qos.logback.classic.Logger;
 import com.rihee.alerting.logbizcore.log.appender.MemoryAppender;
-import com.rihee.alerting.common.constant.message.LogType;
+import com.rihee.alerting.common.constant.logging.LogType;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

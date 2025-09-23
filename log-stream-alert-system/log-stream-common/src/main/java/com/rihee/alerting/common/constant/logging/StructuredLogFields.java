@@ -1,4 +1,4 @@
-package com.rihee.alerting.common.constant.message;
+package com.rihee.alerting.common.constant.logging;
 
 import com.rihee.alerting.common.constant.annotation.LogPolicy;
 
@@ -6,7 +6,7 @@ import com.rihee.alerting.common.constant.annotation.LogPolicy;
  * {@code StructuredLogProperties}는
  * 구조화 로그 필드 키들을 정의하며, 로그 시스템 전반에서 통일된 속성 명명 규칙을 제공합니다.
  * 전체 스키마 설계 및 공통 정의에 대해서는
- * {@link com.rihee.alerting.common.constant.message package 설명}을 참고하세요.
+ * {@link com.rihee.alerting.common.constant.logging package 설명}을 참고하세요.
  *
  * <p>모든 필드는 Micrometer, Brave, Zipkin 등과의 연동을 고려하여 B3 Header 표준과 일치하도록 설계되었으며,
  * 추후 외부 분산 추적 시스템과의 호환성을 보장합니다.
@@ -14,7 +14,7 @@ import com.rihee.alerting.common.constant.annotation.LogPolicy;
  * <p>이 필드들은 MDC (Mapped Diagnostic Context)에 저장되며, 로그 백엔드(Kibana, Elasticsearch, Grafana 등)에서
  * 분석 가능하도록 JSON 기반 구조로 출력됩니다.
  */
-public enum StructuredLogProperties implements LogFieldKey {
+public enum StructuredLogFields {
 
   /**
    * 로그 타입.<br>
@@ -129,7 +129,7 @@ public enum StructuredLogProperties implements LogFieldKey {
 
   private final String name;
 
-  StructuredLogProperties(String name) {
+  StructuredLogFields(String name) {
     this.name = name;
   }
 

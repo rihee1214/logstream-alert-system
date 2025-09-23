@@ -1,11 +1,11 @@
 package com.rihee.alerting.logbizcore.actuator;
 
-import static com.rihee.alerting.common.constant.message.CallCommonProperties.ELAPSED_MS;
-import static com.rihee.alerting.common.constant.message.CallCommonProperties.TYPE;
-import static com.rihee.alerting.common.constant.message.HttpCallProperties.METHOD;
-import static com.rihee.alerting.common.constant.message.HttpCallProperties.STATUS_CODE;
-import static com.rihee.alerting.common.constant.message.HttpCallProperties.STATUS_MESSAGE;
-import static com.rihee.alerting.common.constant.message.HttpCallProperties.URI;
+import static com.rihee.alerting.common.constant.observability.CallCommonFields.ELAPSED_MS;
+import static com.rihee.alerting.common.constant.observability.CallCommonFields.TYPE;
+import static com.rihee.alerting.common.constant.observability.HttpCallFields.METHOD;
+import static com.rihee.alerting.common.constant.observability.HttpCallFields.STATUS_CODE;
+import static com.rihee.alerting.common.constant.observability.HttpCallFields.STATUS_MESSAGE;
+import static com.rihee.alerting.common.constant.observability.HttpCallFields.URI;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import ch.qos.logback.classic.Logger;

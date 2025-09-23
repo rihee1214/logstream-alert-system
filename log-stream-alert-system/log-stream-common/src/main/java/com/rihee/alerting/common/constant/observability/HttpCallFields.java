@@ -1,9 +1,9 @@
-package com.rihee.alerting.common.constant.message;
+package com.rihee.alerting.common.constant.observability;
 
 /**
  * {@code CallProperties}는 구조화 로그에서 외부 시스템과의 통신(Call)에 관련된 필드들을 표준화하기 위한 열거형입니다.
  * 전체 스키마 설계 및 공통 정의에 대해서는
- * {@link com.rihee.alerting.common.constant.message package 설명}을 참고하세요.
+ * {@link com.rihee.alerting.common.constant.logging package 설명}을 참고하세요.
  *
  * <p>{@code call.} 접두어를 사용하여 요청/응답 로그의 메타데이터를 일관되게 표현하며,
  * 다양한 프로토콜(HTTP, gRPC, Kafka 등)에 대해 공통된 구조로 로깅이 가능하도록 설계되었습니다.
@@ -17,7 +17,7 @@ package com.rihee.alerting.common.constant.message;
  * @author 리희
  * @since 1.0
  */
-public enum HttpCallProperties implements LogFieldKey {
+public enum HttpCallFields {
   /** 호출 메서드 (예: GET, POST, PUBLISH 등). */
   METHOD("call.method"),
 
@@ -35,7 +35,7 @@ public enum HttpCallProperties implements LogFieldKey {
 
   private final String key;
 
-  HttpCallProperties(String key) {
+  HttpCallFields(String key) {
     this.key = key;
   }
 
@@ -44,7 +44,6 @@ public enum HttpCallProperties implements LogFieldKey {
    *
    * @return 구조화 로그에서 사용할 메타 키 이름
    */
-  @Override
   public String getFieldName() {
     return this.key;
   }

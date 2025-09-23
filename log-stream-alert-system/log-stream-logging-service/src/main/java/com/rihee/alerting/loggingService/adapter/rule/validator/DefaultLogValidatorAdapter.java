@@ -1,7 +1,7 @@
 package com.rihee.alerting.loggingService.adapter.rule.validator;
 
 import com.rihee.alerting.common.constant.annotation.LogPolicy;
-import com.rihee.alerting.common.constant.message.StructuredLogProperties;
+import com.rihee.alerting.common.constant.logging.StructuredLogFields;
 import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.ValidatorType;
 import com.rihee.alerting.loggingService.core.model.LogErrorMessage;
@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code DefaultLogValidator}는 {@link StructuredLogProperties}에 선언된 필드 중
+ * {@code DefaultLogValidator}는 {@link StructuredLogFields}에 선언된 필드 중
  * {@link LogPolicy#isEssential()}이 표시된 항목들을 필수로 간주하여,
  * {@link LogProcessingContext} 내 각 {@link LogMessage}의 유효성을 검증하는 기본 구현체입니다.
  *
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * <p><strong>스레드 안전성:</strong> 본 구현은 불변(static) 검증 맵을 사용하며 상태를 저장하지 않으므로
  * 여러 스레드에서 안전하게 재사용할 수 있습니다.
  *
- * @see StructuredLogProperties
+ * @see StructuredLogFields
  * @see LogPolicy
  * @see LogProcessingContext
  * @see LogMessage
@@ -49,10 +49,10 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
 
   static {
     Map<String, Predicate<Object>> predicateMap = new LinkedHashMap<>();
-    for (StructuredLogProperties c : StructuredLogProperties.values()) {
+    for (StructuredLogFields c : StructuredLogFields.values()) {
       try {
         // enum 상수 필드에 직접 선언된 @LogPolicy 분석
-        Field f = StructuredLogProperties.class.getField(c.name());
+        Field f = StructuredLogFields.class.getField(c.name());
         LogPolicy policy = f.getAnnotation(LogPolicy.class);
         if (policy != null && policy.isEssential()) {
           predicateMap.put(c.getFieldName(), IS_VALID_STRING);
