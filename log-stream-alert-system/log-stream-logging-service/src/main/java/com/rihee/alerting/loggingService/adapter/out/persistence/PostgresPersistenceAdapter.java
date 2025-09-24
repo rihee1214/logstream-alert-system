@@ -36,8 +36,6 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
           traceId,
           spanId,
           parentSpanId,
-          sampled,
-          flags,
           log_major_version,
           meta
       )
@@ -54,8 +52,6 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
           :traceId,
           :spanId,
           :parentSpanId,
-          :sampled,
-          :flags,
           :log_major_version,
           coalesce(:meta::jsonb, '{}'::jsonb)
       ) ON CONFLICT(message_id) DO NOTHING
@@ -114,8 +110,6 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
               .bind("spanId", message.get(StructuredLogFields.SPAN_ID.getFieldName()))
               .bind("parentSpanId",
                                 message.get(StructuredLogFields.PARENT_SPAN_ID.getFieldName()))
-              .bind("sampled", message.get(StructuredLogFields.SAMPLED.getFieldName()))
-              .bind("flags", message.get(StructuredLogFields.FLAGS.getFieldName()))
               .bind("log_major_version",
                                     message.get(NormalLogSchema.LOG_VERSION_MAJOR.getSchemaName()))
               .bind("meta", message.get("meta"))

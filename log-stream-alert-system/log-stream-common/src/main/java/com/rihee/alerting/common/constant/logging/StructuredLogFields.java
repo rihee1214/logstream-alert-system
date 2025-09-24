@@ -102,30 +102,7 @@ public enum StructuredLogFields {
    * <p>비즈니스 기능 또는 API 식별자 단위로 지정되며, 분산 추적 시 "span name" 역할을 수행합니다.
    */
   @LogPolicy(isEssential = true, description = "현재 로그 또는 트랜잭션 단위의 이름입니다.")
-  NAME("name"),
-
-  /**
-   * Zipkin 및 B3 헤더 호환용 trace sampling 여부.<br>
-   * {@code 1} 또는 {@code 0} / {@code true} 또는 {@code false} 등의 값으로 표현됩니다.
-   *
-   * <p>B3 헤더: {@code X-B3-Sampled}
-   */
-  SAMPLED("sampled"),
-
-  /**
-   * Zipkin 및 B3 호환용 디버깅 수집 여부.<br>
-   * 일반적으로 {@code 1} 또는 {@code 0}로 표현되며, 강제 수집 여부를 나타냅니다.
-   *
-   * <p>B3 헤더: {@code X-B3-Flags}
-   */
-  FLAGS("flags"),
-
-  /**
-   * 로그가 기록된 작업 또는 요청 처리의 소요 시간(ms 단위).
-   *
-   * <p>일반적으로 traceId 또는 spanId 단위의 duration을 측정하여 기록합니다.
-   */
-  DURATION("duration");
+  NAME("name");
 
   private final String name;
 

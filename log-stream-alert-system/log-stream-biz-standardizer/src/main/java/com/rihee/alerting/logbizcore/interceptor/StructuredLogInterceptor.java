@@ -1,12 +1,12 @@
 package com.rihee.alerting.logbizcore.interceptor;
 
 import static com.rihee.alerting.common.constant.DefaultValues.B3HEADER_SAMPLED_DEFAULT;
-import static com.rihee.alerting.common.constant.logging.StructuredLogFields.FLAGS;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.NAME;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SAMPLED;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SPAN_ID;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.TRACE_ID;
+import static com.rihee.alerting.common.constant.observability.ObservabilityDefaultFields.FLAGS;
+import static com.rihee.alerting.common.constant.observability.ObservabilityDefaultFields.SAMPLED;
 
 import com.rihee.alerting.common.constant.B3Header;
 import com.rihee.alerting.common.constant.logging.LogType;
@@ -126,6 +126,7 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
     String sampled = request.getHeader(B3Header.SAMPLED.getHeaderName());
     String flags = request.getHeader(B3Header.FLAGS.getHeaderName());
 
+    // TODO 이 항목들은 어떻게 처리할지 고민해야한다. (로그 수집을 위한 요소가 아닌 관측 가능성을 위한 요소)
     MDC.put(SAMPLED.getFieldName(), StringUtils.hasText(sampled) ? sampled
                                                           : B3HEADER_SAMPLED_DEFAULT.getValue());
     if (StringUtils.hasText(flags)) {
