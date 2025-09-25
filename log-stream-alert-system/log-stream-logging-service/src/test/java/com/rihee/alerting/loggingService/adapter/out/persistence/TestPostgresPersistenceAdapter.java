@@ -5,7 +5,9 @@ import com.rihee.alerting.loggingService.core.pipeline.api.LogProcessorPort;
 import com.rihee.alerting.loggingService.core.pipeline.context.LogProcessingContext;
 import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePort;
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.HandleConsumer;
@@ -59,6 +61,33 @@ public final class TestPostgresPersistenceAdapter extends LogPersistencePort {
           = Mockito.mock(PreparedBatch.class,
           Mockito.withSettings().defaultAnswer(Answers.RETURNS_SELF));
 
+      AtomicInteger normalAdds = new AtomicInteger(0);
+      AtomicInteger errorAdds = new AtomicInteger(0);
+
+      Mockito.when(normalBatch.add()).thenAnswer(ans -> {
+        normalAdds.incrementAndGet();
+        return normalBatch;
+      });
+      Mockito.when(errorBatch.add()).thenAnswer(ans -> {
+        errorAdds.incrementAndGet();
+        return errorBatch;
+      });
+
+      Mockito.when(normalBatch.execute())
+          .thenAnswer(ans -> {
+            int n =  normalAdds.get();
+            int[] res = new int[n];
+            Arrays.fill(res, 1);
+            return res;
+          });
+      Mockito.when(errorBatch.execute())
+          .thenAnswer(ans -> {
+            int n =  errorAdds.get();
+            int[] res = new int[n];
+            Arrays.fill(res, 1);
+            return res;
+          });
+
       Mockito.doAnswer(ans -> {
         @SuppressWarnings("unchecked")
         var consumer = (HandleConsumer<RuntimeException>) ans.getArgument(0);
@@ -72,9 +101,6 @@ public final class TestPostgresPersistenceAdapter extends LogPersistencePort {
       Mockito.when(
           handle.prepareBatch(PostgresPersistenceAdapter.ERROR_INSERT_QUERY)
       ).thenReturn(errorBatch);
-
-      Mockito.when(normalBatch.execute()).thenReturn(new int[0]);
-      Mockito.when(errorBatch.execute()).thenReturn(new int[0]);
 
       DataSource ds = Mockito.mock(
           DataSource.class,

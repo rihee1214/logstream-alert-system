@@ -13,11 +13,15 @@ import com.rihee.alerting.loggingService.core.pipeline.port.out.LogPersistencePo
 import com.rihee.alerting.loggingService.core.pipeline.result.ProcessResult;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @PersistenceType("postgres")
 public final class PostgresPersistenceAdapter extends LogPersistencePort {
@@ -61,6 +65,8 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
             VALUES (:messageId, :originLog, :reason, :occurred_at, :stage, :log_version_major)
             ON CONFLICT(message_id) DO NOTHING
       """;
+
+  private static final Logger log = LoggerFactory.getLogger(PostgresPersistenceAdapter.class);
 
   private final Jdbi jdbi;
   private final DataSource dataSource;
@@ -120,14 +126,45 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
         result.stackingLogMessage(message);
       }
 
-      if (normalCount > 0) {
-        normalBatch.execute();
-      }
-      if (errorCount > 0) {
-        errorBatch.execute();
-      }
+      int[] norRes = normalBatch.execute();
+      int[] errRes = errorBatch.execute();
+      logBatchResult("normal", norRes);
+      logBatchResult("error", errRes);
     });
     return ProcessResult.success(result);
+  }
+
+  /**
+   * JDBC 배치 결과(int[])를 요약해서 로그로 남긴다.
+   * 규칙:
+   *  - 1  : 성공한 행 수 1 (INSERT/UPDATE 성공)
+   *  - 0  : 영향 없음 (여기선 ON CONFLICT DO NOTHING 등 멱등 충돌로 간주)
+   *  - -2 : Statement.SUCCESS_NO_INFO (성공했으나 행 수 미상) → 성공으로 취급
+   *  - -3 : Statement.EXECUTE_FAILED (실패)
+   */
+  private static void logBatchResult(String name, int[] result) {
+    if (result == null) {
+      log.warn("[batch:{}] result is null", name);
+      return;
+    }
+    long success = Arrays.stream(result)
+                          .filter(v -> v == 1 || v == Statement.SUCCESS_NO_INFO)  // 1 또는 -2
+                          .count();
+    long duplicateOrNoOp = Arrays.stream(result)
+                                  .filter(v -> v == 0)                          // 0
+                                  .count();
+    long failed = Arrays.stream(result)
+                        .filter(v -> v == Statement.EXECUTE_FAILED)             // -3
+                        .count();
+    int total = result.length;
+
+    if (failed > 0) {
+      log.warn("[batch:{}] total={}, success={}, duplicate/noop={}, failed={}, raw={}",
+          name, total, success, duplicateOrNoOp, failed, Arrays.toString(result));
+    } else {
+      log.debug("[batch:{}] total={}, success={}, duplicate/noop={}",
+          name, total, success, duplicateOrNoOp);
+    }
   }
 
   public static LogProcessorPort.Builder<?> builder() {
