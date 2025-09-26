@@ -1,5 +1,7 @@
 package com.rihee.alerting.loggingService.core.model;
 
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.META;
+
 import com.rihee.alerting.common.constant.logging.StructuredLogFields;
 import com.rihee.alerting.common.constant.storage.NormalLogSchema;
 import com.rihee.alerting.common.util.MapUtils;
@@ -83,7 +85,7 @@ public final class LogNormalMessage extends LogMessage {
   @Override
   public String toJsonString() {
     Map<String, Object> result = new HashMap<>(logMap.get(StructuredRouter.NORMAL));
-    result.put("meta", logMap.get(StructuredRouter.NONE));
+    result.put(META.getSchemaName(), logMap.get(StructuredRouter.NONE));
     return MapUtils.toJsonString(result);
   }
 

@@ -1,8 +1,22 @@
 package com.rihee.alerting.loggingService.adapter.out.persistence;
 
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.CLASS_NAME;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.CONTAINER;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.HOST;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.LOG_LEVEL;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.LOG_TYPE;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.LOG_VERSION_MAJOR;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.MESSAGE;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.META;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.PARENT_SPAN_ID;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.SERVICE;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.SPAN_ID;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.STACKTRACE;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.TIMESTAMP;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.TRACE_ID;
+
 import com.rihee.alerting.common.constant.logging.StructuredLogFields;
 import com.rihee.alerting.common.constant.storage.ErrorLogSchema;
-import com.rihee.alerting.common.constant.storage.NormalLogSchema;
 import com.rihee.alerting.common.util.StringUtils;
 import com.rihee.alerting.loggingService.annotations.PersistenceType;
 import com.rihee.alerting.loggingService.core.model.LogMessage;
@@ -17,6 +31,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
@@ -26,6 +41,7 @@ import org.slf4j.LoggerFactory;
 @PersistenceType("postgres")
 public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
+  // TODO 테이블 명을 더 명확하게 바꾸고, class 컬럼 같이 모호한 요소 변경 및, messageId에 대한 재고찰 필요.
   static final String NORMAL_INSERT_QUERY = """
       INSERT INTO logs (
           logtype,
@@ -70,6 +86,7 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
   private final Jdbi jdbi;
   private final DataSource dataSource;
+  private final AtomicBoolean closed = new AtomicBoolean(false);
 
   PostgresPersistenceAdapter(Jdbi jdbi, DataSource dataSource) {
     this.jdbi = jdbi;
@@ -79,58 +96,52 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
   @Override
   public ProcessResult process(LogProcessingContext messages) {
     LogProcessingContext result = new DefaultLogProcessingContext();
-    jdbi.useHandle(handle -> {
-      PreparedBatch normalBatch = handle.prepareBatch(NORMAL_INSERT_QUERY);
-      PreparedBatch errorBatch = handle.prepareBatch(ERROR_INSERT_QUERY);
+    if(!messages.isEmpty()) {
+      jdbi.useHandle(handle -> {
+        PreparedBatch normalBatch = handle.prepareBatch(NORMAL_INSERT_QUERY);
+        PreparedBatch errorBatch = handle.prepareBatch(ERROR_INSERT_QUERY);
 
-      int normalCount = 0;
-      int errorCount = 0;
+        for (Iterator<LogMessage> it = messages.iterator(); it.hasNext();) {
+          LogMessage message = it.next();
 
-      for (Iterator<LogMessage> it = messages.iterator(); it.hasNext();) {
-        LogMessage message = it.next();
+          if (message.isError()) {
+            for(ErrorLogSchema param : ErrorLogSchema.values()) {
+              errorBatch.bind(param.getSchemaName(), message.get(param.getSchemaName()));
+            }
+            errorBatch.add();
 
-        if (message.isError()) {
-          errorBatch
-              .bind("messageId", message.get(ErrorLogSchema.MESSAGE_ID.getSchemaName()))
-              .bind("originLog", message.get(ErrorLogSchema.ORIGIN_LOG.getSchemaName()))
-              .bind("reason", message.get(ErrorLogSchema.REASON.getSchemaName()))
-              .bind("occurred_at", message.get(ErrorLogSchema.OCCURRED_AT.getSchemaName()))
-              .bind("stage", message.get(ErrorLogSchema.STAGE.getSchemaName()))
-              .bind("log_version_major",
-                                      message.get(ErrorLogSchema.LOG_VERSION_MAJOR.getSchemaName()))
-              .add();
-          errorCount++;
-        } else {
-          // TODO 기능 완성 및 스키마 완성 필요
-          normalBatch
-              .bind("logtype", message.get(StructuredLogFields.LOG_TYPE.getFieldName()))
-              .bind("timestamp", message.get(StructuredLogFields.TIME_STAMP.getFieldName()))
-              .bind("level", message.get(StructuredLogFields.LEVEL.getFieldName()))
-              .bind("service", message.get(StructuredLogFields.SERVICE.getFieldName()))
-              .bind("class", message.get(StructuredLogFields.CLASS.getFieldName()))
-              .bind("message", message.get(StructuredLogFields.MESSAGE.getFieldName()))
-              .bind("host", message.get(StructuredLogFields.HOST.getFieldName()))
-              .bind("container", message.get(StructuredLogFields.CONTAINER.getFieldName()))
-              .bind("stacktrace", message.get(StructuredLogFields.STACK_TRACE.getFieldName()))
-              .bind("traceId", message.get(StructuredLogFields.TRACE_ID.getFieldName()))
-              .bind("spanId", message.get(StructuredLogFields.SPAN_ID.getFieldName()))
-              .bind("parentSpanId",
-                                message.get(StructuredLogFields.PARENT_SPAN_ID.getFieldName()))
-              .bind("log_major_version",
-                                    message.get(NormalLogSchema.LOG_VERSION_MAJOR.getSchemaName()))
-              .bind("meta", message.get("meta"))
-              .add();
-          normalCount++;
+          } else {
+            // TODO 기능 완성 및 스키마 완성 필요
+            normalBatch
+                .bind(LOG_TYPE.getSchemaName(), message.get(StructuredLogFields.LOG_TYPE.getFieldName()))
+                .bind(TIMESTAMP.getSchemaName(), message.get(StructuredLogFields.TIME_STAMP.getFieldName()))
+                .bind(LOG_LEVEL.getSchemaName(), message.get(StructuredLogFields.LEVEL.getFieldName()))
+                .bind(SERVICE.getSchemaName(), message.get(StructuredLogFields.SERVICE.getFieldName()))
+                .bind(CLASS_NAME.getSchemaName(), message.get(StructuredLogFields.CLASS.getFieldName()))
+                .bind(MESSAGE.getSchemaName(), message.get(StructuredLogFields.MESSAGE.getFieldName()))
+                .bind(HOST.getSchemaName(), message.get(StructuredLogFields.HOST.getFieldName()))
+                .bind(CONTAINER.getSchemaName(), message.get(StructuredLogFields.CONTAINER.getFieldName()))
+                .bind(STACKTRACE.getSchemaName(), message.get(StructuredLogFields.STACK_TRACE.getFieldName()))
+                .bind(TRACE_ID.getSchemaName(), message.get(StructuredLogFields.TRACE_ID.getFieldName()))
+                .bind(SPAN_ID.getSchemaName(), message.get(StructuredLogFields.SPAN_ID.getFieldName()))
+                .bind(PARENT_SPAN_ID.getSchemaName(),
+                    message.get(StructuredLogFields.PARENT_SPAN_ID.getFieldName()))
+                .bind(LOG_VERSION_MAJOR.getSchemaName(),
+                    message.get(LOG_VERSION_MAJOR.getSchemaName()))
+                .bind(META.getSchemaName(), message.get(META.getSchemaName()))
+                .add();
+          }
+
+          result.stackingLogMessage(message);
         }
 
-        result.stackingLogMessage(message);
-      }
+        int[] norRes = normalBatch.execute();
+        int[] errRes = errorBatch.execute();
+        logBatchResult("normal", norRes);
+        logBatchResult("error", errRes);
+      });
+    }
 
-      int[] norRes = normalBatch.execute();
-      int[] errRes = errorBatch.execute();
-      logBatchResult("normal", norRes);
-      logBatchResult("error", errRes);
-    });
     return ProcessResult.success(result);
   }
 
@@ -173,9 +184,9 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
   @Override
   public void close() throws Exception {
-    if (dataSource instanceof AutoCloseable) {
+    if (dataSource instanceof AutoCloseable ac && !closed.compareAndExchange(false, true)) {
       try {
-        ((AutoCloseable) dataSource).close();
+        ac.close();
       } catch (Exception ignore) {
         // 오류가 발생하더라도 무시한다. 이미 종료된 자원이거나, 종료할 수 없는 자원임.
       }
@@ -183,9 +194,6 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
   }
 
   public static class Builder implements LogProcessorPort.Builder<PostgresPersistenceAdapter> {
-
-    private static volatile HikariDataSource dataSource;
-    private static volatile Jdbi jdbi;
 
     private HikariConfig config;
 
@@ -239,17 +247,8 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
     @Override
     public PostgresPersistenceAdapter build() {
-      if (jdbi == null) {
-        synchronized (Builder.class) {
-          if (jdbi == null) {
-            dataSource = new HikariDataSource(config);
-            jdbi = Jdbi.create(dataSource);
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-              dataSource.close();
-            }));
-          }
-        }
-      }
+      DataSource dataSource = new HikariDataSource(config);
+      Jdbi jdbi = Jdbi.create(dataSource);
       return new PostgresPersistenceAdapter(jdbi, dataSource);
     }
   }
