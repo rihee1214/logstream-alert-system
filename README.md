@@ -1,7 +1,7 @@
 # 📊 Distributed Centralized Logging & Monitoring Platform
 
-> MSA 환경에서 다수의 서비스가 생성하는 로그와 메트릭을 **중앙에서 수집·저장·분석·알림**까지 처리하는 확장 가능한 플랫폼  
-> Biz 서비스의 로그·메트릭을 안전하고 일관된 방식으로 수집하고, 분석과 모니터링을 통해 운영 가시성을 극대화합니다.
+> MSA 환경에서 서비스들이 생성하는 로그와 메트릭을 **중앙에서 수집·저장·분석·알림**까지 처리하는 확장 가능한 플랫폼  
+> Biz 서비스의 로그·메트릭을 안전하고 일관된 방식으로 수집하고, 분석과 추적, 모니터링을 통해 운영 가시성을 극대화합니다.
 
 ---
 
@@ -16,7 +16,6 @@
 
 2. **유연한 데이터 수집 경로**
    - Fluent Bit + Lua 스크립트를 통한 컨테이너 로그 수집 및 전처리
-   - Collector/Validator/Transformer/Persistence 구조로 구성 요소 교체 가능
 
 3. **안정적인 중앙 저장소**
    - 메시지 브로커(Kafka)와 영속 저장소(PostgreSQL 기본)
@@ -85,7 +84,7 @@
 - **Fluent Bit**  
   컨테이너 로그 수집기. 필요 시 Lua 스크립트를 통해 전처리 수행.
 - **Kafka**  
-  로그 전송을 위한 메시지 브로커.
+  데이터 전송을 위한 메시지 브로커. (버퍼)
 - **Logging Service**  
   Collector → Validator → Transformer → Persistence 구조의 파이프라인을 통해 로그를 가공·저장.
   `LogMessageKeyGenerator`를 이용해 메시지 중복 방지.

@@ -10,7 +10,6 @@
 
 1. **공통 필드 (All Log Types)**: 모든 로그 유형에 포함되는 기본 필드
 2. **추적 필드 (Biz Log 전용)**: 트레이싱을 위한 B3 헤더 기반 필드
-3. **요청 필드 (Request 관련)**: 외부 HTTP 요청에 대한 부가 정보 (LoggingService가 수집하여 Json 구조화)
 
 ※ **필드들 중 필수 요소들은 해당 문맥에서 빠질 경우 제대로 된 추적 및 분석이 불가능 할 수 있습니다.**
 - Y :  필수
@@ -47,28 +46,10 @@
 | `traceId`      | 전체 요청 흐름의 식별자    | Y               |
 | `spanId`       | 개별 작업 단위 식별자     | Y               |
 | `parentSpanId` | 상위 스팬 ID         | T (첫 요청이 아닐 경우) |
-| `sampled`      | 트레이싱 여부 (1 or 0) | N               |
-| `flags`        | 디버깅 플래그 (1 or 0) | N               |
 
-> ⚠️ LoggingService는 traceId의 형식을 검증하며, 잘못된 traceId를 받으면, 새로운 traceId를 생성하여 사용하고, 요청자에게 응답 헤더로 TraceId를 제공합니다.
+// TODO 관찰 가능성에 대한 생각이 달라져서 해당 요소는 달라질 수 있음 (2025-09-27)
+> ⚠️ 각 서비스는 traceId의 형식을 검증하며, 잘못된 traceId를 받으면, 새로운 traceId를 생성하여 사용하고, 요청자에게 응답 헤더로 TraceId를 제공합니다.
 > 해당 요청자는 그 응답헤더를 call.remoteTraceId로 받아서 로깅을 한 후 무시합니다.
-
----
-
-## 3️⃣ Http 요청, 응답 필드 (call.type=http)
-
-> 이 필드들은 HTTP 외부 요청-응답에 대한 추가 정보로, **LoggingService에서 수집 및 Json 구조화**하여 저장됩니다.  
-> `"call.type=http"` 로 설정되어야 하며, UI 상 분리 및 분석을 용이하게 하기 위한 정책입니다.
-
-| 필드명                  | 설명                     | 필수 여부 |
-| -------------------- | ---------------------- | ----- |
-| `call.type`          | 어떤 방식으로 Call했는지 (http) | N     |
-| `call.method`        | HTTP 메서드 (GET, POST 등) | N     |
-| `call.uri`           | 요청 URI                 | N     |
-| `call.statusCode`    | 응답 상태 코드 (예: 200)      | N     |
-| `call.statusMessage` | 응답 상태 메시지 (예: OK)      | N     |
-| `call.elapsedMs`     | 요청-응답 간 소요 시간 (ms)     | N     |
-| `call.remoteTraceId` | 상대가 사용하는 TraceId       | N     |
 
 ---
 

@@ -10,9 +10,10 @@
 
 ```
 contracts/  
-└── logging/ # 구조화 로그에 대한 필드 정의 및 로그 유형별 계약
-      ├─ log-level-semantics.md
-      └─ logstructure-contract.md
+├── logging/       # 구조화 로그에 대한 필드 정의 및 로그 유형별 계약
+│   ├─ log-level-semantics.md
+│   └─ logstructure-contract.md
+└── observability/ # 추적(관찰 가능성)에 대한 필드 정의 및 계약
 ```
 
 ---
@@ -24,9 +25,10 @@ contracts/
 
 
 - **로깅 계약(logging/)**  
-  로그 출력의 일관성과 분석 가능성을 높이기 위한 **로그 구조 및 레벨 의미 정의**를 포함합니다.  
-  - `logstructure-contract.md`: MDC 필드와 그 명명 규칙, traceId/elapsedMs 등 전파 정책 요약
-  - `log-level-semantics.md`: `INFO`, `WARN`, `ERROR` 등의 로그 레벨이 의미하는 바와 **사용 기준**, **실행 환경별 출력 수준**, **운영 로깅 필터링 전략** 등을 정의한 문서
+	로그 출력의 일관성과 분석 가능성을 높이기 위한 **로그 구조 및 레벨 의미 정의**를 포함합니다.  
+	- `logstructure-contract.md`: MDC 필드와 그 명명 규칙, traceId/elapsedMs 등 전파 정책 요약
+	-  `log-level-semantics.md`: `INFO`, `WARN`, `ERROR` 등의 로그 레벨이 의미하는 바와 **사용 기준**, **실행 환경별 출력 수준**, **운영 로깅 필터링 전략** 등을 정의한 문서
+- **추적 계약(observability/)**
 
 ---
 

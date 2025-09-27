@@ -78,7 +78,7 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
       """;
   static final String ERROR_INSERT_QUERY = """
       INSERT INTO err_logs (message_id, origin_log, reason, occurred_at, stage, log_version_major)
-            VALUES (:messageId, :originLog, :reason, :occurred_at, :stage, :log_version_major)
+            VALUES (:message_id, :origin_log, :reason, :occurred_at, :stage, :log_version_major)
             ON CONFLICT(message_id) DO NOTHING
       """;
 
@@ -101,6 +101,9 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
         PreparedBatch normalBatch = handle.prepareBatch(NORMAL_INSERT_QUERY);
         PreparedBatch errorBatch = handle.prepareBatch(ERROR_INSERT_QUERY);
 
+        int normalCount = 0;
+        int errorCount = 0;
+
         for (Iterator<LogMessage> it = messages.iterator(); it.hasNext();) {
           LogMessage message = it.next();
 
@@ -109,36 +112,39 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
               errorBatch.bind(param.getSchemaName(), message.get(param.getSchemaName()));
             }
             errorBatch.add();
-
+            errorCount++;
           } else {
             // TODO 기능 완성 및 스키마 완성 필요
             normalBatch
-                .bind(LOG_TYPE.getSchemaName(), message.get(StructuredLogFields.LOG_TYPE.getFieldName()))
-                .bind(TIMESTAMP.getSchemaName(), message.get(StructuredLogFields.TIME_STAMP.getFieldName()))
-                .bind(LOG_LEVEL.getSchemaName(), message.get(StructuredLogFields.LEVEL.getFieldName()))
-                .bind(SERVICE.getSchemaName(), message.get(StructuredLogFields.SERVICE.getFieldName()))
+                .bind(LOG_TYPE.getSchemaName(),   message.get(StructuredLogFields.LOG_TYPE.getFieldName()))
+                .bind(TIMESTAMP.getSchemaName(),  message.get(StructuredLogFields.TIME_STAMP.getFieldName()))
+                .bind(LOG_LEVEL.getSchemaName(),  message.get(StructuredLogFields.LEVEL.getFieldName()))
+                .bind(SERVICE.getSchemaName(),    message.get(StructuredLogFields.SERVICE.getFieldName()))
                 .bind(CLASS_NAME.getSchemaName(), message.get(StructuredLogFields.CLASS.getFieldName()))
-                .bind(MESSAGE.getSchemaName(), message.get(StructuredLogFields.MESSAGE.getFieldName()))
-                .bind(HOST.getSchemaName(), message.get(StructuredLogFields.HOST.getFieldName()))
-                .bind(CONTAINER.getSchemaName(), message.get(StructuredLogFields.CONTAINER.getFieldName()))
+                .bind(MESSAGE.getSchemaName(),    message.get(StructuredLogFields.MESSAGE.getFieldName()))
+                .bind(HOST.getSchemaName(),       message.get(StructuredLogFields.HOST.getFieldName()))
+                .bind(CONTAINER.getSchemaName(),  message.get(StructuredLogFields.CONTAINER.getFieldName()))
                 .bind(STACKTRACE.getSchemaName(), message.get(StructuredLogFields.STACK_TRACE.getFieldName()))
-                .bind(TRACE_ID.getSchemaName(), message.get(StructuredLogFields.TRACE_ID.getFieldName()))
-                .bind(SPAN_ID.getSchemaName(), message.get(StructuredLogFields.SPAN_ID.getFieldName()))
+                .bind(TRACE_ID.getSchemaName(),   message.get(StructuredLogFields.TRACE_ID.getFieldName()))
+                .bind(SPAN_ID.getSchemaName(),    message.get(StructuredLogFields.SPAN_ID.getFieldName()))
                 .bind(PARENT_SPAN_ID.getSchemaName(),
-                    message.get(StructuredLogFields.PARENT_SPAN_ID.getFieldName()))
+                                                  message.get(StructuredLogFields.PARENT_SPAN_ID.getFieldName()))
                 .bind(LOG_VERSION_MAJOR.getSchemaName(),
-                    message.get(LOG_VERSION_MAJOR.getSchemaName()))
-                .bind(META.getSchemaName(), message.get(META.getSchemaName()))
+                                                  message.get(LOG_VERSION_MAJOR.getSchemaName()))
+                .bind(META.getSchemaName(),       message.get(META.getSchemaName()))
                 .add();
+            normalCount++;
           }
 
           result.stackingLogMessage(message);
         }
 
-        int[] norRes = normalBatch.execute();
-        int[] errRes = errorBatch.execute();
-        logBatchResult("normal", norRes);
-        logBatchResult("error", errRes);
+        if(normalCount > 0) {
+          logBatchResult("normal", normalBatch.execute());
+        }
+        if(errorCount > 0) {
+          logBatchResult("error", errorBatch.execute());
+        }
       });
     }
 

@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+// TODO timestamp String으로 들어왔지만, DB와의 호환을 위해 java.sql.timestamp로 변형해야 할 필요성 있음.
 public final class LogNormalMessage extends LogMessage {
-
 
   private static final int LOG_VERSION_MAJOR = 1;
 
@@ -70,7 +70,7 @@ public final class LogNormalMessage extends LogMessage {
 
   @Override
   public Object get(String key) {
-    if ("meta".equals(key)) {
+    if (META.getSchemaName().equals(key)) {
       return MapUtils.toJsonString(logMap.get(StructuredRouter.NONE));
     } else {
       return logMap.get(StructuredRouter.routeKey(key)).get(key);
