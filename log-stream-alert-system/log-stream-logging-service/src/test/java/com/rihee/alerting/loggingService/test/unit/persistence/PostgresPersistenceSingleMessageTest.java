@@ -55,6 +55,7 @@ public class PostgresPersistenceSingleMessageTest {
     LogMessage resultMessage = result.context().iterator().next();
     assertThat(resultMessage.isError()).isFalse();
     assertThat(resultMessage).isInstanceOf(LogNormalMessage.class);
+    assertThat(resultMessage).isSameAs(message);
   }
 
   @Test
@@ -81,6 +82,7 @@ public class PostgresPersistenceSingleMessageTest {
     LogMessage resultMessage = result.context().iterator().next();
     assertThat(resultMessage.isError()).isTrue();
     assertThat(resultMessage).isInstanceOf(LogErrorMessage.class);
+    assertThat(resultMessage).isSameAs(message);
   }
 
   private static final Map<String, Object> TEST_PARAM_MAP;

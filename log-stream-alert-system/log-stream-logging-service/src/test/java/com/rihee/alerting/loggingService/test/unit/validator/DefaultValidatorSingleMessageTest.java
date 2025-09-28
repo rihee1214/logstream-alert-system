@@ -104,6 +104,7 @@ public class DefaultValidatorSingleMessageTest {
     LogMessage resultMessage = result.context().iterator().next();
     assertThat(resultMessage.isError()).isTrue();
     assertThat(resultMessage).isInstanceOf(LogErrorMessage.class);
+    assertThat(resultMessage).isSameAs(message);
   }
 
   private static final Map<String, Object> TEST_PARAM_MAP;
