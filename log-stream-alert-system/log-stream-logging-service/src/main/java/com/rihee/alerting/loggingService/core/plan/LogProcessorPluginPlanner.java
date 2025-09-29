@@ -16,9 +16,9 @@ import java.util.Map;
  *
  * <p>주요 특징:
  * <ul>
- *   <li>{@link #COLLECT} : 로그 수집 단계 → {@link LogCollectorPlugin} 생성</li>
- *   <li>{@link #VALIDATE} : 검증 단계 → {@link LogValidatorPlugin} 생성</li>
- *   <li>{@link #PERSIST} : 영속화 단계 → {@link LogPersistencePlugin} 생성</li>
+ *   <li>{@link #COLLECTOR} : 로그 수집 단계 → {@link LogCollectorPlugin} 생성</li>
+ *   <li>{@link #VALIDATOR} : 검증 단계 → {@link LogValidatorPlugin} 생성</li>
+ *   <li>{@link #PERSISTENCE} : 영속화 단계 → {@link LogPersistencePlugin} 생성</li>
  * </ul>
  *
  * <p>사용 예시:
@@ -42,7 +42,7 @@ public enum LogProcessorPluginPlanner {
    * 로그 수집 단계(Collect)를 담당하는 플러그인 생성.
    * → {@link LogCollectorPlugin} 인스턴스를 생성합니다.
    */
-  COLLECT("collect") {
+  COLLECTOR("collector") {
     @Override
     public LogProcessorPlugin createSpecInstance(Map<String, String> setting) {
       return new LogCollectorPlugin(setting);
@@ -52,7 +52,7 @@ public enum LogProcessorPluginPlanner {
    * 로그 검증 단계(Validate)를 담당하는 플러그인 생성.
    * → {@link LogValidatorPlugin} 인스턴스를 생성합니다.
    */
-  VALIDATE("validate") {
+  VALIDATOR("validator") {
     @Override
     public LogProcessorPlugin createSpecInstance(Map<String, String> setting) {
       return new LogValidatorPlugin(setting);
@@ -62,7 +62,7 @@ public enum LogProcessorPluginPlanner {
    * 로그 영속화 단계(Persist)를 담당하는 플러그인 생성.
    * → {@link LogPersistencePlugin} 인스턴스를 생성합니다.
    */
-  PERSIST("persist") {
+  PERSISTENCE("persistence") {
     @Override
     public LogProcessorPlugin createSpecInstance(Map<String, String> setting) {
       return new LogPersistencePlugin(setting);

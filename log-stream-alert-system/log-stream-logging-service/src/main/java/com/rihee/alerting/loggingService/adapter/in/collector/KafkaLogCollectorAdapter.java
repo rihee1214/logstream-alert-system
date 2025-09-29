@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -55,7 +56,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
   private final Consumer<String, String> kafkaConsumer;
   private final Duration kafkaTimeoutMillis;
 
-  private KafkaLogCollectorAdapter(Consumer<String, String> kafkaConsumer, int timeoutMillis) {
+  KafkaLogCollectorAdapter(Consumer<String, String> kafkaConsumer, int timeoutMillis) {
     this.kafkaConsumer = kafkaConsumer;
     this.kafkaTimeoutMillis = Duration.ofMillis(timeoutMillis);
 
@@ -63,11 +64,6 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
       kafkaConsumer.wakeup();
       kafkaConsumer.close();
     }));
-  }
-
-  KafkaLogCollectorAdapter(Consumer<String, String> kafkaConsumer) {
-    this.kafkaConsumer = kafkaConsumer;
-    this.kafkaTimeoutMillis = Duration.ofMillis(1000);
   }
 
   /**
@@ -174,17 +170,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
    */
   public static class Builder implements LogCollectorPort.Builder<KafkaLogCollectorAdapter> {
 
-    private static final Map<String, String> KEY_MAPPING = Map.of(
-        "kafka.bootstrap.servers",  ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-        "kafka.group.id",           ConsumerConfig.GROUP_ID_CONFIG,
-        "kafka.enable.auto.commit", ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
-        "kafka.auto.offset.reset",  ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
-        "kafka.max.poll.records",   ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
-        "kafka.key.deserializer",   ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-        "kafka.value.deserializer", ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG
-    );
-
-    private Map<String, String> consumerSetting = new HashMap<>();
+    private Map<String, String> consumerSetting;
     private int timeoutMillis = 1000;
     private String kafkaTopic;
 
@@ -197,20 +183,19 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
      */
     @Override
     public Builder withProperties(Map<String, String> setting) {
-      KEY_MAPPING.forEach((key, value) -> {
-        String settingValue = setting.get(key);
-        if (settingValue == null || settingValue.isBlank()) {
-          throw new IllegalArgumentException("필수 Kafka 설정이 빠졌습니다: [key :" + key + "]");
-        }
-        consumerSetting.put(value, settingValue);
-      });
+      consumerSetting = setting.entrySet().stream()
+                                .filter(e -> e.getKey().startsWith("kafka.consumer."))
+                                .collect(Collectors.toMap(
+                                    e -> e.getKey().substring("kafka.consumer.".length()),
+                                    Map.Entry::getValue
+                                ));
 
       this.kafkaTopic = setting.get("kafka.topic");
       if (this.kafkaTopic == null || this.kafkaTopic.isBlank()) {
         throw new IllegalArgumentException("kafka Topic[kafka.topic]이 세팅되어있지 않습니다.");
       }
 
-      this.timeoutMillis = Integer.parseInt(setting.getOrDefault("kafka.max.poll.timeout", "1000"));
+      this.timeoutMillis = Integer.parseInt(setting.getOrDefault("collector.fetch.wait.ms", "1000"));
       return this;
     }
 

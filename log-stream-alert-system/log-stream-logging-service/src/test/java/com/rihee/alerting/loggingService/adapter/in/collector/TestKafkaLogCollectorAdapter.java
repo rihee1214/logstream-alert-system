@@ -136,7 +136,7 @@ public final class TestKafkaLogCollectorAdapter extends LogCollectorPort
           mockConsumer.seek(tp, 0L);
         }
 
-        KafkaLogCollectorAdapter adapter = new KafkaLogCollectorAdapter(mockConsumer);
+        KafkaLogCollectorAdapter adapter = new KafkaLogCollectorAdapter(mockConsumer, 1000);
         return new TestKafkaLogCollectorAdapter(adapter, mockConsumer);
       } catch (Exception e) {
         if (mockConsumer != null) {
