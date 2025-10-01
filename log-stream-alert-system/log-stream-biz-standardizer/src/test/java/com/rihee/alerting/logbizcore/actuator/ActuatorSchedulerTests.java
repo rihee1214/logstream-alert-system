@@ -29,7 +29,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 /**
- * {@code ActuatorSchedulerTests}는 {@link ActuatorHealthMonitoringScheduler} 클래스의 동작을
+ * //{@code ActuatorSchedulerTests}는 {@link } 클래스의 동작을
  * 검증하는 테스트 클래스입니다.
  *
  * <p>이 테스트는 Spring Boot 애플리케이션이 기동된 상태에서

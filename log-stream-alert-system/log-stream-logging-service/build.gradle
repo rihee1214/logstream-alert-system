@@ -78,10 +78,12 @@ sourceSets {
  */
 tasks.named('processResources') {
     dependsOn tasks.named('compileJava')
+    duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
 tasks.named('processTestResources') {
     dependsOn tasks.named('compileTestJava')
+    duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
 

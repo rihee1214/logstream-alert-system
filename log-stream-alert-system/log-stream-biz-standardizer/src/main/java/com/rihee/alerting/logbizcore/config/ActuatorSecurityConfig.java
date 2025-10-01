@@ -8,6 +8,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
@@ -29,6 +30,7 @@ import org.springframework.util.StringUtils;
  * @since 1.0
  */
 @Configuration
+@EnableWebSecurity
 public class ActuatorSecurityConfig {
 
   private static final String MONITORING_TOKEN_HEADER = "X-Monitoring-Token";
@@ -78,6 +80,7 @@ public class ActuatorSecurityConfig {
    * @throws Exception 보안 설정 중 예외가 발생할 경우
    */
   @Bean
+  @Order(0)
   public SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
     http.securityMatcher(actuatorBaseUrl + "/**")
         .authorizeHttpRequests(auth
@@ -92,8 +95,22 @@ public class ActuatorSecurityConfig {
                     .anyRequest()
                     .access((authentication, context)
                                                                     -> isLocalhostRequest(context))
+        ).exceptionHandling(exceptions -> exceptions
+            .authenticationEntryPoint((request, response, authException) -> {
+              response.setStatus(401);
+              response.setContentType("application/json");
+              response.getWriter().write(
+                  "{\"error\":\"Unauthorized\",\"message\":\"Access to actuator endpoint denied\"}"
+              );
+            })
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+              response.setStatus(403);
+              response.setContentType("application/json");
+              response.getWriter().write(
+                  "{\"error\":\"Forbidden\",\"message\":\"Insufficient permissions for actuator access\"}"
+              );
+            })
         )
-        .httpBasic(Customizer.withDefaults())
         .csrf(CsrfConfigurer::disable);
 
     return http.build();
