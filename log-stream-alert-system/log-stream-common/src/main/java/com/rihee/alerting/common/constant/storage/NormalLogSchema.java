@@ -36,7 +36,7 @@ public enum NormalLogSchema {
   /**
    * 로그를 남긴 클래스명(또는 모듈명)을 기록하는 컬럼.
    */
-  CLASS_NAME("class"),
+  CLASS_NAME("class_name"),
   /**
    * 로그 메시지 본문을 저장하는 컬럼.
    */
@@ -56,16 +56,16 @@ public enum NormalLogSchema {
   /**
    * 분산 추적을 위한 Trace ID를 저장하는 컬럼.
    */
-  TRACE_ID("traceId"),
+  TRACE_ID("trace_id"),
   /**
    * 분산 추적을 위한 Span ID를 저장하는 컬럼.
    */
-  SPAN_ID("spanId"),
+  SPAN_ID("span_id"),
   /**
    * 부모 Span의 ID를 저장하는 컬럼.
    * 트랜잭션 계층 구조 파악에 사용됩니다.
    */
-  PARENT_SPAN_ID("parentSpanId"),
+  PARENT_SPAN_ID("parent_span_id"),
   /**
    * 로그 포맷의 메이저 버전을 기록하는 컬럼.
    * 스키마/포맷 진화 시 호환성 판단에 사용됩니다.
