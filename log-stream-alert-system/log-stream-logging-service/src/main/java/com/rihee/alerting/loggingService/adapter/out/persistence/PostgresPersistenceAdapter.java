@@ -82,6 +82,7 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
   // TODO messageId에 대한 재고찰 필요.
   static final String NORMAL_INSERT_QUERY = """
       INSERT INTO logs_entries (
+          message_id,
           logtype,
           timestamp,
           level,
@@ -98,6 +99,7 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
           meta
       )
       VALUES (
+          :message_id,
           :logtype,
           :timestamp,
           :level,

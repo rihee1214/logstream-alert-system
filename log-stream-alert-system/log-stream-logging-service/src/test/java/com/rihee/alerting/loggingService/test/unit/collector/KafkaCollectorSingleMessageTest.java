@@ -17,11 +17,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+/**
+ * KafkaCollectorSingleMessageTest 클래스는 단일 Kafka 메시지를 수집하고 처리하는 로직을 테스트하는 단위 테스트를 포함한다.
+ *
+ * <p>이 테스트 클래스는 JUnit 5의 확장 기능을 활용하며 런타임 파이프라인 초기화를 수행한다.</p>
+ *
+ * <p>이 테스트 클래스는 {@link RuntimeBootstrapExtension}을 통해 테스트 어댑터의 설정 및 리소스 정리를 자동으로 처리하며
+ * 테스트 케이스마다 동일한 스레드 내에서 동작해야 하는 제약을 가진다.</p>
+ */
 @ExtendWith(RuntimeBootstrapExtension.class)
 public class KafkaCollectorSingleMessageTest {
 
   @Test
-  @DisplayName("단일 메시지를 수집하여 파이프라인으로 전달한다")
+  @DisplayName("단일 Kafka 메시지를 수집하고 이를 성공적으로 파이프라인으로 전달하는 경우를 검증한다.")
   void collects_single_message_and_emits_to_pipeline(TestKafkaLogCollectorAdapter adapter) {
 
     Map<String, Object> params = new HashMap<>();
@@ -54,7 +62,7 @@ public class KafkaCollectorSingleMessageTest {
   }
 
   @Test
-  @DisplayName("단일 메시지를 수집하여 key 생성 불가 메시지를 스킵한다.")
+  @DisplayName("단일 Kafka 메시지를 수집했으나 key 생성이 불가한 경우를 시뮬레이션하여 메시지가 스킵되는 동작을 검증한다.")
   void collects_single_message_and_skip_create_message_key_error(
                                                   TestKafkaLogCollectorAdapter adapter) {
 
@@ -86,7 +94,7 @@ public class KafkaCollectorSingleMessageTest {
   }
 
   @Test
-  @DisplayName("단일 메시지를 수집한 후 파싱 불가능 판정으로, 에러 메시지로 변환한다.")
+  @DisplayName("단일 Kafka 메시지를 수집한 후 파싱이 불가능한 경우 에러 메시지로 변환하는 로직을 검증한다.")
   void collects_single_message_and_emit_error_message(TestKafkaLogCollectorAdapter adapter) {
 
     // 테스트 레코드 1건 주입 (topic, offset, key, value)

@@ -1,4 +1,4 @@
-# docker/kafka/kafka.Dockerfile
+# docker/kafka/kafka.postgres.Dockerfile
 
 FROM apache/kafka:4.0.0
 
