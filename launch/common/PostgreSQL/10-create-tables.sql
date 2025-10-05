@@ -1,8 +1,8 @@
 -- create tables (idempotent)
 CREATE TABLE IF NOT EXISTS logs (
-                                    message_id        TEXT PRIMARY KEY,
-                                    logtype           TEXT NOT NULL,
-                                    logged_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+    message_id        TEXT PRIMARY KEY,
+    logtype           TEXT NOT NULL,
+    logged_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
     level             TEXT NOT NULL,
     service           TEXT NOT NULL,
     class_name        TEXT,
@@ -15,16 +15,16 @@ CREATE TABLE IF NOT EXISTS logs (
     parent_span_id    TEXT,
     log_version_major INT  NOT NULL,
     meta              JSONB NOT NULL DEFAULT '{}'::jsonb
-    );
+);
 
 CREATE TABLE IF NOT EXISTS error_logs (
-                                          message_id        TEXT PRIMARY KEY,
-                                          origin_log        JSONB NOT NULL,
-                                          reason            TEXT  NOT NULL,
-                                          occurred_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    message_id        TEXT PRIMARY KEY,
+    origin_log        JSONB NOT NULL,
+    reason            TEXT  NOT NULL,
+    occurred_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
     stage             TEXT  NOT NULL,
     log_version_major INT   NOT NULL
-    );
+);
 
 -- 인덱스 (IF NOT EXISTS는 일부 PG 버전에서 인덱스명 중복 방지 용도로 사용)
 DO $$

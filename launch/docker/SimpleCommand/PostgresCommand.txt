@@ -1,0 +1,14 @@
+# 1) 볼륨 생성
+docker volume create postgresDev
+
+# 2) 컨테이너 실행 (초기 SQL이 있으면 읽기전용 마운트 추가)
+docker run -d \
+  --name postgres-dev \
+  --network msa-log-dev-net \
+  -e POSTGRES_DB=LogForDebugging \
+  -e POSTGRES_USER=LogForDebugging \
+  -e POSTGRES_PASSWORD=95log!@# \
+  -p 5432:5432 \
+  -v postgresDev:/var/lib/postgresql/data \
+  -v "$(pwd)/PostgreSQL:/docker-entrypoint-initdb.d:ro" \
+  postgres:16.10-bookworm
