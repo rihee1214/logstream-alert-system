@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS logs (
 
 CREATE TABLE IF NOT EXISTS error_logs (
     message_id        TEXT PRIMARY KEY,
-    origin_log        JSONB NOT NULL,
+    origin_log        TEXT NOT NULL,
     reason            TEXT  NOT NULL,
     occurred_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
     stage             TEXT  NOT NULL,
@@ -35,7 +35,7 @@ BEGIN
   ) THEN
 CREATE INDEX idx_logs_trace_id ON logs (trace_id);
 END IF;
-END$$;
+END$$ LANGUAGE plpgsql;
 
 DO $$
 BEGIN
@@ -45,4 +45,4 @@ BEGIN
   ) THEN
 CREATE INDEX idx_logs_logged_at ON logs (logged_at DESC);
 END IF;
-END$$;
+END$$ LANGUAGE plpgsql;
