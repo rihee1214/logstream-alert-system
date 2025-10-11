@@ -5,5 +5,5 @@
 
 <suppressions>
     <suppress checks="IllegalImport"
-              files=".*[/\\]com[/\\]rihee[/\\]alerting[/\\](?!(?:common|emailService|errorHandleService|loggingService|smsService)(?:[/\\]|$))[/\\].*"/>
+              files=".*[/\\]com[/\\]rihee[/\\]alerting[/\\](?!(?:common|emailService|logbizcore|errorHandleService|loggingService|smsService)(?:[/\\]|$))[/\\].*"/>
 </suppressions>
