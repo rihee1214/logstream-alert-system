@@ -94,4 +94,8 @@ public class CompositeStaticContextProvider extends AbstractJsonProvider<ILoggin
       generator.writeStringField(key, value);
     }
   }
+
+  private void generateMessageId() {
+    // TODO messageId를 생성하는 hashkey 생성하기
+  }
 }
