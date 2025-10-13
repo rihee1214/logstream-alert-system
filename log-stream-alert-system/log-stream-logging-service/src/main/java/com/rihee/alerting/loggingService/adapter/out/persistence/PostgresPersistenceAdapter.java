@@ -186,11 +186,11 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
                 .bind(TIMESTAMP.getSchemaName(),
                         message.get(StructuredLogFields.TIME_STAMP.getFieldName()))
                 .bind(LOG_LEVEL.getSchemaName(),
-                        message.get(StructuredLogFields.LEVEL.getFieldName()))
+                        message.get(StructuredLogFields.LOG_LEVEL.getFieldName()))
                 .bind(SERVICE.getSchemaName(),
                         message.get(StructuredLogFields.SERVICE.getFieldName()))
                 .bind(CLASS_NAME.getSchemaName(),
-                        message.get(StructuredLogFields.CLASS.getFieldName()))
+                        message.get(StructuredLogFields.CLASS_NAME.getFieldName()))
                 .bind(MESSAGE.getSchemaName(),
                         message.get(StructuredLogFields.MESSAGE.getFieldName()))
                 .bind(HOST.getSchemaName(),

@@ -1,9 +1,9 @@
 package com.rihee.alerting.loggingService.test.unit.persistence;
 
-import static com.rihee.alerting.common.constant.logging.StructuredLogFields.CLASS;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.CLASS_NAME;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.CONTAINER;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.HOST;
-import static com.rihee.alerting.common.constant.logging.StructuredLogFields.LEVEL;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.LOG_LEVEL;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.LOG_TYPE;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.MESSAGE;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.NAME;
@@ -129,9 +129,9 @@ public class PostgresPersistenceSingleMessageTest {
     paramMap.put(LOG_TYPE.getFieldName(), "biz");
     paramMap.put(TIME_STAMP.getFieldName(), Instant.now().toString());
     paramMap.put(SERVICE.getFieldName(), "orders");
-    paramMap.put(LEVEL.getFieldName(), "debug");
+    paramMap.put(LOG_LEVEL.getFieldName(), "debug");
     paramMap.put(NAME.getFieldName(), "test");
-    paramMap.put(CLASS.getFieldName(), "com.example.OrderService"); // 컬럼명은 "class"
+    paramMap.put(CLASS_NAME.getFieldName(), "com.example.OrderService"); // 컬럼명은 "class"
     paramMap.put(MESSAGE.getFieldName(), "hello world");
     paramMap.put(HOST.getFieldName(), "ip-10-0-0-1");
     paramMap.put(CONTAINER.getFieldName(), "orders-0");

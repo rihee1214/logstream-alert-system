@@ -16,11 +16,12 @@ import com.rihee.alerting.common.constant.annotation.LogPolicy;
  */
 public enum StructuredLogFields {
 
+  LOG_MESSAGE_ID("logMessageId"),
   /**
    * 로그 타입.<br>
    * 업무 로그 : {@code biz}, 시스템 로그 : {@code sys}, 그 외 기본값 : {@code default}
    */
-  LOG_TYPE("logtype"),
+  LOG_TYPE("logType"),
 
   /**
    * 로그 발생 시각.<br>
@@ -33,7 +34,7 @@ public enum StructuredLogFields {
    * 로그 레벨 (DEBUG, INFO, WARN, ERROR).
    */
   @LogPolicy(isEssential = true, description = "알림, 필터링 정책의 기준이 되는 필드입니다.")
-  LEVEL("level"),
+  LOG_LEVEL("logLevel"),
 
   /**
    * 로그를 발생시킨 마이크로서비스 또는 애플리케이션의 논리적 이름.
@@ -74,7 +75,7 @@ public enum StructuredLogFields {
    * 로그 발생 위치 클래스의 FQCN (Fully Qualified Class Name).
    */
   @LogPolicy(isEssential = true, description = "로그 발생 위치 클래스의 FQCN 입니다.")
-  CLASS("class"),
+  CLASS_NAME("className"),
 
   /**
    * 로그를 발생시킨 서버의 호스트 이름 (e.g., 서버 노드 구분용).

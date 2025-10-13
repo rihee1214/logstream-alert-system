@@ -14,4 +14,6 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
     // 주석에 들어가는 MDC에 대한 내용을 넣어주기 위한 용도
     implementation "org.slf4j:slf4j-api:${log4jVersion}"
+    // UUID (메시지 ID 생성용)
+    implementation "com.fasterxml.uuid:java-uuid-generator:${uuidGeneratorVersion}"
 }

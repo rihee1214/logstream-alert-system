@@ -58,7 +58,7 @@ public final class LogNormalMessage extends LogMessage {
   public static LogNormalMessage fromOriginMessage(Map<String, Object> allLogs, String messageKey) {
     String tobeMessageKey = messageKey;
     if (StringUtils.isBlank(tobeMessageKey)) {
-      tobeMessageKey = generateKey(allLogs);
+      tobeMessageKey = generateKey();
     }
     return new LogNormalMessage(allLogs, tobeMessageKey);
   }

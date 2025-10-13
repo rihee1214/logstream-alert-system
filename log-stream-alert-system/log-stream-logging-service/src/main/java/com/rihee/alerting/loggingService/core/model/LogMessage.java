@@ -66,18 +66,7 @@ public sealed abstract class LogMessage permits LogNormalMessage, LogErrorMessag
    */
   public abstract String toJsonString();
 
-  protected static String generateKey(Map<String, Object> originLog) {
-    Object rawServiceName
-        = Objects.requireNonNull(originLog.get(StructuredLogFields.SERVICE.getFieldName()));
-    Object rawHostName
-        = Objects.requireNonNull(originLog.get(StructuredLogFields.HOST.getFieldName()));
-    Object rawContainerName
-        = Objects.requireNonNull(originLog.get(StructuredLogFields.CONTAINER.getFieldName()));
-
-    String serviceName = String.valueOf(rawServiceName);
-    String hostName = String.valueOf(rawHostName);
-    String containerName = String.valueOf(rawContainerName);
-
-    return LogMessageKeyGenerator.generate(serviceName, hostName, containerName);
+  protected static String generateKey() {
+    return LogMessageKeyGenerator.generate();
   }
 }

@@ -55,8 +55,7 @@ public final class LogErrorMessage extends LogMessage {
                                                           String messageKey,
                                                           String reason,
                                                           String stage) {
-    Map<String, Object> errorLogs = buildErrorLogs(originLog, messageKey, reason, stage);
-    return new LogErrorMessage(errorLogs);
+    return new LogErrorMessage(buildErrorLogs(originLog, messageKey, reason, stage));
   }
 
   /**
@@ -75,8 +74,7 @@ public final class LogErrorMessage extends LogMessage {
                                                           String stage) {
     String messageKey = message.getMessageKey();
     String originLog = message.toJsonString();
-    Map<String, Object> errorLogs = buildErrorLogs(originLog, messageKey, reason, stage);
-    return new LogErrorMessage(errorLogs);
+    return new LogErrorMessage(buildErrorLogs(originLog, messageKey, reason, stage));
   }
 
   /**
@@ -95,13 +93,7 @@ public final class LogErrorMessage extends LogMessage {
                                                             String stage) {
     String tobeMessageKey = messageKey;
     if (StringUtils.isBlank(tobeMessageKey)) {
-      Map<String, Object> tobeOriginLog = null;
-      try {
-        tobeOriginLog = MapUtils.fromJson(originLog);
-      } catch (Exception e) {
-        throw new IllegalArgumentException("messageKey가 존재하지 않으며, 생성할 수 없습니다.");
-      }
-      tobeMessageKey = generateKey(tobeOriginLog);
+      tobeMessageKey = generateKey();
     }
 
     if (StringUtils.isBlank(reason)) {
