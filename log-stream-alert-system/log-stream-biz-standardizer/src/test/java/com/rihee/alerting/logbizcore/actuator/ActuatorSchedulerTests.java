@@ -44,7 +44,7 @@ import org.springframework.test.context.TestPropertySource;
  * @since 1.0
  */
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT,
-                classes = {LogBizCoreTestBootstrap.class})
+                      classes = {LogBizCoreTestBootstrap.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestPropertySource(properties = "spring.profiles.active=dev")

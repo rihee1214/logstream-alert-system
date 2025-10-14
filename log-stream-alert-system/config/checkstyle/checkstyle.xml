@@ -6,6 +6,7 @@
   <!-- SuppressionFilter로 예외 경로 지정 -->
   <module name="SuppressionFilter">
     <property name="file" value="${suppressionsFile}" default="config/checkstyle/suppressions.xml"/>
+    <property name="optional" value="true"/>
   </module>
   <module name="TreeWalker">
     <!-- public API에 사용되는 기본 Mapping Annotation 대신 프로젝트 내에 정의된 Annotation 사용 강제 -->

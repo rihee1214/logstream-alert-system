@@ -194,7 +194,8 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
         throw new IllegalArgumentException("kafka Topic[kafka.topic]이 세팅되어있지 않습니다.");
       }
 
-      this.timeoutMillis = Integer.parseInt(setting.getOrDefault("collector.fetch.wait.ms", "1000"));
+      this.timeoutMillis
+          = Integer.parseInt(setting.getOrDefault("collector.fetch.wait.ms", "1000"));
       return this;
     }
 

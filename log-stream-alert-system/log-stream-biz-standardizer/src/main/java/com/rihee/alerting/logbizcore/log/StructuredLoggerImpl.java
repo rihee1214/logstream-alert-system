@@ -41,7 +41,7 @@ import org.springframework.lang.NonNull;
  * - 이는 로그 노이즈 방지 및 운영 환경에서의 로그 가독성 확보를 위한 정책입니다.
  * </p>
  */
-public class StructuredLoggerImpl implements StructuredLogger {
+public final class StructuredLoggerImpl implements StructuredLogger {
 
   private final Logger log;
 

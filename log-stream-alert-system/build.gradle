@@ -25,7 +25,6 @@ tasks.named('check').configure {
 subprojects { Project it ->
     apply plugin: 'java'
     apply plugin: 'eclipse'
-    apply plugin: 'checkstyle'
 
     java {
         toolchain {
@@ -41,14 +40,38 @@ subprojects { Project it ->
         mavenCentral()
     }
 
-    checkstyle {
-        toolVersion = "${checkStyleVersion}"
-        configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-        configProperties = [
-                "suppressionsFile": file("${rootDir}/config/checkstyle/suppressions.xml").absolutePath
-        ]
-        ignoreFailures = false   // 위반 시 빌드 실패
-        showViolations = true    // 콘솔에 위반 사항 출력
+    plugins.withId('java') {
+        apply plugin: 'checkstyle'
+
+        checkstyle {
+            toolVersion = "${checkStyleVersion}"
+
+            // ✅ Gradle 8+ 권장: TextResource로 구성 파일 지정
+            config = resources.text.fromFile(rootProject.file('config/checkstyle/checkstyle.xml'))
+
+            // SuppressionFilter에서 사용할 프로퍼티 주입 (절대경로 권장)
+            configProperties = [
+                    suppressionsFile: rootProject.file('config/checkstyle/suppressions.xml').absolutePath
+            ]
+            ignoreFailures = false   // 위반 시 빌드 실패
+            maxWarnings = 0
+            // showViolations = true  // (선택) 콘솔 출력 원하면 유지
+
+            // 모든 Checkstyle 태스크 공통 리포트 설정 & 그룹 지정
+            tasks.withType(Checkstyle).configureEach {
+                group = 'verification'
+                reports {
+                    xml.required = false
+                    html.required = true
+                    html.outputLocation = layout.buildDirectory.file("reports/checkstyle/${name}.html")
+                }
+            }
+
+            // 집계 check에 의존성 연결
+            tasks.named('check').configure {
+                dependsOn tasks.named('checkstyleMain'), tasks.named('checkstyleTest')
+            }
+        }
     }
 
     afterEvaluate {

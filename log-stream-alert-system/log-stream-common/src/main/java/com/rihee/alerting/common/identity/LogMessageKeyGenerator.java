@@ -12,7 +12,7 @@ public final class LogMessageKeyGenerator {
   /**
    * 로그 키 스키마 버전.
    */
-  private static final String LOG_VERSION = "v1";
+  //  private static final String LOG_VERSION = "v1";
 
   private static final NoArgGenerator V7_GENERATOR = Generators.timeBasedEpochGenerator();
 
