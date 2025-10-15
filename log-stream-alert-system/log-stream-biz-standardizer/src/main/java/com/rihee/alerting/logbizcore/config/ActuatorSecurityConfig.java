@@ -1,12 +1,11 @@
 package com.rihee.alerting.logbizcore.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authorization.AuthorizationDecision;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -31,6 +30,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @EnableWebSecurity
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class ActuatorSecurityConfig {
 
   private static final String MONITORING_TOKEN_HEADER = "X-Monitoring-Token";
@@ -107,7 +107,8 @@ public class ActuatorSecurityConfig {
               response.setStatus(403);
               response.setContentType("application/json");
               response.getWriter().write(
-                  "{\"error\":\"Forbidden\",\"message\":\"Insufficient permissions for actuator access\"}"
+                  "{\"error\":\"Forbidden\","
+                      + "\"message\":\"Insufficient permissions for actuator access\"}"
               );
             })
         )

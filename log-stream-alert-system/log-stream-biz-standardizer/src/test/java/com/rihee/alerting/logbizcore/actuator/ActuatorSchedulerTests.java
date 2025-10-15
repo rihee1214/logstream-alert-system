@@ -43,11 +43,16 @@ import org.springframework.test.context.TestPropertySource;
  * @author 리희
  * @since 1.0
  */
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT,
-                      classes = {LogBizCoreTestBootstrap.class})
+// TODO 완전히 다시 작성해야하는 테스트, 현재 로그 MDC 정책이 바뀌었기 때문에, 고민할 필요가 있음.
+@SpringBootTest(
+    webEnvironment = WebEnvironment.RANDOM_PORT,
+    properties = {
+        "management.endpoints.web.exposure.include=health",
+        "monitoring.scheduler.enabled=false"
+    }
+)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@TestPropertySource(properties = "spring.profiles.active=dev")
 public class ActuatorSchedulerTests {
 
   /**
