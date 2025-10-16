@@ -1,16 +1,13 @@
 package com.rihee.alerting.loggingService.core.model;
 
-import com.rihee.alerting.common.constant.logging.StructuredLogFields;
 import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
-import java.util.Map;
-import java.util.Objects;
 
 /**
- * 로그 메시지를 표현하는 핵심 인터페이스입니다.
+ * 로그 메시지를 표현하는 핵심 <b>추상 기반 클래스</b>입니다.
  *
- * <p>이 인터페이스는 정상적으로 수집·검증된 로그 메시지
+ * <p>정상적으로 수집·검증된 로그
  * ({@link com.rihee.alerting.loggingService.core.model.LogNormalMessage})와
- * 수집 실패나 검증 실패 등 오류 상황을 기록하기 위한
+ * 수집 실패나 검증 실패 등 오류 상황을 기록하기 위한 로그
  * ({@link com.rihee.alerting.loggingService.core.model.LogErrorMessage})를
  * 공통으로 다루기 위해 정의되었습니다.
  *
@@ -22,10 +19,10 @@ import java.util.Objects;
  *   <li>로그 전체를 JSON 문자열로 직렬화 ({@link #toJsonString()})</li>
  * </ul>
  *
- * <p>이 인터페이스를 구현하는 클래스는 로그 수집 파이프라인 전반에서
- * 공통적으로 다뤄질 수 있도록 설계되어 있습니다.
+ * <p>이 클래스를 상속하는 구현체는 로그 수집 파이프라인 전반에서
+ * 공통적으로 다뤄질 수 있도록 설계되어야 합니다.
  */
-public sealed abstract class LogMessage permits LogNormalMessage, LogErrorMessage {
+public abstract sealed class LogMessage permits LogNormalMessage, LogErrorMessage {
 
   /**
    * 로그 메시지를 식별하기 위한 고유 key를 반환합니다.
@@ -53,19 +50,29 @@ public sealed abstract class LogMessage permits LogNormalMessage, LogErrorMessag
    * 주어진 key와 value를 로그 속성에 추가하거나 갱신합니다.
    *
    * @param key 속성 key
-   * @param value 속성 값
+   * @param value 속성 값 (null 허용 여부는 구현체 정책에 따름)
    */
   public abstract void put(String key, Object value);
 
   /**
    * 로그 전체를 JSON 문자열로 직렬화합니다.
    *
-   * <p>이 메서드는 주로 다른 메시지 타입으로 변환하는 과정에서 사용됩니다.
+   * <p>이 메서드는 주로 다른 메시지 타입으로 변환하거나,
+   * 외부로 전달하기 위한 직렬화 과정에서 사용됩니다.
    *
-   * @return 로그의 JSON 표현
+   * @return 로그의 JSON 표현 (null이 아님)
    */
   public abstract String toJsonString();
 
+  /**
+   * 고유한 로그 메시지 key를 생성합니다.
+   *
+   * <p>기본 구현은 {@link LogMessageKeyGenerator}를 위임 호출하여
+   * 충돌 가능성이 매우 낮은 식별자를 생성합니다. 구현체에서 메시지 생성 시
+   * 공통적으로 사용할 수 있도록 {@code protected} 정적 헬퍼로 제공합니다.
+   *
+   * @return 새로 생성된 메시지 key (null이 아님)
+   */
   protected static String generateKey() {
     return LogMessageKeyGenerator.generate();
   }

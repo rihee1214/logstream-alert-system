@@ -6,13 +6,11 @@ import static com.rihee.alerting.common.constant.logging.StructuredLogFields.LOG
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SERVICE;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.rihee.alerting.common.constant.logging.LogType;
 import com.rihee.alerting.common.identity.LogMessageKeyGenerator;
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 import net.logstash.logback.composite.AbstractJsonProvider;
 import org.springframework.util.StringUtils;
 

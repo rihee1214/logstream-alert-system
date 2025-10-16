@@ -6,6 +6,8 @@ import com.rihee.alerting.common.constant.logging.StructuredLogFields;
 import com.rihee.alerting.common.constant.storage.NormalLogSchema;
 import com.rihee.alerting.common.util.MapUtils;
 import com.rihee.alerting.common.util.StringUtils;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +31,9 @@ public final class LogNormalMessage extends LogMessage {
     NONE;
 
     private static final Set<String> STRUCTURED_KEYS = EnumSet.allOf(StructuredLogFields.class)
-                                                            .stream()
-                                                            .map(StructuredLogFields::getFieldName)
-                                                            .collect(Collectors.toUnmodifiableSet());
+                                                        .stream()
+                                                        .map(StructuredLogFields::getFieldName)
+                                                        .collect(Collectors.toUnmodifiableSet());
 
     public static StructuredRouter routeKey(String key) {
       if (STRUCTURED_KEYS.contains(key)) {
@@ -53,6 +55,14 @@ public final class LogNormalMessage extends LogMessage {
       this.put(entry.getKey(), entry.getValue());
     }
     this.put(NormalLogSchema.LOG_VERSION_MAJOR.getSchemaName(), LOG_VERSION_MAJOR);
+    Object rawTimestamp = this.get(NormalLogSchema.TIMESTAMP.getSchemaName());
+    if (StringUtils.isNotBlankText(rawTimestamp)) {
+      this.put(NormalLogSchema.TIMESTAMP.getSchemaName(),
+                Timestamp.valueOf(rawTimestamp.toString()));
+    } else {
+      this.put(NormalLogSchema.TIMESTAMP.getSchemaName(),
+          Timestamp.valueOf(LocalDateTime.now()));
+    }
   }
 
   public static LogNormalMessage fromOriginMessage(Map<String, Object> allLogs, String messageKey) {
