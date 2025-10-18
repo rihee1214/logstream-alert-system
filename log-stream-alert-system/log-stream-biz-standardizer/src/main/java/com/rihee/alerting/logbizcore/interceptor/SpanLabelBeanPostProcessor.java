@@ -39,6 +39,7 @@ public class SpanLabelBeanPostProcessor implements BeanPostProcessor {
    * 분석 대상이 되는 사용자 정의 HTTP Mapping 어노테이션 클래스 목록입니다.
    * 각 어노테이션은 {@code spanLabel()} 메서드를 포함해야 합니다.
    */
+  // THINKING 만약 새로운 사용자 정의 annotation이 생성된다면, 이것을 자동으로 읽을 수 있도록 정책이 필요함. 지금은 그저 고정.
   private static final Set<Class<? extends Annotation>> targetAnnotations
                                                             = new HashSet<>(List.of(
                                                                     StructuredRequestMapping.class,

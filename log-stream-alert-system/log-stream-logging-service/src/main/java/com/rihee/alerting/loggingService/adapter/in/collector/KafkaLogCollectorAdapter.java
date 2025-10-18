@@ -139,6 +139,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
    * 커밋 실패 로그만 남기며 예외는 전파하지 않습니다.
    * 이는 수집 파이프라인의 안정성을 위한 선택입니다.
    */
+  // FIXME 결국 commit을 날릴때, validation fail 떨어진 항목들은 DLQ로도 갈 수 있게 하기 위해
   @Override
   public void commit() {
     try {

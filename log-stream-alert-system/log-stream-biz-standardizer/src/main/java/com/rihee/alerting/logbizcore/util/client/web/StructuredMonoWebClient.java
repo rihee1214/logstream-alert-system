@@ -241,7 +241,8 @@ public class StructuredMonoWebClient {
           "MDC context is missing; required tracing keys not found."
       );
     }
-    if (!snapshot.containsKey(TRACE_ID.getFieldName()) || !snapshot.containsKey(SPAN_ID.getFieldName())) {
+    if (!snapshot.containsKey(TRACE_ID.getFieldName())
+        || !snapshot.containsKey(SPAN_ID.getFieldName())) {
       throw new IllegalStateException(
           "Missing required MDC keys: traceId and spanId must be present."
       );

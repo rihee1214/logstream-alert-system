@@ -206,7 +206,6 @@ public class ActuatorHealthMonitoringScheduler {
     stopWatch.stop();
     HttpStatusCode status = response.statusCode();
     int statusCode = status.value();
-
     String statusMessage;
     if (status instanceof HttpStatus) {
       statusMessage = ((HttpStatus) status).getReasonPhrase();
