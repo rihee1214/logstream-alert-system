@@ -13,8 +13,8 @@ public class StackTraceSummaryProvider extends AbstractJsonProvider<ILoggingEven
   private int maxDepth = 5;
 
   @Override
-  public void writeTo(JsonGenerator jsonGenerator, ILoggingEvent iLoggingEvent) throws IOException {
-    IThrowableProxy throwableProxy = iLoggingEvent.getThrowableProxy();
+  public void writeTo(JsonGenerator jsonGenerator, ILoggingEvent loggingEvent) throws IOException {
+    IThrowableProxy throwableProxy = loggingEvent.getThrowableProxy();
     if (throwableProxy instanceof ThrowableProxy) {
       Throwable t = ((ThrowableProxy) throwableProxy).getThrowable();
       StackTraceElement[] stackTrace = t.getStackTrace();
@@ -24,9 +24,5 @@ public class StackTraceSummaryProvider extends AbstractJsonProvider<ILoggingEven
       }
       jsonGenerator.writeEndArray();
     }
-  }
-
-  public void setMaxDepth(int maxDepth) {
-    this.maxDepth = maxDepth;
   }
 }

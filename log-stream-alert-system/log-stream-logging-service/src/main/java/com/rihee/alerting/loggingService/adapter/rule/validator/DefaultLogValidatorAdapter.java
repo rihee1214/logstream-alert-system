@@ -119,8 +119,7 @@ public final class DefaultLogValidatorAdapter extends LogValidatorPort {
       Predicate<Object> validate = entry.getValue();
       Object messageValue = message.get(key);
       if (!validate.test(messageValue)) {
-        return String.format("Validate Failed! : [%s] field [value : %s]",
-                                                  key, String.valueOf(messageValue));
+        return String.format("Validate Failed! : [%s] field [value : %s]", key, messageValue);
       }
     }
     return null;

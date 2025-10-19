@@ -140,7 +140,7 @@ public final class LogNormalMessage extends LogMessage {
       this.put(entry.getKey(), entry.getValue());
     }
     this.put(NormalLogSchema.LOG_VERSION_MAJOR.getSchemaName(), LOG_VERSION_MAJOR);
-    Object rawTimestamp = this.get(NormalLogSchema.TIMESTAMP.getSchemaName());
+    Object rawTimestamp = this.get(StructuredLogFields.TIME_STAMP.getFieldName());
     if (StringUtils.isNotBlankText(rawTimestamp)) {
       this.put(NormalLogSchema.TIMESTAMP.getSchemaName(),
                 Timestamp.valueOf(rawTimestamp.toString()));
