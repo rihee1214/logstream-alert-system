@@ -3,7 +3,7 @@ package com.rihee.alerting.logbizcore.log.provider;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.CONTAINER;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.HOST;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.LOG_TYPE;
-import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SERVICE;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SERVICE_NAME;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -69,7 +69,7 @@ public class CompositeStaticContextProvider extends AbstractJsonProvider<ILoggin
   @Override
   public void writeTo(JsonGenerator generator, ILoggingEvent event) throws IOException {
     Map<String, String> mdc = event.getMDCPropertyMap();
-    writeIfAbsentInMdc(mdc, generator, SERVICE.getFieldName(), serviceName);
+    writeIfAbsentInMdc(mdc, generator, SERVICE_NAME.getFieldName(), serviceName);
     writeIfAbsentInMdc(mdc, generator, HOST.getFieldName(), hostName);
     writeIfAbsentInMdc(mdc, generator, CONTAINER.getFieldName(), containerName);
     writeIfAbsentInMdc(mdc, generator, LOG_TYPE.getFieldName(), LogType.SYS.getCode());

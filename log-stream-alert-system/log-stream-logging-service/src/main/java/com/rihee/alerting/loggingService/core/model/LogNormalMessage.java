@@ -121,7 +121,7 @@ public final class LogNormalMessage extends LogMessage {
    *   <li>{@code allLogs}의 엔트리를 순회하며 {@link #put(String, Object)}로 라우팅 저장</li>
    *   <li>{@link NormalLogSchema#LOG_VERSION_MAJOR}를 {@link #LOG_VERSION_MAJOR}로 세팅</li>
    *   <li>
-   *     {@link NormalLogSchema#TIMESTAMP} 값 정규화:
+   *     {@link NormalLogSchema#TIME_STAMP} 값 정규화:
    *     <ul>
    *       <li>문자열/텍스트가 존재하면 {@link Timestamp#valueOf(String)}로 변환</li>
    *       <li>없거나 공백이면 현재 시각({@link LocalDateTime#now()})을 사용</li>
@@ -142,10 +142,10 @@ public final class LogNormalMessage extends LogMessage {
     this.put(NormalLogSchema.LOG_VERSION_MAJOR.getSchemaName(), LOG_VERSION_MAJOR);
     Object rawTimestamp = this.get(StructuredLogFields.TIME_STAMP.getFieldName());
     if (StringUtils.isNotBlankText(rawTimestamp)) {
-      this.put(NormalLogSchema.TIMESTAMP.getSchemaName(),
+      this.put(NormalLogSchema.TIME_STAMP.getSchemaName(),
                 Timestamp.valueOf(rawTimestamp.toString()));
     } else {
-      this.put(NormalLogSchema.TIMESTAMP.getSchemaName(),
+      this.put(NormalLogSchema.TIME_STAMP.getSchemaName(),
           Timestamp.valueOf(LocalDateTime.now()));
     }
   }

@@ -40,7 +40,7 @@ public enum StructuredLogFields {
    * 로그를 발생시킨 마이크로서비스 또는 애플리케이션의 논리적 이름.
    */
   @LogPolicy(isEssential = true, description = "로그를 발생시킨 마이크로서비스 또는 애플리케이션의 논리적 이름입니다.")
-  SERVICE("service"),
+  SERVICE_NAME("serviceName"),
 
   /**
    * 전체 트랜잭션 흐름을 식별하는 유일한 ID.
@@ -94,7 +94,7 @@ public enum StructuredLogFields {
    *
    * <p>전체 예외 로그를 JSON 문자열로 포함합니다.
    */
-  STACK_TRACE("stacktrace"),
+  STACKTRACE("stacktrace"),
 
   /**
    * 현재 로그 또는 트랜잭션 단위의 이름.<br>

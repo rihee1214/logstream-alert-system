@@ -1,5 +1,7 @@
 package com.rihee.alerting.common.constant.storage;
 
+import com.rihee.alerting.common.constant.logging.StructuredLogFields;
+
 /**
  * 정상적으로 수집·검증을 통과한 로그를
  * “일반 로그 테이블”에 저장하기 위한 DB 스키마(컬럼) 열거형입니다.
@@ -19,11 +21,11 @@ public enum NormalLogSchema {
    * 로그의 유형을 나타내는 컬럼.
    * 예) biz, sys 등.
    */
-  LOG_TYPE("logtype"),
+  LOG_TYPE("log_type"),
   /**
    * 로그가 발생한 시점의 타임스탬프 컬럼.
    */
-  TIMESTAMP("timestamp"),
+  TIME_STAMP("timestamp"),
   /**
    * 로그 레벨을 나타내는 컬럼.
    * 예) INFO, WARN, ERROR 등.
@@ -32,7 +34,7 @@ public enum NormalLogSchema {
   /**
    * 로그를 발생시킨 서비스명을 기록하는 컬럼.
    */
-  SERVICE("service"),
+  SERVICE_NAME("service_name"),
   /**
    * 로그를 남긴 클래스명(또는 모듈명)을 기록하는 컬럼.
    */
@@ -89,4 +91,32 @@ public enum NormalLogSchema {
     return schemaName;
   }
 
+  /**
+   * 프로듀서(로그 발생지)에서 정의한 구조화 필드({@link StructuredLogFields})를
+   * 스토리지 스키마({@link NormalLogSchema})로 1:1 매핑합니다.
+   *
+   * <p>발생지와 저장소의 명명 규칙이 다를 수 있으므로 중앙에서 매핑을 유지합니다.
+   * 새 필드가 추가될 때 누락을 컴파일 타임에 바로 발견할 수 있도록 default 절을 두지 않습니다.</p>
+   *
+   * @param field 로그 발생지에서 사용한 구조화 필드(enum). {@code null}이면 예외가 발생합니다.
+   * @return 매핑된 저장 스키마 열거값
+   * @throws NullPointerException {@code field}가 {@code null}인 경우
+   */
+  public static NormalLogSchema fromStructuredLogField(StructuredLogFields field) {
+    return switch (field) {
+      case StructuredLogFields.LOG_TYPE -> LOG_TYPE;
+      case StructuredLogFields.TIME_STAMP -> TIME_STAMP;
+      case StructuredLogFields.LOG_LEVEL -> LOG_LEVEL;
+      case StructuredLogFields.SERVICE_NAME -> SERVICE_NAME;
+      case StructuredLogFields.CLASS_NAME -> CLASS_NAME;
+      case StructuredLogFields.MESSAGE -> MESSAGE;
+      case StructuredLogFields.HOST -> HOST;
+      case StructuredLogFields.CONTAINER -> CONTAINER;
+      case StructuredLogFields.STACKTRACE -> STACKTRACE;
+      case StructuredLogFields.TRACE_ID -> TRACE_ID;
+      case StructuredLogFields.SPAN_ID -> SPAN_ID;
+      case StructuredLogFields.PARENT_SPAN_ID -> PARENT_SPAN_ID;
+      default -> META;
+    };
+  }
 }

@@ -8,9 +8,9 @@ import static com.rihee.alerting.common.constant.logging.StructuredLogFields.LOG
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.MESSAGE;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.NAME;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SERVICE;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SERVICE_NAME;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SPAN_ID;
-import static com.rihee.alerting.common.constant.logging.StructuredLogFields.STACK_TRACE;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.STACKTRACE;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.TIME_STAMP;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.TRACE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,7 +64,7 @@ public class DefaultValidatorSingleMessageTest {
                                                         TestDefaultLogValidatorAdapter adapter) {
 
     Map<String, Object> params = new HashMap<>(TEST_PARAM_MAP);
-    params.remove(SERVICE.getFieldName());
+    params.remove(SERVICE_NAME.getFieldName());
 
     LogMessage message = LogNormalMessage.fromOriginMessage(params, "abc");
     LogProcessingContext context = new DefaultLogProcessingContext();
@@ -89,7 +89,7 @@ public class DefaultValidatorSingleMessageTest {
                                                 TestDefaultLogValidatorAdapter adapter) {
 
     Map<String, Object> params = new HashMap<>(TEST_PARAM_MAP);
-    params.remove(SERVICE.getFieldName());
+    params.remove(SERVICE_NAME.getFieldName());
 
     LogMessage origin = LogNormalMessage.fromOriginMessage(params, "abc");
     LogMessage message = LogErrorMessage.fromNormalMessage(origin, "테스트용 에러 발생", "collector");
@@ -116,14 +116,14 @@ public class DefaultValidatorSingleMessageTest {
     Map<String, Object> paramMap = new HashMap<>();
     paramMap.put(LOG_TYPE.getFieldName(), "biz");
     paramMap.put(TIME_STAMP.getFieldName(), Instant.now().toString());
-    paramMap.put(SERVICE.getFieldName(), "orders");
+    paramMap.put(SERVICE_NAME.getFieldName(), "orders");
     paramMap.put(LOG_LEVEL.getFieldName(), "debug");
     paramMap.put(NAME.getFieldName(), "test");
     paramMap.put(CLASS_NAME.getFieldName(), "com.example.OrderService"); // 컬럼명은 "class"
     paramMap.put(MESSAGE.getFieldName(), "hello world");
     paramMap.put(HOST.getFieldName(), "ip-10-0-0-1");
     paramMap.put(CONTAINER.getFieldName(), "orders-0");
-    paramMap.put(STACK_TRACE.getFieldName(), null);          // 없으면 null
+    paramMap.put(STACKTRACE.getFieldName(), null);          // 없으면 null
     paramMap.put(TRACE_ID.getFieldName(), "abc123");
     paramMap.put(SPAN_ID.getFieldName(), "def456");
     paramMap.put(PARENT_SPAN_ID.getFieldName(), null);

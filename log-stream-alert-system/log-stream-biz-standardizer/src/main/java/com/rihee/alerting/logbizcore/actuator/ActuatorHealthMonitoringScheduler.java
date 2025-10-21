@@ -2,7 +2,7 @@ package com.rihee.alerting.logbizcore.actuator;
 
 import static com.rihee.alerting.common.constant.logging.LogType.ACT;
 import static com.rihee.alerting.common.constant.logging.LogType.SYS;
-import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SERVICE;
+import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SERVICE_NAME;
 import static com.rihee.alerting.common.constant.observability.CallCommonFields.ELAPSED_MS;
 import static com.rihee.alerting.common.constant.observability.CallCommonFields.TYPE;
 import static com.rihee.alerting.common.constant.observability.CallType.HTTP;
@@ -176,7 +176,7 @@ public class ActuatorHealthMonitoringScheduler {
   @Scheduled(fixedDelayString = "${monitoring.scheduler.interval.ms:10000}")
   public void scheduleActuatorLogs() {
     String uri = this.actuatorBaseUrl + "/health";
-    MDC.put(SERVICE.getFieldName(), serviceName);
+    MDC.put(SERVICE_NAME.getFieldName(), serviceName);
 
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();

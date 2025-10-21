@@ -9,10 +9,10 @@ import static com.rihee.alerting.common.constant.storage.NormalLogSchema.LOG_VER
 import static com.rihee.alerting.common.constant.storage.NormalLogSchema.MESSAGE;
 import static com.rihee.alerting.common.constant.storage.NormalLogSchema.META;
 import static com.rihee.alerting.common.constant.storage.NormalLogSchema.PARENT_SPAN_ID;
-import static com.rihee.alerting.common.constant.storage.NormalLogSchema.SERVICE;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.SERVICE_NAME;
 import static com.rihee.alerting.common.constant.storage.NormalLogSchema.SPAN_ID;
 import static com.rihee.alerting.common.constant.storage.NormalLogSchema.STACKTRACE;
-import static com.rihee.alerting.common.constant.storage.NormalLogSchema.TIMESTAMP;
+import static com.rihee.alerting.common.constant.storage.NormalLogSchema.TIME_STAMP;
 import static com.rihee.alerting.common.constant.storage.NormalLogSchema.TRACE_ID;
 
 import com.rihee.alerting.common.constant.logging.StructuredLogFields;
@@ -73,6 +73,8 @@ import org.slf4j.LoggerFactory;
  * @see HikariConfig
  * @since 1.0
  */
+// THINKING 스키마와 모니터링 전략에 이정도면 충분한지 추가 고려가 필요함
+// TODO 전체 계약을 따져보고, key값을 어떻게 할지 고민하였을때, 부족한 부분이 존재하는것으로 보임.
 @PersistenceType("postgres")
 public final class PostgresPersistenceAdapter extends LogPersistencePort {
 
@@ -179,37 +181,14 @@ public final class PostgresPersistenceAdapter extends LogPersistencePort {
             errorBatch.add();
             errorCount++;
           } else {
-            // TODO 기능 완성 및 스키마 완성 필요
-            normalBatch
-                .bind(LOG_TYPE.getSchemaName(),
-                        message.get(StructuredLogFields.LOG_TYPE.getFieldName()))
-                .bind(TIMESTAMP.getSchemaName(),
-                        message.get(StructuredLogFields.TIME_STAMP.getFieldName()))
-                .bind(LOG_LEVEL.getSchemaName(),
-                        message.get(StructuredLogFields.LOG_LEVEL.getFieldName()))
-                .bind(SERVICE.getSchemaName(),
-                        message.get(StructuredLogFields.SERVICE.getFieldName()))
-                .bind(CLASS_NAME.getSchemaName(),
-                        message.get(StructuredLogFields.CLASS_NAME.getFieldName()))
-                .bind(MESSAGE.getSchemaName(),
-                        message.get(StructuredLogFields.MESSAGE.getFieldName()))
-                .bind(HOST.getSchemaName(),
-                        message.get(StructuredLogFields.HOST.getFieldName()))
-                .bind(CONTAINER.getSchemaName(),
-                        message.get(StructuredLogFields.CONTAINER.getFieldName()))
-                .bind(STACKTRACE.getSchemaName(),
-                        message.get(StructuredLogFields.STACK_TRACE.getFieldName()))
-                .bind(TRACE_ID.getSchemaName(),
-                        message.get(StructuredLogFields.TRACE_ID.getFieldName()))
-                .bind(SPAN_ID.getSchemaName(),
-                        message.get(StructuredLogFields.SPAN_ID.getFieldName()))
-                .bind(PARENT_SPAN_ID.getSchemaName(),
-                        message.get(StructuredLogFields.PARENT_SPAN_ID.getFieldName()))
-                .bind(LOG_VERSION_MAJOR.getSchemaName(),
-                        message.get(LOG_VERSION_MAJOR.getSchemaName()))
-                .bind(META.getSchemaName(),
-                        message.get(META.getSchemaName()))
-                .add();
+            for (StructuredLogFields param : StructuredLogFields.values()) {
+              normalBatch.bind(NormalLogSchema.fromStructuredLogField(param).getSchemaName(),
+                                message.get(param.getFieldName()));
+            }
+            normalBatch.bind(LOG_VERSION_MAJOR.getSchemaName(),
+                message.get(LOG_VERSION_MAJOR.getSchemaName()));
+            normalBatch.bind(META.getSchemaName(), message.get(META.getSchemaName()));
+            normalBatch.add();
             normalCount++;
           }
 
