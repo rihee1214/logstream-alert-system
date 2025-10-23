@@ -1,8 +1,8 @@
 package com.rihee.alerting.mockservice.infra;
 
+import com.rihee.alerting.common.constant.logging.LogType;
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.constant.logging.LogType;
 import com.rihee.alerting.logbizcore.util.client.web.StructuredMonoWebClient;
 import com.rihee.alerting.logbizcore.util.client.web.response.WebClientCallResult;
 import java.util.Map;
@@ -144,7 +144,10 @@ public class MockExternalCallImpl implements MockExternalCall {
           logger.warn(LogType.BIZ, "External call failed ({} {}): {}", method, uri, ex.toString());
           return Mono.just("ERROR: " + ex.getMessage());
         }
-    );
+    ).doOnSuccess(s -> {
+      MDC.setContextMap(mdcSnapshot);
+      logger.info(LogType.BIZ, "External call success ({} {}): {}", method, uri, s);
+    });
 
   }
 

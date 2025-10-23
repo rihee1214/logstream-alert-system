@@ -1,29 +1,17 @@
 package com.rihee.alerting.logbizcore.util.client.web;
 
-import static com.rihee.alerting.common.constant.observability.CallCommonFields.ELAPSED_MS;
-import static com.rihee.alerting.common.constant.observability.CallCommonFields.TYPE;
-import static com.rihee.alerting.common.constant.observability.CallType.HTTP;
-import static com.rihee.alerting.common.constant.observability.HttpCallFields.METHOD;
-import static com.rihee.alerting.common.constant.observability.HttpCallFields.RESP_TRACE_ID;
-import static com.rihee.alerting.common.constant.observability.HttpCallFields.STATUS_CODE;
-import static com.rihee.alerting.common.constant.observability.HttpCallFields.STATUS_MESSAGE;
-import static com.rihee.alerting.common.constant.observability.HttpCallFields.URI;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.PARENT_SPAN_ID;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.SPAN_ID;
 import static com.rihee.alerting.common.constant.logging.StructuredLogFields.TRACE_ID;
 
 import com.rihee.alerting.common.constant.B3Header;
-import com.rihee.alerting.common.constant.DefaultValues;
-import com.rihee.alerting.common.constant.logging.LogType;
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
 import com.rihee.alerting.logbizcore.util.client.web.response.WebClientCallResult;
 import java.util.Map;
-import java.util.Objects;
 import org.slf4j.MDC;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -183,47 +171,10 @@ public class StructuredMonoWebClient {
           long elapsed = (System.nanoTime() - start) / 1_000_000;
 
           HttpStatusCode status = resp.statusCode();
-          int statusCode = status.value();
-          String statusMessage;
-          if (status instanceof HttpStatus) {
-            statusMessage = ((HttpStatus) status).getReasonPhrase();
-          } else {
-            HttpStatus tempStatus = HttpStatus.resolve(statusCode);
-            statusMessage = tempStatus != null
-                ? tempStatus.getReasonPhrase()
-                : DefaultValues.UNKNOWN.getValue();
-          }
-
-          MDC.put(TYPE.getFieldName(), HTTP.getType());
-          MDC.put(METHOD.getFieldName(), resp.request().getMethod().name());
-          MDC.put(URI.getFieldName(), uri);
-          MDC.put(STATUS_CODE.getFieldName(), String.valueOf(status.value()));
-          MDC.put(STATUS_MESSAGE.getFieldName(), statusMessage);
-          MDC.put(RESP_TRACE_ID.getFieldName(),
-              Objects.toString(resp.headers()
-                                  .header(B3Header.TRACE_ID.getHeaderName()).getFirst(),
-                                          DefaultValues.UNKNOWN.getValue()));
-          MDC.put(ELAPSED_MS.getFieldName(), String.valueOf(elapsed));
-
-          logger.info(LogType.BIZ,
-              "External call completed | uri={} | method={} | statusCode={} | elapsedMs={}ms | "
-                  + "traceId={} | spanId={} | remoteTraceId={}",
-              uri,
-              resp.request().getMethod(),
-              status.value(),
-              elapsed,
-              MDC.get(TRACE_ID.getFieldName()),
-              MDC.get(SPAN_ID.getFieldName()),
-              MDC.get(RESP_TRACE_ID.getFieldName())
-          );
-
-          MDC.clear();
           // 개발자가 실 환경에서 사용할 수 있을만한 구조로 response를 담아 Mono로 return
           return resp.bodyToMono(respType)
-                  .map(body -> {
-                    return WebClientCallResult.processedWebClientCallResult(status, resp.headers(),
-                                                             body, elapsed);
-                  });
+                  .map(body -> WebClientCallResult.processedWebClientCallResult(
+                                                          status, resp.headers(), body, elapsed));
         });
   }
 

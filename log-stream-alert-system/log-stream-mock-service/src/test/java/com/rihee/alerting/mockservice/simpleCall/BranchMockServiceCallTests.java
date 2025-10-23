@@ -12,10 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import com.rihee.alerting.common.constant.logging.LogType;
 import com.rihee.alerting.logbizcore.config.CommonInterceptorConfiguration;
 import com.rihee.alerting.logbizcore.log.StructuredLogger;
 import com.rihee.alerting.logbizcore.log.StructuredLoggerFactory;
-import com.rihee.alerting.common.constant.logging.LogType;
 import com.rihee.alerting.mockservice.configuration.MockHttpServletRequestConfig;
 import com.rihee.alerting.mockservice.log.MemoryAppender;
 import java.util.Comparator;
@@ -142,9 +142,12 @@ public class BranchMockServiceCallTests {
     assertThat(event1.get(TRACE_ID.getFieldName())).isEqualTo(event4.get(TRACE_ID.getFieldName()));
 
     // 전체의 부모 spanId와 자식의 parentSpanId 정합성 검증
-    assertThat(event1.get(SPAN_ID.getFieldName())).isEqualTo(event2.get(PARENT_SPAN_ID.getFieldName()));
-    assertThat(event2.get(SPAN_ID.getFieldName())).isEqualTo(event3.get(PARENT_SPAN_ID.getFieldName()));
-    assertThat(event1.get(SPAN_ID.getFieldName())).isEqualTo(event4.get(PARENT_SPAN_ID.getFieldName()));
+    assertThat(event1.get(SPAN_ID.getFieldName()))
+            .isEqualTo(event2.get(PARENT_SPAN_ID.getFieldName()));
+    assertThat(event2.get(SPAN_ID.getFieldName()))
+            .isEqualTo(event3.get(PARENT_SPAN_ID.getFieldName()));
+    assertThat(event1.get(SPAN_ID.getFieldName()))
+            .isEqualTo(event4.get(PARENT_SPAN_ID.getFieldName()));
   }
 
   /* ▼ 호출 흐름 요약 (Stack 구조 기준)
@@ -155,7 +158,7 @@ public class BranchMockServiceCallTests {
     4.              middle C  -- FIRST MIDDLE
     5.                  middle S
     6.                      middle I → call simpleBiz
-    7.                          simple C  -- FIRST SIMPLE CALL BY MIDDLE
+    7.                          simple C -- FIRST SIMPLE CALL BY MIDDLE
     8.                              simple S
     9.                                  simple D
 
@@ -170,7 +173,7 @@ public class BranchMockServiceCallTests {
 
     RE-ENTRY
     17.         branch I
-    18.             simple C  -- FIRST SIMPLE CALL BY BRANCH
+    18.             simple C -- FIRST SIMPLE CALL BY BRANCH
     19.                 simple S
     20.                     simple D
 
