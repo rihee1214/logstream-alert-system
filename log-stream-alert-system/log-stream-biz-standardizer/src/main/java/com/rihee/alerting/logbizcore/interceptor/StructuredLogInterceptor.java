@@ -100,6 +100,7 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
    *
    * <p>모든 값은 MDC에 설정되어 구조화 로그에 포함되며, 로그 추적 및 수집 시스템에서 활용됩니다.</p>
    */
+  // TODO 결국 관찰 가능성을 위한 요소를 두어야 한다.
   @Override
   public boolean preHandle(HttpServletRequest request,
           @NonNull HttpServletResponse response, @NonNull Object handler) {
@@ -151,6 +152,7 @@ public final class StructuredLogInterceptor implements HandlerInterceptor {
    * @param ex       any exception thrown on handler execution, if any; this does not
    *                 include exceptions that have been handled through an exception resolver
    */
+  // TODO 결국 관찰 가능성을 위한 요소를 두어야 한다.
   @Override
   public void afterCompletion(@NonNull HttpServletRequest request,
           @NonNull HttpServletResponse response, @NonNull Object handler, @Nullable Exception ex) {

@@ -103,7 +103,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
     for (ConsumerRecord<String, String> record : records) {
       String messageKey = record.key();
       String logMessage = record.value();
-      LogMessage newMessage = null;
+      LogMessage newMessage;
       try {
         newMessage = LogNormalMessage.fromOriginMessage(MapUtils.fromJson(logMessage), messageKey);
       } catch (RuntimeException e) {
@@ -150,7 +150,7 @@ public final class KafkaLogCollectorAdapter extends LogCollectorPort
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() {
     kafkaConsumer.close();
   }
 
